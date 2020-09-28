@@ -15,6 +15,14 @@ https://www.rust-lang.org/learn/get-started
 
 	cargo install cargo-make
 
+# Configure
+
+Create a `.env` file with :
+
+* LOGIN=your_login 
+* PWD=your_password
+
+
 ## Run
 
 Open a new terminal and run :
