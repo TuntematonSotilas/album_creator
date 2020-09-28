@@ -4,7 +4,7 @@ Web app to create albums
 
 ## Framework
 
-Seed [Website](https://seed-rs.org)/[Doc](https://seed-rs.org)
+Seed [Website](https://seed-rs.org)
 
 ## Installation
 
