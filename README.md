@@ -17,13 +17,9 @@ https://www.rust-lang.org/learn/get-started
 
 ## Run
 
-### Serve 
-
 Open a new terminal tab / window and run :
 
 	cargo make serve
-
-### Watch 
 
 Open a second terminal tab and run :
 
