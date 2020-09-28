@@ -13,3 +13,16 @@ https://www.rust-lang.org/learn/get-started
 
 	cargo install cargo-make
 
+## Run
+
+### Serve 
+
+Open a new terminal tab / window and run :
+
+	cargo make serve
+
+### Watch 
+
+Open a second terminal tab and run :
+
+	cargo make watch
