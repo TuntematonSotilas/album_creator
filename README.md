@@ -17,10 +17,10 @@ https://www.rust-lang.org/learn/get-started
 
 ## Run
 
-Open a new terminal tab / window and run :
+Open a new terminal and run :
 
 	cargo make serve
 
-Open a second terminal tab and run :
+Open a second terminal and run :
 
 	cargo make watch
