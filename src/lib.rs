@@ -6,58 +6,59 @@
 use seed::{prelude::*, *};
 use crate::components::login;
 
-// ------ ------
+mod components;
+
+// ------------
 //     Init
-// ------ ------
+// ------------
 
 // `init` describes what should happen when your app started.
 fn init(_: Url, _: &mut impl Orders<Msg>) -> Model {
     Model::default()
 }
 
-// ------ ------
+// ------------
 //     Model
-// ------ ------
+// ------------
 
-// `Model` describes our app state.
-type Model = i32;
+#[derive(Default)]
+struct Model {
+    login: login::Model,
+}
 
-// ------ ------
+// ------------
 //    Update
-// ------ ------
+// ------------
 
-// (Remove the line below once any of your `Msg` variants doesn't implement `Copy`.)
-#[derive(Copy, Clone)]
-// `Msg` describes the different events you can modify state with.
 enum Msg {
-    Increment,
+    Login(login::Msg),
 }
 
 // `update` describes how to handle each `Msg`.
-fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
+fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
-        Msg::Increment => *model += 1,
+        Msg::Login(msg) => {
+            login::update(msg, &mut model.login, &mut orders.proxy(Msg::Login));
+        }
     }
 }
 
-// ------ ------
+// ------------
 //     View
-// ------ ------
+// ------------
 
 // (Remove the line below once your `Model` become more complex.)
 #[allow(clippy::trivially_copy_pass_by_ref)]
 // `view` describes what to display.
 fn view(model: &Model) -> Node<Msg> {
     div![
-        "This is a counter: ",
-        C!["counter"],
-        button![model, ev(Ev::Click, |_| Msg::Increment),],
+        login::view(&model.login).map_msg(Msg::Login),
     ]
 }
 
-// ------ ------
+// ------------
 //     Start
-// ------ ------
+// ------------
 
 // (This function is invoked by `init` function in `index.html`.)
 #[wasm_bindgen(start)]
