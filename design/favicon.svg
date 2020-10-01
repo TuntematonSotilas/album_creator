@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="Capa_1"
+   enable-background="new 0 0 512 512"
+   height="512"
+   viewBox="0 0 512 512"
+   width="512"
+   version="1.1"
+   sodipodi:docname="favicon.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   inkscape:export-filename="C:\projet\album_creator\design\favicon.png"
+   inkscape:export-xdpi="13.24"
+   inkscape:export-ydpi="13.24">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs11" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     id="namedview9"
+     showgrid="false"
+     inkscape:zoom="0.81054688"
+     inkscape:cx="48.809722"
+     inkscape:cy="270.44653"
+     inkscape:window-x="1991"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="XMLID_57_"
+     inkscape:document-rotation="0" />
+  <g
+     id="XMLID_1556_">
+    <g
+       id="XMLID_57_">
+      <rect
+         style="fill:#008891;fill-opacity:1;fill-rule:evenodd;stroke-width:0.285229"
+         id="rect15-3"
+         width="28.076424"
+         height="472"
+         x="83.923576"
+         y="20" />
+      <rect
+         style="fill:#00587a;fill-rule:evenodd;fill-opacity:1"
+         id="rect15"
+         width="338.21408"
+         height="481.61984"
+         x="132"
+         y="20" />
+      <path
+         id="XMLID_1409_"
+         d="m458 0h-360c-16.542 0-30 13.458-30 30v24h-6c-20.953 0-38 17.047-38 38s17.047 38 38 38h6v33.333h-6c-20.953 0-38 17.047-38 38s17.047 38 38 38h6v33.333h-6c-20.953 0-38 17.047-38 38s17.047 38 38 38h6v33.334h-6c-20.953 0-38 17.047-38 38s17.047 38 38 38h6v24c0 16.542 13.458 30 30 30h360c16.542 0 30-13.458 30-30v-452c0-16.542-13.458-30-30-30zm-370 30c0-5.514 4.486-10 10-10h14v38.543c-5.361-2.896-11.491-4.543-18-4.543h-6zm-26 80c-9.925 0-18-8.075-18-18s8.075-18 18-18h6v36zm26-36h6c9.925 0 18 8.075 18 18v75.876c-5.361-2.896-11.491-4.543-18-4.543h-6zm-26 145.333c-9.925 0-18-8.075-18-18s8.075-18 18-18h6v36zm26-36h6c9.925 0 18 8.075 18 18v75.876c-5.361-2.896-11.491-4.543-18-4.543h-6zm-26 145.334c-9.925 0-18-8.075-18-18s8.075-18 18-18h6v36zm26-36h6c9.925 0 18 8.075 18 18v75.876c-5.361-2.896-11.491-4.543-18-4.543h-6zm-26 145.333c-9.925 0-18-8.075-18-18s8.075-18 18-18h6v36zm26 44v-80h6c9.925 0 18 8.075 18 18v72h-14c-5.514 0-10-4.486-10-10zm380 0c0 5.514-4.486 10-10 10h-326v-472h326c5.514 0 10 4.486 10 10z" />
+    </g>
+  </g>
+</svg>
