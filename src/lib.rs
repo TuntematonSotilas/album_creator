@@ -4,9 +4,11 @@
 #![allow(clippy::wildcard_imports)]
 
 use seed::{prelude::*, *};
+
 use crate::components::login;
 
 mod components;
+mod config;
 
 // ------------
 //     Init
@@ -63,6 +65,5 @@ fn view(model: &Model) -> Node<Msg> {
 // (This function is invoked by `init` function in `index.html`.)
 #[wasm_bindgen(start)]
 pub fn start() {
-    // Mount the `app` to the element with the `id` "app".
     App::start("app", init, update, view);
 }

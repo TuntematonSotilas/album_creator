@@ -1,4 +1,5 @@
 use seed::{self, prelude::*, *};
+use crate::config::config::{LOGIN, PWD};
 
 // ------------
 //     Model
@@ -6,7 +7,10 @@ use seed::{self, prelude::*, *};
 
 #[derive(Default)]
 pub struct Model {
-    result: String,
+    is_auth: bool,
+    message: Option<String>,
+    login: String,
+    pwd: String,
 }
 
 // ------------
@@ -14,13 +18,22 @@ pub struct Model {
 // ------------
 
 pub enum Msg {
-    Login,
+    Submit,
+    NameChanged(String),
+    PwdChanged(String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
     match msg {
-        Msg::Login => {
-            model.result = "Ok".to_string();
+        Msg::NameChanged(login) => model.login = login,
+        Msg::PwdChanged(pwd) => model.pwd = pwd,
+        Msg::Submit => {
+            if model.login == LOGIN && model.pwd == PWD {
+                model.is_auth = true;
+                model.message = None;
+            } else {
+                model.message = Some("Login failed".into());
+            }
         }
     }
 }
@@ -31,8 +44,31 @@ pub fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
     nodes![
-        div!["login"],
-        span![model.result.clone()]
-        button![ev(Ev::Click, |_| Msg::Login), "Login"],
+        form![
+            ev(Ev::Submit, |event| {
+                event.prevent_default();
+                Msg::Submit
+            }),
+            label![
+                "Login",
+                input![
+                    attrs! {At::Value => model.login},
+                    input_ev(Ev::Input, Msg::NameChanged),
+                ]
+            ],
+            label![
+                "Password",
+                input![
+                    attrs! {At::Value => model.pwd},
+                    input_ev(Ev::Input, Msg::PwdChanged),
+                ]
+            ],
+            button!["Submit"],
+            if let Some(message) = &model.message {
+                span![message]
+            } else {
+                empty![]
+            },
+        ]
     ]
 }

@@ -17,11 +17,12 @@ https://www.rust-lang.org/learn/get-started
 
 # Configure
 
-Create a `.env` file with :
+Create a `config/config.rs` file with :
 
-* LOGIN=your_login 
-* PWD=your_password
-
+```Rust
+pub const LOGIN: &str = "your_login";
+pub const PWD: &str = "your_password";
+```
 
 ## Run
 
