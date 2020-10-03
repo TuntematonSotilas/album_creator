@@ -62,7 +62,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
-    let login = style! {
+    let s_login = style! {
         St::AlignItems => "center",
         St::JustifyContent => "center",
         St::Background => "radial-gradient(circle at bottom left, rgba(130, 130, 130, 0.5) -5%, rgba(0,0,0,0) 100%), 
@@ -70,42 +70,53 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Height => percent(100),
         St::Color => "#fff",
     };
-    let column = style! {
+    let s_column = style! {
         St::Display => "flex",
         St::FlexDirection => "column",
     };
-    let title = style! {
+    let s_title = style! {
         St::FontSize => em(2),
         St::Margin => em(0.67),
-        St::LetterSpacing => px(1),
+        St::LetterSpacing => rem(0.1),
         St::TextAlign => "center"
         St::TextShadow => "0 0 10px rgba(0,0,0,0.3)",
+    };
+    let s_input = style! {
+        St::Padding => rem(0.5),
+        St::Background => "rgba(0, 0, 0, 0.3)",
+        St::Outline => "none",
+        St::Color => "#fff",
+        St::Border => "1px solid rgba(0,0,0,0.3)",
+        St::BorderRadius => rem(0.3),
+        St::BoxShadow => "inset 0 -5px 45px rgba(100,100,100,0.2), 0 1px 1px rgba(255,255,255,0.2)",
     };
     nodes![
         match model.is_auth {
             false => div![
-                column.clone(),
-                login,
+                s_column.clone(),
+                s_login,
                 form![
                     div![
-                        column.clone(),
+                        s_column.clone(),
                         h1![
-                            title,
+                            s_title,
                             "Login"
                         ],
-                        label![
-                            "Login",
-                            input![
-                                attrs! {At::Value => model.login},
-                                input_ev(Ev::Input, Msg::NameChanged),
-                            ]
+                        input![
+                            s_input,
+                            attrs! {
+                                At::Value => model.login,
+                                At::Placeholder => "Username",
+                            },
+                            input_ev(Ev::Input, Msg::NameChanged),
                         ],
-                        label![
-                            "Password",
-                            input![
-                                attrs! {At::Value => model.pwd, At::Type => "password"},
-                                input_ev(Ev::Input, Msg::PwdChanged),
-                            ]
+                        input![
+                            attrs! {
+                                At::Value => model.pwd, 
+                                At::Type => "password"
+                                At::Placeholder => "Password",
+                            },
+                            input_ev(Ev::Input, Msg::PwdChanged),
                         ],
                         button!["Submit"],
                         if let Some(message) = &model.message {
