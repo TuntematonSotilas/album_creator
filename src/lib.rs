@@ -13,7 +13,7 @@ mod utils;
 // ------------
 
 // `init` describes what should happen when your app started.
-fn init(_: Url, orders: &mut impl Orders<Msg>) -> Model {
+fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
         login: login::Model::new(conf_util::parse_conf()),
         menu: menu::Model::default(),
