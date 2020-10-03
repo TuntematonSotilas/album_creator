@@ -17,11 +17,11 @@ https://www.rust-lang.org/learn/get-started
 
 # Configure
 
-Create a `config/config.rs` file with :
+Create a `config.ini` file at root path with :
 
 ```Rust
-pub const LOGIN: &str = "your_login";
-pub const PWD: &str = "your_password";
+LOGIN=your_login
+PWD=your_password
 ```
 
 ## Run

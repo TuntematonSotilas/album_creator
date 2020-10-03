@@ -1,5 +1,4 @@
 use seed::{self, prelude::*, *};
-use crate::config::config::{LOGIN, PWD};
 
 // ------------
 //     Model
@@ -28,12 +27,12 @@ pub fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
         Msg::NameChanged(login) => model.login = login,
         Msg::PwdChanged(pwd) => model.pwd = pwd,
         Msg::Submit => {
-            if model.login == LOGIN && model.pwd == PWD {
+            /*if model.login == LOGIN && model.pwd == PWD {
                 model.is_auth = true;
                 model.message = None;
             } else {
                 model.message = Some("Login failed".into());
-            }
+            }*/
         }
     }
 }

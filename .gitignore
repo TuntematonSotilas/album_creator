@@ -1,4 +1,4 @@
 /target
 /pkg
 Cargo.lock
-config.rs
+config.ini

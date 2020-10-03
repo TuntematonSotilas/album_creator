@@ -8,7 +8,6 @@ use seed::{prelude::*, *};
 use crate::components::login;
 
 mod components;
-mod config;
 
 // ------------
 //     Init
@@ -65,5 +64,8 @@ fn view(model: &Model) -> Node<Msg> {
 // (This function is invoked by `init` function in `index.html`.)
 #[wasm_bindgen(start)]
 pub fn start() {
+    let my_str = include_str!("../config.ini");
+    //log!(my_str);
+
     App::start("app", init, update, view);
 }
