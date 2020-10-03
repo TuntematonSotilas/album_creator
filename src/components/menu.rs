@@ -6,6 +6,7 @@ use seed::{self, prelude::*, *};
 
 #[derive(Default)]
 pub struct Model {
+    is_auth: bool,
 }
 
 // ------------
@@ -16,9 +17,9 @@ pub enum Msg {
     SetIsAuth(bool),
 }
 
-pub fn update(msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {
+pub fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
     match msg {
-        Msg::SetIsAuth(is_auth) => log!("menu", is_auth),
+        Msg::SetIsAuth(is_auth) => model.is_auth = is_auth,
     }
 }
 
@@ -26,8 +27,11 @@ pub fn update(msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {
 //     View
 // ------------
 
-pub fn view(_model: &Model) -> Vec<Node<Msg>> {
+pub fn view(model: &Model) -> Vec<Node<Msg>> {
     nodes![
-        span!["menu"],
+        match model.is_auth {
+            true => span!["menu"], 
+            false => empty![],
+        }
     ]
 }
