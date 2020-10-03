@@ -1,4 +1,5 @@
 use seed::{self, prelude::*, *};
+use std::collections::HashMap;
 
 // ------------
 //     Model
@@ -7,9 +8,22 @@ use seed::{self, prelude::*, *};
 #[derive(Default)]
 pub struct Model {
     is_auth: bool,
-    message: Option<String>,
     login: String,
     pwd: String,
+    message: Option<String>,
+    config: HashMap<String, String>,
+}
+
+impl Model {
+    pub fn new(config: HashMap<String, String>) -> Self {
+        Self {
+            is_auth: false,
+            login: String::new(),
+            pwd: String::new(),
+            message: None,
+            config: config,
+        }
+    }
 }
 
 // ------------
@@ -27,12 +41,16 @@ pub fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
         Msg::NameChanged(login) => model.login = login,
         Msg::PwdChanged(pwd) => model.pwd = pwd,
         Msg::Submit => {
-            /*if model.login == LOGIN && model.pwd == PWD {
-                model.is_auth = true;
-                model.message = None;
-            } else {
-                model.message = Some("Login failed".into());
-            }*/
+            let conf_login = model.config.get("LOGIN");
+            let conf_pwd = model.config.get("PWD");
+            if conf_login.is_some() && conf_pwd.is_some() {
+                if model.login == *conf_login.unwrap() && model.pwd == *conf_pwd.unwrap() {
+                    model.is_auth = true;
+                    model.message = None;
+                } else {
+                    model.message = Some("Login failed".into());
+                }
+            }
         }
     }
 }
@@ -58,7 +76,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             label![
                 "Password",
                 input![
-                    attrs! {At::Value => model.pwd},
+                    attrs! {At::Value => model.pwd, At::Type => "password"},
                     input_ev(Ev::Input, Msg::PwdChanged),
                 ]
             ],

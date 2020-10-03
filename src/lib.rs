@@ -1,13 +1,12 @@
-// (Lines like the one below ignore selected Clippy rules
-//  - it's useful when you want to check your code with `cargo make verify`
-// but some rules are too "annoying" or are not applicable for your case.)
 #![allow(clippy::wildcard_imports)]
 
 use seed::{prelude::*, *};
 
 use crate::components::login;
+use crate::utils::conf_util;
 
 mod components;
+mod utils;
 
 // ------------
 //     Init
@@ -15,7 +14,9 @@ mod components;
 
 // `init` describes what should happen when your app started.
 fn init(_: Url, _: &mut impl Orders<Msg>) -> Model {
-    Model::default()
+    Model {
+        login: login::Model::new(conf_util::parse_conf()),
+    }
 }
 
 // ------------
@@ -64,8 +65,5 @@ fn view(model: &Model) -> Node<Msg> {
 // (This function is invoked by `init` function in `index.html`.)
 #[wasm_bindgen(start)]
 pub fn start() {
-    let my_str = include_str!("../config.ini");
-    //log!(my_str);
-
     App::start("app", init, update, view);
 }
