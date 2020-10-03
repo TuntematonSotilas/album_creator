@@ -62,25 +62,37 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
-    let container = style! {
+    let login = style! {
         St::AlignItems => "center",
         St::JustifyContent => "center",
         St::Background => "radial-gradient(circle at bottom left, rgba(130, 130, 130, 0.5) -5%, rgba(0,0,0,0) 100%), 
             radial-gradient(circle at top left, #008891 -20%, #0f3057 100%)",
         St::Height => percent(100),
+        St::Color => "#fff",
     };
     let column = style! {
         St::Display => "flex",
         St::FlexDirection => "column",
     };
+    let title = style! {
+        St::FontSize => em(2),
+        St::Margin => em(0.67),
+        St::LetterSpacing => px(1),
+        St::TextAlign => "center"
+        St::TextShadow => "0 0 10px rgba(0,0,0,0.3)",
+    };
     nodes![
         match model.is_auth {
             false => div![
                 column.clone(),
-                container,
+                login,
                 form![
                     div![
                         column.clone(),
+                        h1![
+                            title,
+                            "Login"
+                        ],
                         label![
                             "Login",
                             input![

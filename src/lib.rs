@@ -67,7 +67,10 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 #[allow(clippy::trivially_copy_pass_by_ref)]
 // `view` describes what to display.
 fn view(model: &Model) -> Node<Msg> {
-    let style = style! { St::Height => vh(100) };
+    let style = style! { 
+        St::Height => vh(100),
+        St::FontFamily => "'Open Sans', sans-serif",
+    };
     div![style,
         login::view(&model.login).map_msg(Msg::Login),
         menu::view(&model.menu).map_msg(Msg::Menu),
