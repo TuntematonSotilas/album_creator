@@ -19,7 +19,7 @@ https://www.rust-lang.org/learn/get-started
 
 Create a `config.ini` file at root path with :
 
-```Rust
+```ini
 LOGIN=your_login
 PWD=your_password
 ```
