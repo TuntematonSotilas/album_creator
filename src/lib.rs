@@ -2,7 +2,7 @@
 
 use seed::{prelude::*, *};
 
-use crate::components::login;
+use crate::components::{login, menu};
 use crate::utils::conf_util;
 
 mod components;
@@ -13,9 +13,10 @@ mod utils;
 // ------------
 
 // `init` describes what should happen when your app started.
-fn init(_: Url, _: &mut impl Orders<Msg>) -> Model {
+fn init(_: Url, orders: &mut impl Orders<Msg>) -> Model {
     Model {
         login: login::Model::new(conf_util::parse_conf()),
+        menu: menu::Model::default(),
     }
 }
 
@@ -26,6 +27,7 @@ fn init(_: Url, _: &mut impl Orders<Msg>) -> Model {
 #[derive(Default)]
 struct Model {
     login: login::Model,
+    menu: menu::Model,
 }
 
 // ------------
@@ -34,13 +36,25 @@ struct Model {
 
 enum Msg {
     Login(login::Msg),
+    Menu(menu::Msg),
+    SetIsAuth(bool),
 }
 
 // `update` describes how to handle each `Msg`.
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
-        Msg::Login(msg) => {
-            login::update(msg, &mut model.login, &mut orders.proxy(Msg::Login));
+        Msg::Login(msg_login) => {
+            match msg_login {
+                login::Msg::SetIsAuth(is_auth) => orders.send_msg(Msg::SetIsAuth(is_auth)),
+                _ => orders.skip(),
+            };
+            login::update(msg_login, &mut model.login, &mut orders.proxy(Msg::Login));
+        },
+        Msg::Menu(msg) => {
+            menu::update(msg, &mut model.menu, &mut orders.proxy(Msg::Menu));
+        },
+        Msg::SetIsAuth(is_auth) => {
+            menu::update(menu::Msg::SetIsAuth(is_auth), &mut model.menu, &mut orders.proxy(Msg::Menu));
         }
     }
 }
@@ -55,6 +69,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 fn view(model: &Model) -> Node<Msg> {
     div![
         login::view(&model.login).map_msg(Msg::Login),
+        menu::view(&model.menu).map_msg(Msg::Menu),
     ]
 }
 
