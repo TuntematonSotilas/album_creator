@@ -92,7 +92,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Color => "#fff",
         St::Border => "1px solid rgba(0,0,0,0.3)",
         St::BorderRadius => rem(0.3),
-        St::BoxShadow => "inset 0 -5px 45px rgba(100,100,100,0.2), 0 1px 1px rgba(255,255,255,0.2)",
+        St::Transition => "box-shadow .5s ease",
     };
 
     nodes![
@@ -109,6 +109,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             "Login"
                         ],
                         input![
+                            class!("login__input"),
                             s_input.clone(),
                             attrs! {
                                 At::Value => model.login,
@@ -117,6 +118,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             input_ev(Ev::Input, Msg::NameChanged),
                         ],
                         input![
+                            class!("login__input"),
                             s_input.clone(),
                             attrs! {
                                 At::Value => model.pwd, 
