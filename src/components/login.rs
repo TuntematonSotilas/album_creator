@@ -62,6 +62,10 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
+    let s_column = style! {
+        St::Display => "flex",
+        St::FlexDirection => "column",
+    };
     let s_login = style! {
         St::AlignItems => "center",
         St::JustifyContent => "center",
@@ -70,9 +74,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Height => percent(100),
         St::Color => "#fff",
     };
-    let s_column = style! {
-        St::Display => "flex",
-        St::FlexDirection => "column",
+    let s_form = style! {
+        St::Width => rem(12),
     };
     let s_title = style! {
         St::FontSize => em(2),
@@ -83,6 +86,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
     };
     let s_input = style! {
         St::Padding => rem(0.5),
+        St::MarginBottom => rem(0.5),
         St::Background => "rgba(0, 0, 0, 0.3)",
         St::Outline => "none",
         St::Color => "#fff",
@@ -90,6 +94,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::BorderRadius => rem(0.3),
         St::BoxShadow => "inset 0 -5px 45px rgba(100,100,100,0.2), 0 1px 1px rgba(255,255,255,0.2)",
     };
+
     nodes![
         match model.is_auth {
             false => div![
@@ -98,12 +103,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                 form![
                     div![
                         s_column.clone(),
+                        s_form,
                         h1![
                             s_title,
                             "Login"
                         ],
                         input![
-                            s_input,
+                            s_input.clone(),
                             attrs! {
                                 At::Value => model.login,
                                 At::Placeholder => "Username",
@@ -111,6 +117,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             input_ev(Ev::Input, Msg::NameChanged),
                         ],
                         input![
+                            s_input.clone(),
                             attrs! {
                                 At::Value => model.pwd, 
                                 At::Type => "password"
