@@ -48,6 +48,10 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             if conf_login.is_some() && conf_pwd.is_some() {
                 if model.login == *conf_login.unwrap() && model.pwd == *conf_pwd.unwrap() {
                     orders.send_msg(Msg::SetIsAuth(true));
+                    orders.send_msg(Msg::ShowToast(
+                        Toast { 
+                            message: None
+                        }));
                 } else {
                     orders.send_msg(Msg::ShowToast(
                         Toast { 
