@@ -83,7 +83,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Margin => em(0.67),
         St::LetterSpacing => rem(0.1),
         St::TextAlign => "center"
-        St::TextShadow => "0 0 10px rgba(0,0,0,0.3)",
+        St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
     };
     let s_input = style! {
         St::Padding => rem(0.5),
@@ -93,6 +93,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Color => "#fff",
         St::Border => "1px solid rgba(0,0,0,0.3)",
         St::BorderRadius => rem(0.3),
+        St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
         St::Transition => "box-shadow .5s ease",
     };
     let s_button = style! {
@@ -107,6 +108,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::TextShadow => "1px 1px 1px rgba(0,0,0,0.4)",
         St::Cursor => "pointer",
         St::Outline => "none",
+        St::BoxShadow => "0 1px 2px rgba(0, 0, 0, 0.5)",
     };
     nodes![
         match model.is_auth {
