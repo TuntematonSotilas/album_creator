@@ -50,6 +50,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                     orders.send_msg(Msg::SetIsAuth(true));
                 } else {
                     model.message = Some("Login failed".into());
+                    orders.render();
                 }
             }
         },
@@ -94,13 +95,29 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::BorderRadius => rem(0.3),
         St::Transition => "box-shadow .5s ease",
     };
-
+    let s_button = style! {
+        St::Padding => rem(0.5),
+        St::BackgroundImage => "linear-gradient(#6eb6de, #4a77d4)",
+        St::BackgroundRepeat => "repeat-x",
+        St::Border => "1px solid #3762bc",
+        St::BorderRadius => rem(0.3),
+        St::Color => "#fff",
+        St::FontSize => rem(0.9),
+        St::LetterSpacing => rem(0.1),
+        St::TextShadow => "1px 1px 1px rgba(0,0,0,0.4)",
+        St::Cursor => "pointer",
+        St::Outline => "none",
+    };
     nodes![
         match model.is_auth {
             false => div![
                 s_column.clone(),
                 s_login,
                 form![
+                    ev(Ev::Submit, |event| {
+                        event.prevent_default();
+                        Msg::Submit
+                    }),
                     div![
                         s_column.clone(),
                         s_form,
@@ -127,17 +144,17 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             },
                             input_ev(Ev::Input, Msg::PwdChanged),
                         ],
-                        button!["Submit"],
+                        button![
+                            class!("login__button"),
+                            s_button,
+                            "Submit"
+                        ],
                         if let Some(message) = &model.message {
                             span![message]
                         } else {
                             empty![]
                         }, 
                     ],
-                    ev(Ev::Submit, |event| {
-                        event.prevent_default();
-                        Msg::Submit
-                    }),
                 ],
             ],
             true => empty![],
