@@ -1,6 +1,8 @@
 use seed::{self, prelude::*, *};
 use std::collections::HashMap;
 
+use crate::models::toast::Toast;
+
 // ------------
 //     Model
 // -----------
@@ -10,7 +12,6 @@ pub struct Model {
     is_auth: bool,
     login: String,
     pwd: String,
-    message: Option<String>,
     config: HashMap<String, String>,
 }
 
@@ -20,7 +21,6 @@ impl Model {
             is_auth: false,
             login: String::new(),
             pwd: String::new(),
-            message: None,
             config: config,
         }
     }
@@ -35,6 +35,7 @@ pub enum Msg {
     NameChanged(String),
     PwdChanged(String),
     SetIsAuth(bool),
+    ShowToast(Toast),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -46,15 +47,17 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             let conf_pwd = model.config.get("PWD");
             if conf_login.is_some() && conf_pwd.is_some() {
                 if model.login == *conf_login.unwrap() && model.pwd == *conf_pwd.unwrap() {
-                    model.message = None;
                     orders.send_msg(Msg::SetIsAuth(true));
                 } else {
-                    model.message = Some("Login failed".into());
-                    orders.render();
+                    orders.send_msg(Msg::ShowToast(
+                        Toast { 
+                            message: Some("Login failed".to_string())
+                        }));
                 }
             }
         },
         Msg::SetIsAuth(is_auth) => model.is_auth = is_auth,
+        Msg::ShowToast(_toast) => (),
     }
 }
 
@@ -151,11 +154,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             s_button,
                             "Submit"
                         ],
-                        if let Some(message) = &model.message {
-                            span![message]
-                        } else {
-                            empty![]
-                        }, 
                     ],
                 ],
             ],

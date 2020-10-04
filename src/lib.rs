@@ -2,11 +2,17 @@
 
 use seed::{prelude::*, *};
 
-use crate::components::{login, menu};
+use crate::components::{
+    login, 
+    menu,
+    toast,
+};
+use crate::models::toast::Toast;
 use crate::utils::conf_util;
 
 mod components;
 mod utils;
+mod models;
 
 // ------------
 //     Init
@@ -17,6 +23,7 @@ fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
         login: login::Model::new(conf_util::parse_conf()),
         menu: menu::Model::default(),
+        toast: toast::Model::default(),
     }
 }
 
@@ -28,6 +35,7 @@ fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
 struct Model {
     login: login::Model,
     menu: menu::Model,
+    toast: toast::Model,
 }
 
 // ------------
@@ -37,25 +45,34 @@ struct Model {
 enum Msg {
     Login(login::Msg),
     Menu(menu::Msg),
+    Toast(toast::Msg),
     SetIsAuth(bool),
+    ShowToast(Toast),
 }
 
 // `update` describes how to handle each `Msg`.
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
-        Msg::Login(msg_login) => {
-            match msg_login {
+        Msg::Login(msg) => {
+            match msg {
                 login::Msg::SetIsAuth(is_auth) => orders.send_msg(Msg::SetIsAuth(is_auth)),
+                login::Msg::ShowToast(ref toast) => orders.send_msg(Msg::ShowToast(toast.clone())),
                 _ => orders.skip(),
             };
-            login::update(msg_login, &mut model.login, &mut orders.proxy(Msg::Login));
+            login::update(msg, &mut model.login, &mut orders.proxy(Msg::Login));
         },
         Msg::Menu(msg) => {
             menu::update(msg, &mut model.menu, &mut orders.proxy(Msg::Menu));
         },
+        Msg::Toast(msg) => {
+            toast::update(msg, &mut model.toast, &mut orders.proxy(Msg::Toast));
+        },
         Msg::SetIsAuth(is_auth) => {
             menu::update(menu::Msg::SetIsAuth(is_auth), &mut model.menu, &mut orders.proxy(Msg::Menu));
-        }
+        },
+        Msg::ShowToast(toast) => {
+            toast::update(toast::Msg::Show(toast), &mut model.toast, &mut orders.proxy(Msg::Toast));
+        },
     }
 }
 
@@ -72,6 +89,7 @@ fn view(model: &Model) -> Node<Msg> {
         St::FontFamily => "'Open Sans', sans-serif",
     };
     div![style,
+        toast::view(&model.toast).map_msg(Msg::Toast),
         login::view(&model.login).map_msg(Msg::Login),
         menu::view(&model.menu).map_msg(Msg::Menu),
     ]
