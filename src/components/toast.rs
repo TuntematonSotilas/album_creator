@@ -30,11 +30,12 @@ pub fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
-    let style = style!{
+    let s_toast = style!{
         St::Position => "fixed",
         St::Left => percent(50),
-        St::Width => rem(10),
-        St::MarginLeft => rem(-6),
+        St::Width => rem(20),
+        St::MarginLeft => rem(-10),
+        St::MarginTop => rem(0.5),
         St::Padding => ".75rem 1.25rem",
         St::Color => "#ff0303",
         St::Background => "rgba(220, 17, 1, 0.3)",
@@ -42,12 +43,25 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::BorderRadius => "0.25rem",
         St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
     };
+    let s_title= style! {
+        St::MarginLeft => rem(0.5);
+        St::MarginRight => rem(0.5);
+    };
     nodes![
-        if let Some(message) = &model.toast.message {
-            div![
-                style,
-                message
-            ]
+        if model.toast.is_visible && 
+            model.toast.title.is_some() && 
+            model.toast.content.is_some() {
+                div![
+                    s_toast,
+                    i![
+                        class!("far fa-times-circle"),
+                    ],
+                    strong![
+                        s_title,
+                        model.toast.clone().title.unwrap()
+                    ],
+                    model.toast.clone().content.unwrap()
+                ]
         } else {
             empty![]
         },

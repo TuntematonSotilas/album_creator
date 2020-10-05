@@ -49,13 +49,17 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 if model.login == *conf_login.unwrap() && model.pwd == *conf_pwd.unwrap() {
                     orders.send_msg(Msg::SetIsAuth(true));
                     orders.send_msg(Msg::ShowToast(
-                        Toast { 
-                            message: None
+                        Toast {
+                            is_visible: false,
+                            title: None,
+                            content: None,
                         }));
                 } else {
                     orders.send_msg(Msg::ShowToast(
                         Toast { 
-                            message: Some("Login failed".to_string())
+                            is_visible: true,
+                            title: Some("Login failed !".to_string()),
+                            content: Some("Try again.".to_string()),
                         }));
                 }
             }
@@ -77,7 +81,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
     let s_login = style! {
         St::AlignItems => "center",
         St::JustifyContent => "center",
-        St::Background => "radial-gradient(circle at bottom left, rgba(130, 130, 130, 0.5) -5%, rgba(0,0,0,0) 100%), 
+        St::Background => "radial-gradient(circle at bottom left, rgba(130, 130, 130, 0.5) -10%, rgba(0,0,0,0) 100%), 
             radial-gradient(circle at top left, #008891 -20%, #0f3057 100%)",
         St::Height => percent(100),
         St::Color => "#fff",

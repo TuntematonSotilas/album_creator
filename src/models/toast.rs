@@ -1,4 +1,6 @@
 #[derive(Debug, Clone, Default)]
 pub struct Toast {
-    pub message : Option<String>,
+    pub is_visible: bool,
+    pub title: Option<String>,
+    pub content: Option<String>,
 }
