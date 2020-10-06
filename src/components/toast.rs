@@ -44,14 +44,15 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
     };
     let s_title= style! {
-        St::MarginLeft => rem(0.5);
-        St::MarginRight => rem(0.5);
+        St::MarginLeft => rem(0.7);
+        St::MarginRight => rem(0.7);
     };
     nodes![
         if model.toast.is_visible && 
             model.toast.title.is_some() && 
             model.toast.content.is_some() {
                 div![
+                    class!("toast"),
                     s_toast,
                     i![
                         class!("far fa-times-circle"),
