@@ -41,11 +41,11 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Border => "1px solid rgba(241, 6, 6, 0.81)",
         St::BorderRadius => "0.25rem",
         St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
-        St::MarginTop => rem(-2)
+        St::MarginTop => rem(-5)
         
     };
     let mut s_toast_trans = s_toast.clone();
-    s_toast_trans.add(St::Transition, "margin-top 1s linear");
+    s_toast_trans.add(St::Transition, "margin-top 200ms ease-out");
     s_toast_trans.add(St::MarginTop, rem(1));
 
     let s_title= style! {
