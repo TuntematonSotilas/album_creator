@@ -89,9 +89,17 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
     let s_form = style! {
         St::Width => rem(12),
     };
-    let s_title = style! {
-        St::FontSize => em(2),
-        St::Margin => em(0.67),
+    let s_h1 = style! {
+        St::FontSize => rem(2),
+        St::Margin => 0,
+    };
+    let s_h2 = style! {
+        St::FontSize => rem(0.7),
+        St::Color => "rgba(255,255,255,0.5)",
+        St::MarginTop => em(0.1),
+        St::MarginBottom => em(2),
+    };
+    let s_titles = style! {
         St::LetterSpacing => rem(0.1),
         St::TextAlign => "center"
         St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
@@ -135,8 +143,14 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                         s_column.clone(),
                         s_form,
                         h1![
-                            s_title,
+                            s_h1,
+                            s_titles.clone(),
                             "Login"
+                        ],
+                        h2![
+                            s_h2,
+                            s_titles.clone(),
+                            "Album Creator"
                         ],
                         input![
                             class!("login__input"),
