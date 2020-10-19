@@ -28,9 +28,23 @@ pub fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
+    let s_menu = style![
+        St::Display => "flex",
+        St::FlexDirection => "column",
+        St::AlignItems => "center",
+        St::JustifyContent => "center",
+        St::Height => percent(100),
+    ];
     nodes![
         match model.is_auth {
-            true => span!["menu"], 
+            true => nav![
+                s_menu,
+                a![
+                    i![
+                        class!("fa fa-heart"),
+                    ],
+                ],
+            ],
             false => empty![],
         }
     ]
