@@ -1,7 +1,7 @@
 use seed::{self, prelude::*, *};
-use std::collections::HashMap;
 
 use crate::models::toast::Toast;
+use crate::conf::vars;
 
 // ------------
 //     Model
@@ -12,18 +12,6 @@ pub struct Model {
     is_auth: bool,
     login: String,
     pwd: String,
-    config: HashMap<String, String>,
-}
-
-impl Model {
-    pub fn new(config: HashMap<String, String>) -> Self {
-        Self {
-            is_auth: false,
-            login: String::new(),
-            pwd: String::new(),
-            config: config,
-        }
-    }
 }
 
 // ------------
@@ -43,25 +31,21 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::NameChanged(login) => model.login = login,
         Msg::PwdChanged(pwd) => model.pwd = pwd,
         Msg::Submit => {
-            let conf_login = model.config.get("LOGIN");
-            let conf_pwd = model.config.get("PWD");
-            if conf_login.is_some() && conf_pwd.is_some() {
-                if model.login == *conf_login.unwrap() && model.pwd == *conf_pwd.unwrap() {
-                    orders.send_msg(Msg::SetIsAuth(true));
-                    orders.send_msg(Msg::ShowToast(
-                        Toast {
-                            is_visible: false,
-                            title: None,
-                            content: None,
-                        }));
-                } else {
-                    orders.send_msg(Msg::ShowToast(
-                        Toast { 
-                            is_visible: true,
-                            title: Some("Login failed !".to_string()),
-                            content: Some("Try again.".to_string()),
-                        }));
-                }
+            if model.login == vars::LOGIN && model.pwd == vars::PWD {
+                orders.send_msg(Msg::SetIsAuth(true));
+                orders.send_msg(Msg::ShowToast(
+                    Toast {
+                        is_visible: false,
+                        title: None,
+                        content: None,
+                    }));
+            } else {
+                orders.send_msg(Msg::ShowToast(
+                    Toast { 
+                        is_visible: true,
+                        title: Some("Login failed !".to_string()),
+                        content: Some("Try again.".to_string()),
+                    }));
             }
         },
         Msg::SetIsAuth(is_auth) => model.is_auth = is_auth,

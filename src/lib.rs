@@ -8,10 +8,9 @@ use crate::components::{
     toast,
 };
 use crate::models::toast::Toast;
-use crate::utils::conf_util;
 
 mod components;
-mod utils;
+mod conf;
 mod models;
 
 // ------------
@@ -21,7 +20,7 @@ mod models;
 // `init` describes what should happen when your app started.
 fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
-        login: login::Model::new(conf_util::parse_conf()),
+        login: login::Model::default(),
         menu: menu::Model::default(),
         toast: toast::Model::default(),
     }
