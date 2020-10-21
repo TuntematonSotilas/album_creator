@@ -17,12 +17,7 @@ https://www.rust-lang.org/learn/get-started
 
 # Configure
 
-Create a `config.ini` file at root path with :
-
-```ini
-LOGIN=your_login
-PWD=your_password
-```
+Modif the `conf/vars.rs` file to personalize **LOGIN** and **PWD**
 
 ## Run
 

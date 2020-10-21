@@ -1,2 +1,2 @@
-pub const LOGIN: &str = "";
-pub const PWD: &str = "";
+pub const LOGIN: &str = "test";
+pub const PWD: &str = "test";
