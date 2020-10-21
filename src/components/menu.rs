@@ -29,6 +29,7 @@ pub fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
     let s_menu = style![
+        St::Background => "radial-gradient(circle at top left, #e8feff -20%, #0f3057 100%)",
         St::Display => "flex",
         St::FlexDirection => "column",
         St::AlignItems => "center",
