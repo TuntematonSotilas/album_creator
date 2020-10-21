@@ -5,48 +5,28 @@ use seed::{self, prelude::*, *};
 // -----------
 
 #[derive(Default)]
-pub struct Model {
-    is_auth: bool,
-}
+pub struct Model {}
 
 // ------------
 //    Update
 // ------------
 
-pub enum Msg {
-    SetIsAuth(bool),
-}
+pub enum Msg {}
 
-pub fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
-    match msg {
-        Msg::SetIsAuth(is_auth) => model.is_auth = is_auth,
-    }
-}
+pub fn update(_msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {}
 
 // ------------
 //     View
 // ------------
 
-pub fn view(model: &Model) -> Vec<Node<Msg>> {
-    let s_menu = style![
-        St::Background => "radial-gradient(circle at top left, #e8feff -20%, #0f3057 100%)",
-        St::Display => "flex",
-        St::FlexDirection => "column",
-        St::AlignItems => "center",
-        St::JustifyContent => "center",
-        St::Height => percent(100),
-    ];
+pub fn view(_model: &Model) -> Vec<Node<Msg>> {
     nodes![
-        match model.is_auth {
-            true => nav![
-                s_menu,
-                a![
-                    i![
-                        class!("fa fa-heart"),
-                    ],
+        nav![
+            a![
+                i![
+                    class!("fa fa-heart"),
                 ],
             ],
-            false => empty![],
-        }
+        ]
     ]
 }

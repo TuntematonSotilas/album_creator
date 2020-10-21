@@ -4,7 +4,7 @@ use seed::{prelude::*, *};
 
 use crate::components::{
     login, 
-    menu,
+    main,
     toast,
 };
 use crate::models::toast::Toast;
@@ -21,7 +21,7 @@ mod models;
 fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
         login: login::Model::default(),
-        menu: menu::Model::default(),
+        main: main::Model::default(),
         toast: toast::Model::default(),
     }
 }
@@ -33,7 +33,7 @@ fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
 #[derive(Default)]
 struct Model {
     login: login::Model,
-    menu: menu::Model,
+    main: main::Model,
     toast: toast::Model,
 }
 
@@ -43,7 +43,7 @@ struct Model {
 
 enum Msg {
     Login(login::Msg),
-    Menu(menu::Msg),
+    Main(main::Msg),
     Toast(toast::Msg),
     SetIsAuth(bool),
     ShowToast(Toast),
@@ -60,14 +60,14 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             };
             login::update(msg, &mut model.login, &mut orders.proxy(Msg::Login));
         },
-        Msg::Menu(msg) => {
-            menu::update(msg, &mut model.menu, &mut orders.proxy(Msg::Menu));
+        Msg::Main(msg) => {
+            main::update(msg, &mut model.main, &mut orders.proxy(Msg::Main));
         },
         Msg::Toast(msg) => {
             toast::update(msg, &mut model.toast, &mut orders.proxy(Msg::Toast));
         },
         Msg::SetIsAuth(is_auth) => {
-            menu::update(menu::Msg::SetIsAuth(is_auth), &mut model.menu, &mut orders.proxy(Msg::Menu));
+            main::update(main::Msg::SetIsAuth(is_auth), &mut model.main, &mut orders.proxy(Msg::Main));
         },
         Msg::ShowToast(toast) => {
             toast::update(toast::Msg::Show(toast), &mut model.toast, &mut orders.proxy(Msg::Toast));
@@ -90,7 +90,7 @@ fn view(model: &Model) -> Node<Msg> {
     div![style,
         toast::view(&model.toast).map_msg(Msg::Toast),
         login::view(&model.login).map_msg(Msg::Login),
-        menu::view(&model.menu).map_msg(Msg::Menu),
+        main::view(&model.main).map_msg(Msg::Main),
     ]
 }
 
