@@ -26,16 +26,28 @@
     top: 0.75rem;
 }
 
+.menu__item {
+	color: white;
+	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.12)
+}
+
 .menu__item:hover {
-    background: #e7e7de !important;
+	background: #e7e7de;
+    text-shadow: none;
+}
+
+.menu__item--blue {
+    background: #00587a;
+}
+
+.menu__item--green {
+	background: #008891;
 }
 
 .menu__item--blue:hover {
-    color: #00587a !important;
-    text-shadow: none !important;
+    color: #00587a;
 }
 
 .menu__item--green:hover {
-    color: #008891 !important;
-    text-shadow: none !important;
+    color: #008891;
 }
