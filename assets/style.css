@@ -25,3 +25,17 @@
     left: 0;
     top: 0.75rem;
 }
+
+.menu__item:hover {
+    background: #e7e7de !important;
+}
+
+.menu__item--blue:hover {
+    color: #00587a !important;
+    text-shadow: none !important;
+}
+
+.menu__item--green:hover {
+    color: #008891 !important;
+    text-shadow: none !important;
+}
