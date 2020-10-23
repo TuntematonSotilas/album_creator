@@ -5,21 +5,37 @@ use seed::{self, prelude::*, *};
 // -----------
 
 #[derive(Default)]
-pub struct Model {}
+pub struct Model {
+	show: bool,
+}
 
 // ------------
 //    Update
 // ------------
 
-pub enum Msg {}
+pub enum Msg {
+	SetIsAuth(bool),
+	SetIsAuth2,
+}
 
-pub fn update(_msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {}
+pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
+	match msg {
+        Msg::SetIsAuth(_is_auth) => {
+			orders.stream_with_handle(streams::interval(3000, || Msg::SetIsAuth2));
+		},
+		Msg::SetIsAuth2 => {
+			log!("a");
+			model.show = true;
+		}
+			
+	}
+}
 
 // ------------
 //     View
 // ------------
 
-pub fn view(_model: &Model) -> Vec<Node<Msg>> {
+pub fn view(model: &Model) -> Vec<Node<Msg>> {
     let s_nav = style! {
         St::Display => "flex",
     };
@@ -31,14 +47,25 @@ pub fn view(_model: &Model) -> Vec<Node<Msg>> {
         St::FontSize => rem(1.5),
         St::TextAlign => "center",
         St::LineHeight => rem(5),
-        St::BoxShadow => "3px 3px 0 0 rgba(0, 0, 0, 0.14)"
-    };
+		St::BoxShadow => "3px 3px 0 0 rgba(0, 0, 0, 0.14)",
+		St::Transition => "scale 5s ease;"
+	};
+
+	let s_anim = match model.show {
+		true => style! { 
+			St::Scale => 1
+		},
+		false => style! { 
+			St::Scale => 0
+		},
+	};
     nodes![
         nav![
             s_nav,
             a![
-                class!("menu__item menu__item--blue"),
-                s_item.clone(),
+				class!("menu__item menu__item--blue"),
+				s_item.clone(),
+				s_anim,
                 attrs! { At::Href => String::new() },
                 i![
                     class!("fa fa-book-open"),
