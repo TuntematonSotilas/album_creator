@@ -25,7 +25,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::SetIsAuth(is_auth) => {
 			model.is_auth = is_auth;
-			menu::update(menu::Msg::SetIsAuth(is_auth), &mut model.menu, &mut orders.proxy(Msg::Menu));
+			menu::update(menu::Msg::SetIsAuth, &mut model.menu, &mut orders.proxy(Msg::Menu));
 		},
         Msg::Menu(msg) => {
             menu::update(msg, &mut model.menu, &mut orders.proxy(Msg::Menu));

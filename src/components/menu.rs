@@ -6,7 +6,7 @@ use seed::{self, prelude::*, *};
 
 #[derive(Default)]
 pub struct Model {
-	show: bool,
+	anim: bool,
 }
 
 // ------------
@@ -14,20 +14,16 @@ pub struct Model {
 // ------------
 
 pub enum Msg {
-	SetIsAuth(bool),
-	SetIsAuth2,
+	SetIsAuth,
+	Animate,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
-        Msg::SetIsAuth(_is_auth) => {
-			orders.stream_with_handle(streams::interval(3000, || Msg::SetIsAuth2));
+        Msg::SetIsAuth => {
+			orders.after_next_render(|_| Msg::Animate);
 		},
-		Msg::SetIsAuth2 => {
-			log!("a");
-			model.show = true;
-		}
-			
+		Msg::Animate => model.anim = true,
 	}
 }
 
@@ -48,10 +44,11 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::TextAlign => "center",
         St::LineHeight => rem(5),
 		St::BoxShadow => "3px 3px 0 0 rgba(0, 0, 0, 0.14)",
-		St::Transition => "scale 5s ease;"
+		St::Transition => "scale 200ms ease-out",
+		St::TransitionTimingFunction => "cubic-bezier(0.2, 0.8, 0.3, 1.2)",
 	};
 
-	let s_anim = match model.show {
+	let s_anim = match model.anim {
 		true => style! { 
 			St::Scale => 1
 		},
@@ -65,7 +62,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             a![
 				class!("menu__item menu__item--blue"),
 				s_item.clone(),
-				s_anim,
+				s_anim.clone(),
                 attrs! { At::Href => String::new() },
                 i![
                     class!("fa fa-book-open"),
@@ -73,7 +70,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             ],
             a![
                 class!("menu__item menu__item--green"),
-                s_item.clone(),
+				s_item.clone(),
+				s_anim.clone(),
                 attrs! { At::Href => String::new() },
                 i![
                     class!("fa fa-plus"),
