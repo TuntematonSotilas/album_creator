@@ -47,7 +47,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Transition => "scale 200ms ease-out",
 		St::TransitionTimingFunction => "cubic-bezier(0.2, 0.8, 0.3, 1.2)",
 	};
-
 	let s_anim = match model.anim {
 		true => style! { 
 			St::Scale => 1
