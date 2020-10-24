@@ -68,7 +68,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Background => "radial-gradient(circle at bottom left, rgba(130, 130, 130, 0.5) -10%, rgba(0,0,0,0) 100%), 
             radial-gradient(circle at top left, #008891 -20%, #0f3057 100%)",
         St::Height => percent(100),
-        St::Color => "#fff",
+        St::Color => "white",
     };
     let s_form = style! {
         St::Width => rem(12),
@@ -93,7 +93,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::MarginBottom => rem(0.5),
         St::Background => "rgba(0, 0, 0, 0.3)",
         St::Outline => "none",
-        St::Color => "#fff",
+        St::Color => "white",
         St::Border => "1px solid rgba(0,0,0,0.3)",
         St::BorderRadius => rem(0.3),
         St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
@@ -105,7 +105,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::BackgroundRepeat => "repeat-x",
         St::Border => "1px solid #3762bc",
         St::BorderRadius => rem(0.3),
-        St::Color => "#fff",
+        St::Color => "white",
         St::FontSize => rem(0.9),
         St::LetterSpacing => rem(0.1),
         St::TextShadow => "1px 1px 1px rgba(0,0,0,0.4)",

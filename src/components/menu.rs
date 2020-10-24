@@ -33,7 +33,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
     let s_nav = style! {
-        St::Display => "flex",
+		St::Display => "flex",
+		St::JustifyContent => "center",
+		St::MarginTop => vh(10),
     };
     let s_item = style! {
         St::Width => rem(5),
