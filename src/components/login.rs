@@ -137,7 +137,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             "Album Creator"
                         ],
                         input![
-                            class!("login__input"),
+                            canvas!("login__input"),
                             s_input.clone(),
                             attrs! {
                                 At::Value => model.login,
@@ -146,7 +146,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             input_ev(Ev::Input, Msg::NameChanged),
                         ],
                         input![
-                            class!("login__input"),
+                            C!("login__input"),
                             s_input.clone(),
                             attrs! {
                                 At::Value => model.pwd, 
@@ -156,7 +156,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                             input_ev(Ev::Input, Msg::PwdChanged),
                         ],
                         button![
-                            class!("login__button"),
+                            C!("login__button"),
                             s_button,
                             "Submit"
                         ],

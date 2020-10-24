@@ -54,20 +54,19 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
     };
     nodes![
         div![
-            class!("toast"),
+            C!("toast"),
             match model.toast.is_visible {
                 true => s_toast_trans,
                 false => s_toast
             },
             i![
-                class!("far fa-times-circle"),
+                C!("far fa-times-circle"),
             ],
             if let Some(title) = model.toast.title.clone() {
                 strong![
                     s_title,
                     title
                 ]
-                //model.toast.clone().content.unwrap()
             } else {
                 empty![]
             },
@@ -76,7 +75,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             } else {
                 String::new()
             }
-
         ]
     ]
 }

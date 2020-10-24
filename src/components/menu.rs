@@ -60,21 +60,21 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         nav![
             s_nav,
             a![
-				class!("menu__item menu__item--blue"),
+				C!("menu__item menu__item--blue"),
 				s_item.clone(),
 				s_anim.clone(),
                 attrs! { At::Href => String::new() },
                 i![
-                    class!("fa fa-book-open"),
+                    C!("fa fa-book-open"),
                 ],
             ],
             a![
-                class!("menu__item menu__item--green"),
+                C!("menu__item menu__item--green"),
 				s_item.clone(),
 				s_anim.clone(),
                 attrs! { At::Href => String::new() },
                 i![
-                    class!("fa fa-plus"),
+                    C!("fa fa-plus"),
                 ],
             ],
         ]
