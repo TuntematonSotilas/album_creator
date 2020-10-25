@@ -1,5 +1,7 @@
 use seed::{self, prelude::*, *};
 
+use crate::components::main::Page;
+
 // ------------
 //     Model
 // -----------
@@ -16,6 +18,7 @@ pub struct Model {
 pub enum Msg {
 	SetIsAuth,
 	Animate,
+	ShowPage(Page),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -24,6 +27,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			orders.after_next_render(|_| Msg::Animate);
 		},
 		Msg::Animate => model.anim = true,
+		Msg::ShowPage(_page) => (),
 	}
 }
 
@@ -67,7 +71,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                 attrs! { At::Href => String::new() },
                 i![
                     C!("fa fa-book-open"),
-                ],
+				],
+				ev(Ev::Click, |_| Msg::ShowPage(Page::AlbumList)),
             ],
             a![
                 C!("menu__item menu__item--green"),
@@ -76,7 +81,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                 attrs! { At::Href => String::new() },
                 i![
                     C!("fa fa-plus"),
-                ],
+				],
+				ev(Ev::Click, |_| Msg::ShowPage(Page::NewAlbum)),
             ],
         ]
     ]

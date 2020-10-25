@@ -21,7 +21,7 @@ mod models;
 fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
         login: login::Model::default(),
-        main: main::Model::default(),
+        main: main::Model::new(),
         toast: toast::Model::default(),
     }
 }

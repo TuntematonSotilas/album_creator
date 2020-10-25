@@ -1,16 +1,37 @@
 use seed::{self, prelude::*, *};
 
-use crate::components::{menu, header};
+use crate::components::{menu, header, album_list};
 
 // ------------
 //     Model
 // -----------
 
-#[derive(Default)]
+#[derive(Copy, Clone)]
+pub enum Page {
+	AlbumList,
+	NewAlbum,
+	Menu,
+ }
+
+ #[derive(Default)]
 pub struct Model {
-    is_auth: bool,
+	is_auth: bool,
+	page: Option<Page>,
 	menu: menu::Model,
-	heaer: header::Model,
+	header: header::Model,
+	album_list: album_list::Model, 
+}
+
+impl Model {
+	pub fn new() -> Model {
+		Model {
+			is_auth: false,
+			page: Some(Page::Menu),
+			menu: menu::Model::default(),
+			header: header::Model::default(),
+			album_list: album_list::Model::default(),
+		}
+	}
 }
 
 // ------------
@@ -21,6 +42,7 @@ pub enum Msg {
     SetIsAuth(bool),
 	Menu(menu::Msg),
 	Header(header::Msg),
+	AlbumList(album_list::Msg),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -30,10 +52,20 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			menu::update(menu::Msg::SetIsAuth, &mut model.menu, &mut orders.proxy(Msg::Menu));
 		},
         Msg::Menu(msg) => {
+			match msg {
+				menu::Msg::ShowPage(page) => model.page = Some(page),
+				_ => (),
+            };
             menu::update(msg, &mut model.menu, &mut orders.proxy(Msg::Menu));
 		},
 		Msg::Header(msg) => {
-			header::update(msg, &mut model.heaer, &mut orders.proxy(Msg::Header));
+			match msg {
+				header::Msg::ShowPage(page) => model.page = Some(page),
+            };
+			header::update(msg, &mut model.header, &mut orders.proxy(Msg::Header));
+		},
+		Msg::AlbumList(msg) => {
+			album_list::update(msg, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
 		},
     }
 }
@@ -51,8 +83,15 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         match model.is_auth {
             true => div![
 				s_main,
-				header::view(&model.heaer).map_msg(Msg::Header),
-				menu::view(&model.menu).map_msg(Msg::Menu),
+				header::view(&model.header).map_msg(Msg::Header),
+				match &model.page {
+					Some(page) => match page {
+						Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
+						Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
+						_ => nodes![],
+					},
+					None => nodes![],
+				},
             ],
             false => empty![],
         }

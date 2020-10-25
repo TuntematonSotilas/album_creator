@@ -1,5 +1,8 @@
 use seed::{self, prelude::*, *};
 
+use crate::components::main::Page;
+
+
 // ------------
 //     Model
 // -----------
@@ -11,9 +14,15 @@ pub struct Model {}
 //    Update
 // ------------
 
-pub enum Msg {}
+pub enum Msg {
+	ShowPage(Page),
+}
 
-pub fn update(_msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {}
+pub fn update(msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {
+	match msg {
+		Msg::ShowPage(_page) => (),
+	}
+}
 
 // ------------
 //     View
@@ -33,7 +42,12 @@ pub fn view(_model: &Model) -> Vec<Node<Msg>> {
 	nodes![
 		header![
 			s_header,
-			"Album Creator"
+			a![
+				C!["header__link"],
+				attrs! { At::Href => String::new() },
+				"Album Creator",
+				ev(Ev::Click, |_| Msg::ShowPage(Page::Menu)),
+			]
 		],
 	]
 }
