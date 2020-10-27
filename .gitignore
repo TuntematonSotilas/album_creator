@@ -1,4 +1,4 @@
 /target
 /pkg
 Cargo.lock
-/src/conf/api_secret.rs
+src/conf/api_secret.rs
