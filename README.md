@@ -17,7 +17,11 @@ https://www.rust-lang.org/learn/get-started
 
 # Configure
 
-Modif the `conf/vars.rs` file to personalize **LOGIN** and **PWD**
+Modif the `conf/vars.rs` file to personalize 
+* LOGIN
+* PWD
+* API
+* SECRET
 
 ## Run
 
