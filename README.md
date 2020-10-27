@@ -20,8 +20,7 @@ https://www.rust-lang.org/learn/get-started
 Modif the `conf/vars.rs` file to personalize 
 * LOGIN
 * PWD
-* API
-* SECRET
+* API_URI
 
 ## Run
 
