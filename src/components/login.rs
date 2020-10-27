@@ -1,7 +1,7 @@
 use seed::{self, prelude::*, *};
 
 use crate::models::toast::Toast;
-use crate::conf::vars;
+use crate::utils::vars::{LOGIN, PWD};
 
 // ------------
 //     Model
@@ -31,7 +31,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::NameChanged(login) => model.login = login,
         Msg::PwdChanged(pwd) => model.pwd = pwd,
         Msg::Submit => {
-            if model.login == vars::LOGIN && model.pwd == vars::PWD {
+            if model.login == LOGIN && model.pwd == PWD {
                 orders.send_msg(Msg::SetIsAuth(true));
                 orders.send_msg(Msg::ShowToast(
                     Toast {

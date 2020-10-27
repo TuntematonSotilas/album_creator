@@ -10,7 +10,7 @@ use crate::components::{
 use crate::models::toast::Toast;
 
 mod components;
-mod conf;
+mod utils;
 mod models;
 
 // ------------
