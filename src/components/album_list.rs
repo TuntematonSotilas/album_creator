@@ -9,6 +9,19 @@ use crate::conf::vars::API_URI;
 #[derive(Default)]
 pub struct Model {}
 
+#[derive(serde::Deserialize)]
+pub struct Id {
+	#[serde(rename = "$oid")]
+	oid: String,
+}
+
+#[derive(serde::Deserialize)]
+pub struct Album {
+	#[serde(rename = "_id")]
+	id: Id,
+    name: String,
+}
+
 // ------------
 //    Update
 // ------------
@@ -23,11 +36,15 @@ pub fn update(msg: Msg, _model: &mut Model, orders: &mut impl Orders<Msg>) {
 			orders.skip(); // No need to rerender
             orders.perform_cmd(async {
 				let request = format!("{0}get-albums", API_URI);
-				let response = fetch(request).await;
-				
+				let response_res = fetch(request).await;
+				if let Ok(response) = response_res {
+					if let Ok(resp_ok) = response.check_status() {
+						let albums_res = resp_ok.json::<Album>().await;
+						if let Ok(albums) = albums_res {
 
-
-                //Msg::Received(user)
+						}
+					}
+				}	
             });
 		},
 	}
