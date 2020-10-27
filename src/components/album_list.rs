@@ -10,7 +10,9 @@ use crate::utils::{
 // -----------
 
 #[derive(Default)]
-pub struct Model {}
+pub struct Model {
+	albums: Vec<Album>,
+}
 
 #[derive(serde::Deserialize)]
 pub struct Id {
@@ -60,7 +62,7 @@ pub fn update(msg: Msg, _model: &mut Model, orders: &mut impl Orders<Msg>) {
 //     View
 // ------------
 
-pub fn view(_model: &Model) -> Vec<Node<Msg>> {
+pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	nodes![
 		h1!["ablums"],
 	]
