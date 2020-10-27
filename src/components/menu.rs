@@ -16,14 +16,15 @@ pub struct Model {
 // ------------
 
 pub enum Msg {
-	SetIsAuth,
+	Show,
 	Animate,
 	ShowPage(Page),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
-        Msg::SetIsAuth => {
+        Msg::Show => {
+			model.anim = false;
 			orders.after_next_render(|_| Msg::Animate);
 		},
 		Msg::Animate => model.anim = true,
