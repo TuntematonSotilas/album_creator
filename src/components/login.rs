@@ -114,56 +114,53 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::BoxShadow => "0 1px 2px rgba(0, 0, 0, 0.5)",
     };
     nodes![
-        match model.is_auth {
-            false => div![
-                s_column.clone(),
-                s_login,
-                form![
-                    ev(Ev::Submit, |event| {
-                        event.prevent_default();
-                        Msg::Submit
-                    }),
-                    div![
-                        s_column.clone(),
-                        s_form,
-                        h1![
-                            s_h1,
-                            s_titles.clone(),
-                            "Login"
-                        ],
-                        h2![
-                            s_h2,
-                            s_titles.clone(),
-                            "Album Creator"
-                        ],
-                        input![
-                            canvas!("login__input"),
-                            s_input.clone(),
-                            attrs! {
-                                At::Value => model.login,
-                                At::Placeholder => "Username",
-                            },
-                            input_ev(Ev::Input, Msg::NameChanged),
-                        ],
-                        input![
-                            C!("login__input"),
-                            s_input.clone(),
-                            attrs! {
-                                At::Value => model.pwd, 
-                                At::Type => "password"
-                                At::Placeholder => "Password",
-                            },
-                            input_ev(Ev::Input, Msg::PwdChanged),
-                        ],
-                        button![
-                            C!("login__button"),
-                            s_button,
-                            "Submit"
-                        ],
+        IF!(!model.is_auth => div![
+            &s_column,
+            s_login,
+            form![
+                ev(Ev::Submit, |event| {
+                    event.prevent_default();
+                    Msg::Submit
+                }),
+                div![
+                    &s_column,
+                    s_form,
+                    h1![
+                        s_h1,
+                        &s_titles,
+                        "Login"
+                    ],
+                    h2![
+                        s_h2,
+                        &s_titles,
+                        "Album Creator"
+                    ],
+                    input![
+                        canvas!("login__input"),
+                        &s_input,
+                        attrs! {
+                            At::Value => model.login,
+                            At::Placeholder => "Username",
+                        },
+                        input_ev(Ev::Input, Msg::NameChanged),
+                    ],
+                    input![
+                        C!("login__input"),
+                        &s_input,
+                        attrs! {
+                            At::Value => model.pwd, 
+                            At::Type => "password"
+                            At::Placeholder => "Password",
+                        },
+                        input_ev(Ev::Input, Msg::PwdChanged),
+                    ],
+                    button![
+                        C!("login__button"),
+                        s_button,
+                        "Submit"
                     ],
                 ],
             ],
-            true => empty![],
-        }
+        ])
     ]
 }

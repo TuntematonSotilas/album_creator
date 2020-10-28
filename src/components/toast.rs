@@ -63,7 +63,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             i![
                 C!("far fa-times-circle"),
             ],
-            if let Some(title) = model.toast.title.clone() {
+            if let Some(title) = &model.toast.title {
                 strong![
                     s_title,
                     title
@@ -71,11 +71,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             } else {
                 empty![]
             },
-            if let Some(content) = model.toast.content.clone() {
-                content
-            } else {
-                String::new()
-            }
+            IF!(model.toast.content.is_some() => model.toast.content.clone().unwrap())
         ]
     ]
 }

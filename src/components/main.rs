@@ -97,20 +97,18 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Background => "radial-gradient(circle at top left, #8bd2d6 -20%, #9bbade 100%)",
 	};
     nodes![
-        match model.is_auth {
-            true => div![
+		IF!(model.is_auth => 
+        	div![
 				s_main,
 				header::view(&model.header).map_msg(Msg::Header),
-				match &model.page {
-					Some(page) => match page {
+				IF!(model.page.is_some() => 
+					match model.page.unwrap() {
 						Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
 						Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
 						_ => nodes![],
-					},
-					None => nodes![],
-				},
-            ],
-            false => empty![],
-        }
+					}
+				),
+			]
+		),
     ]
 }
