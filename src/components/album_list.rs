@@ -33,7 +33,7 @@ pub struct Album {
 
 pub enum Msg {
 	Fetch,
-	Received(Vec<Album>),
+	Received(Option<Vec<Album>>),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -46,20 +46,22 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 	.method(Method::Get)
 					.header(Header::authorization(get_auth()));
 				let response_res = fetch(request).await;
+
+				let mut opt: Option<Vec<Album>> = None;
+
 				if let Ok(response) = response_res {
 					if let Ok(resp_ok) = response.check_status() {
 						let albums_res = resp_ok.json::<Vec<Album>>().await;
 						if let Ok(albums) = albums_res {
-							log!("ok");
-							Msg::Received(albums)
+							opt = Some(albums);
 						}
 					}
 				}	
+				Msg::Received(opt)
             });
 		},
 		Msg::Received(albums) => {
-			log!("Received");
-			model.albums = Some(albums);
+			model.albums = albums;
         }
 	}
 }
