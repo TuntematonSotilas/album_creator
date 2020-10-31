@@ -71,12 +71,32 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
+	let s_title = style! {
+		St::TextAlign => "center",
+		St::FontSize => rem(2),
+		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
+	};
+	let s_cards = style! {
+		St::Margin => rem(1),
+		St::Display => "flex",
+		St::FlexFlow => "row wrap",
+	};
+	let s_card = style! {
+		St::Margin => rem(1),
+		St::Width => rem(20),
+		St::Height => rem(10),
+	};
 	nodes![
-		h1!["ablums"],
+		h1![
+			s_title,
+			"Ablums"
+		],
 		div![
+			s_cards,
 			match &model.albums {
 				Some(albums) => div![
 					albums.iter().map(|album| div![
+						&s_card,
 						attrs! { At::Id	=> album.id.oid },
 						span![&album.name]
 					])
