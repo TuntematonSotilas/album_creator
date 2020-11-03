@@ -18,11 +18,14 @@ mod models;
 // ------------
 
 // `init` describes what should happen when your app started.
-fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
+fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    orders.subscribe(Msg::UrlChanged);
     Model {
         login: login::Model::default(),
         main: main::Model::new(),
         toast: toast::Model::default(),
+        base_url: url.to_base_url(),
+        page: Page::init(url),
     }
 }
 
@@ -30,11 +33,27 @@ fn init(_: Url, _orders: &mut impl Orders<Msg>) -> Model {
 //     Model
 // ------------
 
-#[derive(Default)]
 struct Model {
     login: login::Model,
     main: main::Model,
     toast: toast::Model,
+    base_url: Url,
+    page: Page,
+}
+
+enum Page {
+    Home,
+    AlbumList,
+}
+
+impl Page {
+    fn init(mut url: Url) -> Self {
+        match url.next_path_part() {
+            None => Self::Home,
+            Some("albums") => Self::AlbumList,
+            Some(_) => Self::Home,
+        }
+    }
 }
 
 // ------------
@@ -47,11 +66,15 @@ enum Msg {
     Toast(toast::Msg),
     SetIsAuth(bool),
     ShowToast(Toast),
+    UrlChanged(subs::UrlChanged),
 }
 
 // `update` describes how to handle each `Msg`.
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
+        Msg::UrlChanged(subs::UrlChanged(url)) => {
+            model.page = Page::init(url);
+        },
         Msg::Login(msg) => {
             match msg {
                 login::Msg::SetIsAuth(is_auth) => orders.send_msg(Msg::SetIsAuth(is_auth)),
@@ -88,9 +111,22 @@ fn view(model: &Model) -> Node<Msg> {
         St::FontFamily => "'Open Sans', sans-serif",
     };
     div![style,
-        toast::view(&model.toast).map_msg(Msg::Toast),
+        /*toast::view(&model.toast).map_msg(Msg::Toast),
         login::view(&model.login).map_msg(Msg::Login),
-        main::view(&model.main).map_msg(Msg::Main),
+        main::view(&model.main).map_msg(Msg::Main),*/
+
+        li![a![
+            attrs! { At::Href => model.base_url },
+            "Home",
+        ]],
+        li![a![
+            attrs! { At::Href => model.base_url.clone().add_path_part("albums") },
+            "Albums",
+        ]],
+        match &model.page {
+            Page::Home => div!["home"],
+            Page::AlbumList => div!["albums"]
+        }
     ]
 }
 
