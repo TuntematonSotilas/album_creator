@@ -22,7 +22,7 @@ pub enum Msg {
     Submit,
     NameChanged(String),
     PwdChanged(String),
-    SetIsAuth(bool),
+    SetIsAuth,
     ShowToast(Toast),
 }
 
@@ -32,7 +32,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::PwdChanged(pwd) => model.pwd = pwd,
         Msg::Submit => {
             if model.login == LOGIN && model.pwd == PWD {
-                orders.send_msg(Msg::SetIsAuth(true));
+                orders.send_msg(Msg::SetIsAuth);
                 orders.send_msg(Msg::ShowToast(
                     Toast {
                         is_visible: false,
@@ -48,7 +48,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                     }));
             }
         },
-        Msg::SetIsAuth(is_auth) => model.is_auth = is_auth,
+        Msg::SetIsAuth => (),
         Msg::ShowToast(_toast) => (),
     }
 }
@@ -114,7 +114,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::BoxShadow => "0 1px 2px rgba(0, 0, 0, 0.5)",
     };
     nodes![
-        IF!(!model.is_auth => div![
+        div![
             &s_column,
             s_login,
             form![
@@ -161,6 +161,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                     ],
                 ],
             ],
-        ])
+        ]
     ]
 }

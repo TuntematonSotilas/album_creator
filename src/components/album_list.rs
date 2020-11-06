@@ -103,7 +103,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				],
 				None => div![span!["no albums"]],
 			}
-			
 		],
 	]
 }
