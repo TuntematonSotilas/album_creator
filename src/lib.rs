@@ -25,7 +25,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         login: login::Model::default(),
         toast: toast::Model::default(),
         menu: menu::Model::new(url.clone()),
-		header: header::Model::default(),
+		header: header::Model::new(url.clone()),
 		album_list: album_list::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),
@@ -116,6 +116,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					model.page = Page::Menu;
 					orders.send_msg(Msg::SetUrl);
 					orders.send_msg(Msg::LoadPage);
+					header::update(header::Msg::Show, &mut model.header, &mut orders.proxy(Msg::Header));
 				}
                 login::Msg::ShowToast(ref toast) => {
                     orders.send_msg(Msg::ShowToast(toast.clone()));
@@ -154,7 +155,7 @@ fn view(model: &Model) -> Node<Msg> {
 	};
 	let s_main = style! {
 		St::Height => percent(100),
-		St::Background => "radial-gradient(circle at top left, #8bd2d6 -20%, #9bbade 100%)",
+		St::Background => "radial-gradient(circle at bottom right, #0f3057 -20%, #d0fcff 100%)",
 	};
 
     div![style,
