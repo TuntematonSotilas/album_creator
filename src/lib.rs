@@ -77,7 +77,8 @@ enum Msg {
 	Menu(menu::Msg),
     AlbumList(album_list::Msg),
     ShowToast(Toast),
-    UrlChanged(subs::UrlChanged),
+	UrlChanged(subs::UrlChanged),
+	LoadPage(Page),
 }
 
 // `update` describes how to handle each `Msg`.
@@ -85,15 +86,26 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
 			model.page = Page::init(url);
-        },
+		},
+		Msg::LoadPage(page) => {
+			model.page = page;
+			let path_part = match model.page {
+				Page::Menu => "menu",
+				_ => "login",
+			};
+			Url::new()
+				.set_path(&[model.base_url.clone().add_path_part(path_part)])
+				.go_and_push();
+			match model.page {
+				Page::Menu => menu::update(menu::Msg::Show, &mut model.menu, &mut orders.proxy(Msg::Menu)),
+				_ => (),
+			};
+		},
         Msg::Login(msg) => {
             match msg {
                 login::Msg::SetIsAuth => {
-					model.page = Page::Menu;
 					model.is_auth = true;
-					Url::new()
-						.set_path(&[model.base_url.clone().add_path_part("menu")])
-						.go_and_push();
+					orders.send_msg(Msg::LoadPage(Page::Menu));
 				}
                 login::Msg::ShowToast(ref toast) => {
                     orders.send_msg(Msg::ShowToast(toast.clone()));
