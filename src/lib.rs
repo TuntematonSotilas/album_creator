@@ -4,9 +4,10 @@ use seed::{prelude::*, *};
 
 use crate::components::{
     login,
-    menu,
     toast,
-    album_list,
+	menu,
+    header,
+	album_list,
 };
 use crate::models::toast::Toast;
 
@@ -20,15 +21,16 @@ mod models;
 
 // `init` describes what should happen when your app started.
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    orders.subscribe(Msg::UrlChanged);
+	orders.subscribe(Msg::UrlChanged);
     Model {
         login: login::Model::default(),
-        menu: menu::Model::default(),
         toast: toast::Model::default(),
-        album_list: album_list::Model::default(),
-        //base_url: url.to_base_url(),
+        menu: menu::Model::default(),
+		header: header::Model::default(),
+		album_list: album_list::Model::default(),
+        base_url: url.to_base_url(),
         page: Page::init(url),
-        is_auth: true,
+        is_auth: false,
     }
 }
 
@@ -38,10 +40,11 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 
 struct Model {
     login: login::Model,
-    menu: menu::Model,
     toast: toast::Model,
-    album_list: album_list::Model,
-    //base_url: Url,
+    menu: menu::Model,
+	header: header::Model,
+	album_list: album_list::Model,
+    base_url: Url,
     page: Page,
     is_auth: bool,
 }
@@ -69,8 +72,9 @@ impl Page {
 
 enum Msg {
     Login(login::Msg),
-    Menu(menu::Msg),
     Toast(toast::Msg),
+	Header(header::Msg),
+	Menu(menu::Msg),
     AlbumList(album_list::Msg),
     ShowToast(Toast),
     UrlChanged(subs::UrlChanged),
@@ -80,11 +84,17 @@ enum Msg {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
-            model.page = Page::init(url);
+			model.page = Page::init(url);
         },
         Msg::Login(msg) => {
             match msg {
-                login::Msg::SetIsAuth => model.page = Page::Menu,
+                login::Msg::SetIsAuth => {
+					model.page = Page::Menu;
+					model.is_auth = true;
+					Url::new()
+						.set_path(&[model.base_url.clone().add_path_part("menu")])
+						.go_and_push();
+				}
                 login::Msg::ShowToast(ref toast) => {
                     orders.send_msg(Msg::ShowToast(toast.clone()));
                 },
@@ -94,16 +104,20 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         },
         Msg::Toast(msg) => {
             toast::update(msg, &mut model.toast, &mut orders.proxy(Msg::Toast));
-        },
+		},
+		Msg::Menu(msg) => {
+			menu::update(msg, &mut model.menu, &mut orders.proxy(Msg::Menu));
+		},
+		Msg::Header(msg) => {
+			header::update(msg, &mut model.header, &mut orders.proxy(Msg::Header));
+		},
         Msg::ShowToast(toast) => {
             toast::update(toast::Msg::Show(toast), &mut model.toast, &mut orders.proxy(Msg::Toast));
         },
         Msg::AlbumList(msg) => {
 			album_list::update(msg, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
         },
-        Msg::Menu(msg) => {
-			menu::update(msg, &mut model.menu, &mut orders.proxy(Msg::Menu));
-		},
+        
     }
 }
 
@@ -115,21 +129,30 @@ fn view(model: &Model) -> Node<Msg> {
     let style = style! { 
         St::Height => vh(100),
         St::FontFamily => "'Open Sans', sans-serif",
-    };
+	};
+	let s_main = style! {
+		St::Height => percent(100),
+		St::Background => "radial-gradient(circle at top left, #8bd2d6 -20%, #9bbade 100%)",
+	};
+
     div![style,
-        toast::view(&model.toast).map_msg(Msg::Toast),
-        /*li![a![
-            attrs! { At::Href => model.base_url },
-            "Home",
-        ]],
-        li![a![
-            attrs! { At::Href => model.base_url.clone().add_path_part("albums") },
-            "Albums",
-        ]],*/
+		toast::view(&model.toast).map_msg(Msg::Toast),
+		
+		IF!(model.is_auth => 
+        	div![
+				s_main,
+				header::view(&model.header).map_msg(Msg::Header),
+				match &model.page {
+					Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
+            		Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
+					_ => nodes![],
+				}
+			]
+		),
+
         match &model.page {
             Page::Login => login::view(&model.login).map_msg(Msg::Login),
-            Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
-            Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
+			_ => nodes![],
         }
     ]
 }
