@@ -19,13 +19,12 @@ mod models;
 //     Init
 // ------------
 
-// `init` describes what should happen when your app started.
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 	orders.subscribe(Msg::UrlChanged);
     Model {
         login: login::Model::default(),
         toast: toast::Model::default(),
-        menu: menu::Model::default(),
+        menu: menu::Model::new(url.clone()),
 		header: header::Model::default(),
 		album_list: album_list::Model::default(),
         base_url: url.to_base_url(),
@@ -49,10 +48,12 @@ struct Model {
     is_auth: bool,
 }
 
-enum Page {
+#[derive(Copy, Clone)]
+pub enum Page {
     Login,
     Menu,
-    AlbumList,
+	AlbumList,
+	NewAlbum,
 }
 
 impl Page {
@@ -60,7 +61,8 @@ impl Page {
         match url.next_path_part() {
             None => Self::Login,
             Some("menu") => Self::Menu,
-            Some("albums") => Self::AlbumList,
+			Some("albums") => Self::AlbumList,
+			Some("new") => Self::NewAlbum,
             Some(_) => Self::Login,
         }
     }
@@ -78,7 +80,8 @@ enum Msg {
     AlbumList(album_list::Msg),
     ShowToast(Toast),
 	UrlChanged(subs::UrlChanged),
-	LoadPage(Page),
+	SetUrl,
+	LoadPage,
 }
 
 // `update` describes how to handle each `Msg`.
@@ -86,18 +89,23 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
 			model.page = Page::init(url);
+			orders.send_msg(Msg::LoadPage);
 		},
-		Msg::LoadPage(page) => {
-			model.page = page;
+		Msg::SetUrl => {
 			let path_part = match model.page {
 				Page::Menu => "menu",
+				Page::AlbumList => "ablums",
+				Page::NewAlbum => "new",
 				_ => "login",
 			};
-			Url::new()
-				.set_path(&[model.base_url.clone().add_path_part(path_part)])
+			//
+			model.base_url.clone().add_path_part(path_part)
 				.go_and_push();
+		},
+		Msg::LoadPage => {
 			match model.page {
 				Page::Menu => menu::update(menu::Msg::Show, &mut model.menu, &mut orders.proxy(Msg::Menu)),
+				Page::AlbumList => album_list::update(album_list::Msg::Show, &mut model.album_list, &mut orders.proxy(Msg::AlbumList)),
 				_ => (),
 			};
 		},
@@ -105,7 +113,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             match msg {
                 login::Msg::SetIsAuth => {
 					model.is_auth = true;
-					orders.send_msg(Msg::LoadPage(Page::Menu));
+					model.page = Page::Menu;
+					orders.send_msg(Msg::SetUrl);
+					orders.send_msg(Msg::LoadPage);
 				}
                 login::Msg::ShowToast(ref toast) => {
                     orders.send_msg(Msg::ShowToast(toast.clone()));

@@ -1,7 +1,5 @@
 use seed::{self, prelude::*, *};
 
-use crate::components::main::Page;
-
 // ------------
 //     Model
 // -----------
@@ -9,8 +7,17 @@ use crate::components::main::Page;
 #[derive(Default)]
 pub struct Model {
 	anim: bool,
+	base_url: Url,
 }
 
+impl Model {
+	pub fn new(url: Url) -> Self {
+		Model {
+			anim: false,
+			base_url: url.to_base_url(),
+		}
+	}
+}
 // ------------
 //    Update
 // ------------
@@ -18,7 +25,6 @@ pub struct Model {
 pub enum Msg {
 	Show,
 	Animate,
-	ShowPage(Page),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -28,7 +34,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			orders.after_next_render(|_| Msg::Animate);
 		},
 		Msg::Animate => model.anim = true,
-		Msg::ShowPage(_page) => (),
 	}
 }
 
@@ -69,21 +74,19 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				C!("menu__item menu__item--blue"),
 				&s_item,
 				&s_anim,
-                attrs! { At::Href => String::new() },
+				attrs! { At::Href => model.base_url.clone().add_path_part("albums") },
                 i![
                     C!("fa fa-book-open"),
 				],
-				ev(Ev::Click, |_| Msg::ShowPage(Page::AlbumList)),
             ],
             a![
                 C!("menu__item menu__item--green"),
 				&s_item,
 				&s_anim,
-                attrs! { At::Href => String::new() },
+                attrs! { At::Href => model.base_url.clone().add_path_part("new") },
                 i![
                     C!("fa fa-plus"),
 				],
-				ev(Ev::Click, |_| Msg::ShowPage(Page::NewAlbum)),
             ],
         ]
     ]

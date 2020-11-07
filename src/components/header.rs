@@ -1,7 +1,6 @@
 use seed::{self, prelude::*, *};
 
-use crate::components::main::Page;
-
+use crate::Page;
 
 // ------------
 //     Model

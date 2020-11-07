@@ -9,9 +9,8 @@ use crate::utils::vars::{LOGIN, PWD};
 
 #[derive(Default)]
 pub struct Model {
-    is_auth: bool,
     login: String,
-    pwd: String,
+	pwd: String,
 }
 
 // ------------
