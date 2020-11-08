@@ -32,7 +32,6 @@ pub enum Msg {
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
         Msg::Show => {
-			log!("header show");
 			model.anim = false;
 			orders.after_next_render(|_| Msg::Animate);
 		},

@@ -20,7 +20,8 @@ mod models;
 // ------------
 
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-	orders.subscribe(Msg::UrlChanged);
+	orders.subscribe(Msg::UrlChanged)
+		.notify(subs::UrlChanged(url.clone()));
     Model {
         login: login::Model::default(),
         toast: toast::Model::default(),
@@ -58,7 +59,7 @@ pub enum Page {
 
 impl Page {
     fn init(mut url: Url) -> Self {
-        match url.next_path_part() {
+		match url.next_path_part() {
             None => Self::Login,
             Some("menu") => Self::Menu,
 			Some("albums") => Self::AlbumList,
@@ -88,7 +89,12 @@ enum Msg {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
-			model.page = Page::init(url);
+			if !model.is_auth {
+				model.page = Page::Login;
+				orders.send_msg(Msg::SetUrl);
+			} else {
+				model.page = Page::init(url);
+			}
 			orders.send_msg(Msg::LoadPage);
 		},
 		Msg::SetUrl => {
