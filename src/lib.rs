@@ -167,22 +167,23 @@ fn view(model: &Model) -> Node<Msg> {
     div![style,
 		toast::view(&model.toast).map_msg(Msg::Toast),
 		
-		IF!(model.is_auth => 
-        	div![
-				s_main,
-				header::view(&model.header).map_msg(Msg::Header),
-				match &model.page {
-					Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
-            		Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
-					_ => nodes![],
-				}
-			]
-		),
-
-        match &model.page {
-            Page::Login => login::view(&model.login).map_msg(Msg::Login),
-			_ => nodes![],
-        }
+		match &model.page {
+			Page::Login => login::view(&model.login).map_msg(Msg::Login),
+			_ => nodes![
+					match model.is_auth {
+						true => div![
+							s_main,
+							header::view(&model.header).map_msg(Msg::Header),
+							match &model.page {
+								Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
+								Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
+								_ => nodes![],
+							}
+						],
+						false => empty![],
+					}
+				]	
+		}
     ]
 }
 
