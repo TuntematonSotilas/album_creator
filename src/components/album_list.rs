@@ -76,33 +76,40 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FontSize => rem(2),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
-	let s_cards = style! {
+	let s_no_books = style! {
+		St::TextAlign => "center",
+	};
+	let s_books = style! {
 		St::Margin => rem(1),
 		St::Display => "flex",
 		St::FlexFlow => "row wrap",
+		St::JustifyContent => "center",
 	};
-	let s_card = style! {
+	let s_book = style! {
 		St::Margin => rem(1),
-		St::Width => rem(20),
+		St::Width => rem(8),
 		St::Height => rem(10),
+		St::Background => "radial-gradient(circle at top right, #c51350 -30%, #363062 100%)",
+		St::BorderTopRightRadius => rem(0.3),
+		St::BorderBottomRightRadius => rem(0.3),
 	};
 	nodes![
 		h1![
 			s_title,
 			"Ablums"
 		],
-		div![
-			s_cards,
-			match &model.albums {
-				Some(albums) => div![
-					albums.iter().map(|album| div![
-						&s_card,
-						attrs! { At::Id	=> album.id.oid },
-						span![&album.name]
-					])
-				],
-				None => div![span!["no albums"]],
-			}
-		],
+		match &model.albums {
+			Some(albums) => div![
+				s_books,
+				albums.iter().map(|album| div![
+					&s_book,
+					attrs! { At::Id	=> album.id.oid },
+					span![&album.name]
+				])
+			],
+			None => div![
+				s_no_books,
+				span!["no albums"]],
+		}
 	]
 }
