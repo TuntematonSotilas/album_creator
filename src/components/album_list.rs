@@ -74,24 +74,31 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_title = style! {
 		St::TextAlign => "center",
 		St::FontSize => rem(2),
+		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
-	let s_no_books = style! {
+	let s_no_albums = style! {
 		St::TextAlign => "center",
 	};
-	let s_books = style! {
+	let s_albums_list = style! {
 		St::Margin => rem(1),
 		St::Display => "flex",
 		St::FlexFlow => "row wrap",
 		St::JustifyContent => "center",
 	};
-	let s_book = style! {
+	let s_album = style! {
 		St::Margin => rem(1),
-		St::Width => rem(8),
-		St::Height => rem(10),
+		St::Width => rem(6),
+		St::Height => rem(8),
 		St::Background => "radial-gradient(circle at top right, #c51350 -30%, #363062 100%)",
 		St::BorderTopRightRadius => rem(0.3),
 		St::BorderBottomRightRadius => rem(0.3),
+	};
+	
+	let s_album_name = style! {
+		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
+		St::Color => "white",
+		St::FontSize => rem(0.5),
 	};
 	nodes![
 		h1![
@@ -100,15 +107,17 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		],
 		match &model.albums {
 			Some(albums) => div![
-				s_books,
+				s_albums_list,
 				albums.iter().map(|album| div![
-					&s_book,
+					&s_album,
 					attrs! { At::Id	=> album.id.oid },
-					span![&album.name]
+					span![
+						&s_album_name,
+						&album.name]
 				])
 			],
 			None => div![
-				s_no_books,
+				s_no_albums,
 				span!["no albums"]],
 		}
 	]
