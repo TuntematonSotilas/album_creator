@@ -95,7 +95,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::BorderBottomRightRadius => rem(0.3),
 		St::Display => "flex",
 		St::JustifyContent => "center",
-		St::BoxShadow => "3px 3px 10px 0px #363062",
 	};
 	
 	let s_album_name = style! {
@@ -130,7 +129,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					span![
 						&s_album_name,
 						&album.name]
-				])
+				],)
 			],
 			None => div![
 				s_no_albums,
