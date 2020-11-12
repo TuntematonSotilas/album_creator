@@ -90,15 +90,19 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Margin => rem(1),
 		St::Width => rem(6),
 		St::Height => rem(8),
-		St::Background => "radial-gradient(circle at top right, #c51350 -30%, #363062 100%)",
+		St::Background => "radial-gradient(circle at top right, #d73e73 -30%, #6a639b 100%)",
 		St::BorderTopRightRadius => rem(0.3),
 		St::BorderBottomRightRadius => rem(0.3),
+		St::Display => "flex",
+		St::JustifyContent => "center",
+		St::BoxShadow => "3px 3px 10px 0px #363062",
 	};
 	
 	let s_album_name = style! {
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 		St::Color => "white",
-		St::FontSize => rem(0.5),
+		St::FontSize => rem(0.8),
+		St::MarginTop => rem(1),
 	};
 	nodes![
 		h1![

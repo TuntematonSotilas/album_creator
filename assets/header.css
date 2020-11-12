@@ -1,0 +1,4 @@
+.header__link:link, .header__link:visited, .header__link:hover, .header__link:active {
+	text-decoration: none;
+	color: white;
+}
