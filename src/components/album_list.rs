@@ -104,6 +104,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FontSize => rem(0.8),
 		St::MarginTop => rem(1),
 	};
+	let s_album_border = style! {
+		St::Position => "absolute",
+		St::Width => rem(0.5),
+		St::Height => rem(8),
+		St::Background => "linear-gradient(to right, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.5) 150%)",
+		St::MarginLeft => rem(-5.5),
+	};
 	nodes![
 		h1![
 			s_title,
@@ -112,9 +119,14 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		match &model.albums {
 			Some(albums) => div![
 				s_albums_list,
-				albums.iter().map(|album| div![
+				albums.iter().map(|album| a![
+					div![&s_album_border],
+					C!("album"),
 					&s_album,
-					attrs! { At::Id	=> album.id.oid },
+					attrs! { 
+						At::Id	=> album.id.oid,
+						At::Href => "#", 
+					},
 					span![
 						&s_album_name,
 						&album.name]

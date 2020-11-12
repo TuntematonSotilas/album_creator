@@ -1,0 +1,7 @@
+.album:link, .album:visited, .album:hover, .album:active {
+	text-decoration: none;
+}
+
+.album:hover {
+
+}
