@@ -12,9 +12,17 @@ pub struct Model {}
 //    Update
 // ------------
 
-pub enum Msg {}
+pub enum Msg {
+	Show(Option<String>),
+}
 
-pub fn update(_msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {}
+pub fn update(msg: Msg, _model: &mut Model, _orders: &mut impl Orders<Msg>) {
+	match msg {
+		Msg::Show(id_url) => {
+			log!(id_url);
+		},
+	}
+}
 
 // ------------
 //     View

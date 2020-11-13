@@ -34,7 +34,8 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 		album: album::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),
-        is_auth: false,
+		is_auth: false,
+		id_url: None,
     }
 }
 
@@ -52,7 +53,8 @@ struct Model {
 	album: album::Model,
     base_url: Url,
     page: Page,
-    is_auth: bool,
+	is_auth: bool,
+	id_url: Option<String>,
 }
 
 #[derive(Copy, Clone)]
@@ -103,9 +105,14 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				model.page = Page::Login;
 				orders.send_msg(Msg::SetUrl);
 			} else {
-				log!(url.clone().next_hash_path_part());
-				model.page = Page::init(url);
+				model.page = Page::init(url.clone());
 			}
+			let mut url_cp = url.clone(); 
+			url_cp.next_path_part();
+			if let Some(id_url) = url_cp.next_path_part() {
+				model.id_url = Some(id_url.into());
+			}
+
 			orders.send_msg(Msg::LoadPage);
 		},
 		Msg::SetUrl => {
@@ -123,6 +130,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			match model.page {
 				Page::Menu => menu::update(menu::Msg::Show, &mut model.menu, &mut orders.proxy(Msg::Menu)),
 				Page::AlbumList => album_list::update(album_list::Msg::Show, &mut model.album_list, &mut orders.proxy(Msg::AlbumList)),
+				Page::Album => album::update(album::Msg::Show(model.id_url.clone()), &mut model.album, &mut orders.proxy(Msg::Album)),
 				_ => (),
 			};
 		},
