@@ -12,7 +12,18 @@ use crate::utils::{
 #[derive(Default)]
 pub struct Model {
 	albums: Option<Vec<Album>>,
+	base_url: Url,
 }
+
+impl Model {
+	pub fn new(url: Url) -> Self {
+		Model {
+			albums: None,
+			base_url: url.to_base_url(),
+		}
+	}
+}
+
 
 #[derive(serde::Deserialize)]
 pub struct Album {
@@ -106,7 +117,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	nodes![
 		h1![
 			s_title,
-			"Ablums"
+			"Albums"
 		],
 		match &model.albums {
 			Some(albums) => div![
@@ -117,7 +128,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					&s_album,
 					attrs! { 
 						At::Id	=> album.frid,
-						At::Href => "#", 
+						At::Href => model.base_url.clone().add_path_part("album").add_path_part(&album.frid), 
 					},
 					span![
 						&s_album_name,

@@ -9,6 +9,7 @@ use crate::components::{
     header,
 	album_list,
 	new_album,
+	album,
 };
 use crate::models::toast::Toast;
 
@@ -28,8 +29,9 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         toast: toast::Model::default(),
         menu: menu::Model::new(url.clone()),
 		header: header::Model::new(url.clone()),
-		album_list: album_list::Model::default(),
+		album_list: album_list::Model::new(url.clone()),
 		new_album: new_album::Model::new(),
+		album: album::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),
         is_auth: false,
@@ -47,6 +49,7 @@ struct Model {
 	header: header::Model,
 	album_list: album_list::Model,
 	new_album: new_album::Model,
+	album: album::Model,
     base_url: Url,
     page: Page,
     is_auth: bool,
@@ -58,6 +61,7 @@ pub enum Page {
     Menu,
 	AlbumList,
 	NewAlbum,
+	Album,
 }
 
 impl Page {
@@ -67,6 +71,7 @@ impl Page {
             Some("menu") => Self::Menu,
 			Some("albums") => Self::AlbumList,
 			Some("new") => Self::NewAlbum,
+			Some("album") => Self::Album,
             Some(_) => Self::Login,
         }
     }
@@ -83,6 +88,7 @@ enum Msg {
 	Menu(menu::Msg),
 	AlbumList(album_list::Msg),
 	NewAlbum(new_album::Msg),
+	Album(album::Msg),
     ShowToast(Toast),
 	UrlChanged(subs::UrlChanged),
 	SetUrl,
@@ -97,6 +103,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				model.page = Page::Login;
 				orders.send_msg(Msg::SetUrl);
 			} else {
+				log!(url.clone().next_hash_path_part());
 				model.page = Page::init(url);
 			}
 			orders.send_msg(Msg::LoadPage);
@@ -104,7 +111,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::SetUrl => {
 			let path_part = match model.page {
 				Page::Menu => "menu",
-				Page::AlbumList => "ablums",
+				Page::AlbumList => "album",
 				Page::NewAlbum => "new",
 				_ => "login",
 			};
@@ -152,6 +159,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         },
         Msg::NewAlbum(msg) => {
 			new_album::update(msg, &mut model.new_album, &mut orders.proxy(Msg::NewAlbum));
+		},
+		Msg::Album(msg) => {
+			album::update(msg, &mut model.album, &mut orders.proxy(Msg::Album));
         },
     }
 }
@@ -184,6 +194,7 @@ fn view(model: &Model) -> Node<Msg> {
 								Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
 								Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
 								Page::NewAlbum => new_album::view(&model.new_album).map_msg(Msg::NewAlbum),
+								Page::Album => album::view(&model.album).map_msg(Msg::Album),
 								_ => nodes![],
 							}
 						],
