@@ -8,6 +8,7 @@ use crate::components::{
 	menu,
     header,
 	album_list,
+	new_album,
 };
 use crate::models::toast::Toast;
 
@@ -28,6 +29,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         menu: menu::Model::new(url.clone()),
 		header: header::Model::new(url.clone()),
 		album_list: album_list::Model::default(),
+		new_album: new_album::Model::new(),
         base_url: url.to_base_url(),
         page: Page::init(url),
         is_auth: false,
@@ -44,6 +46,7 @@ struct Model {
     menu: menu::Model,
 	header: header::Model,
 	album_list: album_list::Model,
+	new_album: new_album::Model,
     base_url: Url,
     page: Page,
     is_auth: bool,
@@ -78,7 +81,8 @@ enum Msg {
     Toast(toast::Msg),
 	Header(header::Msg),
 	Menu(menu::Msg),
-    AlbumList(album_list::Msg),
+	AlbumList(album_list::Msg),
+	NewAlbum(new_album::Msg),
     ShowToast(Toast),
 	UrlChanged(subs::UrlChanged),
 	SetUrl,
@@ -146,7 +150,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::AlbumList(msg) => {
 			album_list::update(msg, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
         },
-        
+        Msg::NewAlbum(msg) => {
+			new_album::update(msg, &mut model.new_album, &mut orders.proxy(Msg::NewAlbum));
+        },
     }
 }
 
@@ -177,6 +183,7 @@ fn view(model: &Model) -> Node<Msg> {
 							match &model.page {
 								Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
 								Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
+								Page::NewAlbum => new_album::view(&model.new_album).map_msg(Msg::NewAlbum),
 								_ => nodes![],
 							}
 						],

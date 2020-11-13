@@ -15,15 +15,8 @@ pub struct Model {
 }
 
 #[derive(serde::Deserialize)]
-pub struct Id {
-	#[serde(rename = "$oid")]
-	oid: String,
-}
-
-#[derive(serde::Deserialize)]
 pub struct Album {
-	#[serde(rename = "_id")]
-	id: Id,
+	frid: String,
     name: String,
 }
 
@@ -123,7 +116,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					C!("album"),
 					&s_album,
 					attrs! { 
-						At::Id	=> album.id.oid,
+						At::Id	=> album.frid,
 						At::Href => "#", 
 					},
 					span![
