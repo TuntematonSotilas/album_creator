@@ -1,8 +1,9 @@
 use seed::{self, prelude::*, *};
 
 use crate::utils::{
-	vars::API_URI,
-	request::get_auth
+	request::get_auth, 
+	vars::API_URI, 
+	parser::parse_album
 };
 
 // ------------
@@ -14,35 +15,15 @@ pub struct Model {
 	album: Option<Album>,
 }
 
-#[derive(serde::Deserialize)]
 pub struct Album {
-	info: Info,
-	pictures: Vec<Pictures>,
+	pub name: String,
+	pub pictures: Vec<Picture>,
 }
 
-#[derive(serde::Deserialize)]
-pub struct Info {
-    name: String,
-}
-
-#[derive(serde::Deserialize)]
-pub struct Pictures {
-	#[serde(rename = "_id")]	
-	id: Id,
-	order: Order,
-    caption: String,
-}
-
-#[derive(serde::Deserialize)]	
-pub struct Id {	
-	#[serde(rename = "$oid")]	
-	value: String,	
-}
-
-#[derive(serde::Deserialize)]	
-pub struct Order {	
-	#[serde(rename = "$numberInt")]	
-	value: String,	
+pub struct Picture {
+	pub id: String,
+	pub order: i32,
+    pub caption: String,
 }
 
 // ------------
@@ -59,7 +40,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Show(id_url) => {
 			orders.skip(); // No need to rerender
 			orders.perform_cmd(async {
-				let mut opt: Option<Album> = None;
+				let mut album_opt: Option<Album> = None;
 
 				if let Some(id) = id_url {
 					let uri = format!("{0}get-album-detail?id={1}", API_URI, id);
@@ -70,14 +51,11 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 
 					if let Ok(response) = response_res {
 						if let Ok(resp_ok) = response.check_status() {
-							let albums_res = resp_ok.json::<Album>().await;
-							if let Ok(albums) = albums_res {
-								opt = Some(albums);
-							}
+							album_opt = parse_album(resp_ok).await;
 						}
 					}
 				}
-				Msg::Recieved(opt)
+				Msg::Recieved(album_opt)
 			});
 		},
 		Msg::Recieved(opt) => {
@@ -109,14 +87,14 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				s_album,
 				h1![
 					s_title,
-					&album.info.name
+					&album.name
 				],
-				album.pictures.iter().map(|picture| div![
-					span![&picture.id.value],
+				album.pictures.iter().map(|p| div![
+					span![&p.id],
 					" - ",
-					span![&picture.order.value],
+					span![&p.order],
 					" - ",
-					span![&picture.caption],
+					span![&p.caption],
 				])
 
 			],
