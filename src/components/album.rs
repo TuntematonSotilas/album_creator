@@ -27,7 +27,22 @@ pub struct Info {
 
 #[derive(serde::Deserialize)]
 pub struct Pictures {
-    frid: String,
+	#[serde(rename = "_id")]	
+	id: Id,
+	order: Order,
+    caption: String,
+}
+
+#[derive(serde::Deserialize)]	
+pub struct Id {	
+	#[serde(rename = "$oid")]	
+	value: String,	
+}
+
+#[derive(serde::Deserialize)]	
+pub struct Order {	
+	#[serde(rename = "$numberInt")]	
+	value: String,	
 }
 
 // ------------
@@ -88,9 +103,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
-	let s_no_photos = style! {
-		St::TextAlign => "center",
-	};
 	nodes![
 		match &model.album {
 			Some(album) => div![
@@ -99,16 +111,12 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					s_title,
 					&album.info.name
 				],
-				/*span![
-					s_no_photos,
-					"No photos"
-				],*/
-				album.pictures.iter().map(|picture| a![
-					img![
-						attrs! { 
-							At::Alt => picture.frid 
-						}
-					]
+				album.pictures.iter().map(|picture| div![
+					span![&picture.id.value],
+					" - ",
+					span![&picture.order.value],
+					" - ",
+					span![&picture.caption],
 				])
 
 			],
