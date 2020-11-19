@@ -3,7 +3,8 @@ use seed::{self, prelude::*, *};
 use crate::utils::{
 	request::get_auth, 
 	vars::API_URI, 
-	parser::parse_album
+	parser::parse_album, 
+	parser::parse_picture,
 };
 
 // ------------
@@ -32,7 +33,9 @@ pub struct Picture {
 
 pub enum Msg {
 	Show(Option<String>),
-	Recieved(Option<Album>),
+	AlbumRecieved(Option<Album>),
+	GetPicture(String),
+	PictureReceived(String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -41,25 +44,43 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			orders.skip(); // No need to rerender
 			orders.perform_cmd(async {
 				let mut album_opt: Option<Album> = None;
-
 				if let Some(id) = id_url {
 					let uri = format!("{0}get-album-detail?id={1}", API_URI, id);
 					let request = Request::new(uri)
 						.method(Method::Get)
 						.header(Header::authorization(get_auth()));
 					let response_res = fetch(request).await;
-
 					if let Ok(response) = response_res {
 						if let Ok(resp_ok) = response.check_status() {
 							album_opt = parse_album(resp_ok).await;
 						}
 					}
 				}
-				Msg::Recieved(album_opt)
+				Msg::AlbumRecieved(album_opt)
 			});
 		},
-		Msg::Recieved(opt) => {
+		Msg::AlbumRecieved(opt) => {
 			model.album = opt;
+		},
+		Msg::GetPicture(id) => {
+			orders.skip(); // No need to rerender
+			orders.perform_cmd(async move {
+				let uri = format!("{0}get-picture?id={1}", API_URI, id);
+				let request = Request::new(uri)
+					.method(Method::Get)
+					.header(Header::authorization(get_auth()));
+				let response_res = fetch(request).await;
+				if let Ok(response) = response_res {
+					if let Ok(resp_ok) = response.check_status() {
+						let data = parse_picture(resp_ok).await;
+						log!(data.unwrap());
+					}
+				}
+				//Msg::PictureReceived()
+			});
+		},
+		Msg::PictureReceived(data) => {
+
 		},
 	}
 }

@@ -53,3 +53,9 @@ pub async fn parse_album(resp: Response) -> Option<album::Album> {
     }
     album_opt
 }
+
+pub async fn parse_picture(resp: Response) -> Option<String> {
+    let data: Option<String> = None;
+
+    data
+}
