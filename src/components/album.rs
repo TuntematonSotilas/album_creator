@@ -14,6 +14,7 @@ use crate::utils::{
 #[derive(Default)]
 pub struct Model {
 	album: Option<Album>,
+	test: Option<String>,
 }
 
 pub struct Album {
@@ -34,53 +35,55 @@ pub struct Picture {
 pub enum Msg {
 	Show(Option<String>),
 	AlbumRecieved(Option<Album>),
+	LoadPictures,
 	GetPicture(String),
-	PictureReceived(String),
+	PictureReceived(Option<String>),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
 		Msg::Show(id_url) => {
 			orders.skip(); // No need to rerender
+			let mut album_opt: Option<Album> = None;
 			orders.perform_cmd(async {
-				let mut album_opt: Option<Album> = None;
 				if let Some(id) = id_url {
 					let uri = format!("{0}get-album-detail?id={1}", API_URI, id);
 					let request = Request::new(uri)
 						.method(Method::Get)
 						.header(Header::authorization(get_auth()));
-					let response_res = fetch(request).await;
-					if let Ok(response) = response_res {
-						if let Ok(resp_ok) = response.check_status() {
-							album_opt = parse_album(resp_ok).await;
-						}
-					}
+					let response = fetch(request).await;
+					album_opt = parse_album(response).await;
 				}
 				Msg::AlbumRecieved(album_opt)
 			});
 		},
 		Msg::AlbumRecieved(opt) => {
 			model.album = opt;
+			log!("AlbumRecieved");
+			orders.send_msg(Msg::LoadPictures);
+		},
+		Msg::LoadPictures => {
+			if let Some(album) = &model.album {
+				if let Some(first) = album.pictures.first() {
+					orders.send_msg(Msg::GetPicture(first.id.clone()));
+				}
+			}
 		},
 		Msg::GetPicture(id) => {
 			orders.skip(); // No need to rerender
+			let mut data_opt: Option<String> = None;
 			orders.perform_cmd(async move {
 				let uri = format!("{0}get-picture?id={1}", API_URI, id);
 				let request = Request::new(uri)
 					.method(Method::Get)
 					.header(Header::authorization(get_auth()));
-				let response_res = fetch(request).await;
-				if let Ok(response) = response_res {
-					if let Ok(resp_ok) = response.check_status() {
-						let data = parse_picture(resp_ok).await;
-						log!(data.unwrap());
-					}
-				}
-				//Msg::PictureReceived()
+				let result = fetch(request).await;
+				data_opt = parse_picture(result).await;
+				Msg::PictureReceived(data_opt)
 			});
 		},
 		Msg::PictureReceived(data) => {
-
+			model.test = data;
 		},
 	}
 }
@@ -103,6 +106,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
 	nodes![
+		span![&model.test],
 		match &model.album {
 			Some(album) => div![
 				s_album,
