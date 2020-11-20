@@ -1,4 +1,4 @@
-use seed::{self, prelude::*, *};
+use seed::{self, prelude::*};
 
 use crate::components::album;
 
@@ -64,12 +64,12 @@ pub async fn parse_album(result: Result<Response, FetchError>) -> Option<album::
 }
 
 pub async fn parse_picture(result: Result<Response, FetchError>) -> Option<String> {
-	let data: Option<String> = None;
+	let mut data: Option<String> = None;
     if let Ok(response) = result {
 		if let Ok(resp_ok) = response.check_status() {
 			let picture_res = resp_ok.json::<PictureData>().await;
 			if let Ok(pic_data) = picture_res {
-				log!(pic_data.data);
+				data = Some(pic_data.data)
 			}
 		}
 	}

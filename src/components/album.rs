@@ -62,8 +62,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			orders.send_msg(Msg::LoadPictures);
 		},
 		Msg::LoadPictures => {
-			log!("LoadPictures");
-		
 			if let Some(album) = &model.album {
 				if let Some(first) = album.pictures.first() {
 					orders.send_msg(Msg::GetPicture(first.id.clone()));
@@ -71,23 +69,19 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 		},
 		Msg::GetPicture(id) => {
-			log!(id);
 			orders.skip(); // No need to rerender
-			let mut data_opt: Option<String> = None;
 			let uri = format!("{0}get-picture?id={1}", API_URI, id);
 			orders.perform_cmd(async {
 				let request = Request::new(uri)
 					.method(Method::Get)
 					.header(Header::authorization(get_auth()));
 				let result = fetch(request).await;
-				data_opt = parse_picture(result).await;
+				let data_opt = parse_picture(result).await;
 				Msg::PictureReceived(data_opt)
 			});
 		},
 		Msg::PictureReceived(data) => {
-			log!("PictureReceived");
 			model.test = data;
-			//orders.force_render_now();
 		},
 	}
 }
@@ -110,6 +104,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
 	nodes![
+		IF!(model.test.is_some() => img![
+			attrs! { At::Src => model.test.clone().unwrap() }
+		]),
 		match &model.album {
 			Some(album) => div![
 				s_album,
