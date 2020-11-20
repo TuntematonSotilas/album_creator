@@ -51,18 +51,19 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					let request = Request::new(uri)
 						.method(Method::Get)
 						.header(Header::authorization(get_auth()));
-					let response = fetch(request).await;
-					album_opt = parse_album(response).await;
+					let result = fetch(request).await;
+					album_opt = parse_album(result).await;
 				}
 				Msg::AlbumRecieved(album_opt)
 			});
 		},
 		Msg::AlbumRecieved(opt) => {
 			model.album = opt;
-			log!("AlbumRecieved");
 			orders.send_msg(Msg::LoadPictures);
 		},
 		Msg::LoadPictures => {
+			log!("LoadPictures");
+		
 			if let Some(album) = &model.album {
 				if let Some(first) = album.pictures.first() {
 					orders.send_msg(Msg::GetPicture(first.id.clone()));
@@ -70,10 +71,11 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 		},
 		Msg::GetPicture(id) => {
+			log!(id);
 			orders.skip(); // No need to rerender
 			let mut data_opt: Option<String> = None;
-			orders.perform_cmd(async move {
-				let uri = format!("{0}get-picture?id={1}", API_URI, id);
+			let uri = format!("{0}get-picture?id={1}", API_URI, id);
+			orders.perform_cmd(async {
 				let request = Request::new(uri)
 					.method(Method::Get)
 					.header(Header::authorization(get_auth()));
@@ -83,7 +85,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			});
 		},
 		Msg::PictureReceived(data) => {
+			log!("PictureReceived");
 			model.test = data;
+			//orders.force_render_now();
 		},
 	}
 }
@@ -106,7 +110,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
 	nodes![
-		span![&model.test],
 		match &model.album {
 			Some(album) => div![
 				s_album,
