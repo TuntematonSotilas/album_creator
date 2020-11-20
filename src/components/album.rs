@@ -111,8 +111,26 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
-	let s_picture = style! {
-		St::MaxWidth => rem(20),
+	let s_pic_list = style! {
+		St::Display => "flex",
+		St::FlexFlow => "row wrap",
+		St::AlignItems => "center",
+	};
+	let s_pic = style! {
+		St::Display => "flex",
+		St::FlexDirection => "column",
+	};
+	let s_pic_ctn = style! {
+		St::Width => rem(15),
+		St::Margin => rem(1),
+		St::BorderRadius => rem(0.2),
+	};
+	let s_caption = style! {
+		St::TextAlign => "center",
+	};
+	let s_loader = style! {
+		St::Height => rem(10),
+		St::Background => "rgba(0, 0, 0, 0.2)",
 	};
 	nodes![
 		match &model.album {
@@ -122,17 +140,26 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					s_title,
 					&album.name
 				],
-				album.pictures.iter().map(|p| div![
-					match &p.data {
-						Some(d) => img![
-							&s_picture,
-							attrs!{ At::Src => d }
+				div![
+					s_pic_list,
+					album.pictures.iter().map(|pic| div![
+						&s_pic,
+						match &pic.data {
+							Some(data_url) => img![
+								&s_pic_ctn,
+								attrs!{ At::Src => data_url }
+							],
+							_ => div![
+								&s_pic_ctn,
+								&s_loader
+							]
+						},
+						span![
+							&s_caption,
+							&pic.caption
 						],
-						_ => empty![]
-					},
-					span![&p.caption],
-				])
-
+					]),
+				],
 			],
 			None => empty![],
 		}

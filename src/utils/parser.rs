@@ -57,6 +57,7 @@ pub async fn parse_album(result: Result<Response, FetchError>) -> Option<album::
 					.collect()
 				};
 				album.pictures.sort_by(|a, b| b.order.cmp(&a.order));
+				album.pictures.reverse();
 				album_opt = Some(album);
 			}
 		}
