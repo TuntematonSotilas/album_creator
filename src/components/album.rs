@@ -111,6 +111,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
+	let s_picture = style! {
+		St::MaxWidth => rem(20),
+	};
 	nodes![
 		match &model.album {
 			Some(album) => div![
@@ -120,18 +123,14 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					&album.name
 				],
 				album.pictures.iter().map(|p| div![
-					span![&p.id],
-					" - ",
-					span![&p.order],
-					" - ",
-					span![&p.caption],
-
 					match &p.data {
-						Some(d) => img![ 
+						Some(d) => img![
+							&s_picture,
 							attrs!{ At::Src => d }
 						],
 						_ => empty![]
-					}
+					},
+					span![&p.caption],
 				])
 
 			],
