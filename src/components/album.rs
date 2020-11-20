@@ -14,18 +14,20 @@ use crate::utils::{
 #[derive(Default)]
 pub struct Model {
 	album: Option<Album>,
-	test: Option<String>,
 }
 
+#[derive(Clone)]
 pub struct Album {
 	pub name: String,
 	pub pictures: Vec<Picture>,
 }
 
+#[derive(Clone)]
 pub struct Picture {
 	pub id: String,
 	pub order: i32,
-    pub caption: String,
+	pub caption: String,
+	pub data: Option<String>,
 }
 
 // ------------
@@ -37,7 +39,7 @@ pub enum Msg {
 	AlbumRecieved(Option<Album>),
 	LoadPictures,
 	GetPicture(String),
-	PictureReceived(Option<String>),
+	PictureReceived(Option<String>, String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -63,9 +65,11 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::LoadPictures => {
 			if let Some(album) = &model.album {
-				if let Some(first) = album.pictures.first() {
-					orders.send_msg(Msg::GetPicture(first.id.clone()));
-				}
+				album.pictures.clone()
+					.into_iter()
+					.take(10).for_each(|p| {
+						orders.send_msg(Msg::GetPicture(p.id));
+					});
 			}
 		},
 		Msg::GetPicture(id) => {
@@ -77,11 +81,15 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					.header(Header::authorization(get_auth()));
 				let result = fetch(request).await;
 				let data_opt = parse_picture(result).await;
-				Msg::PictureReceived(data_opt)
+				Msg::PictureReceived(data_opt, id)
 			});
 		},
-		Msg::PictureReceived(data) => {
-			model.test = data;
+		Msg::PictureReceived(data, id) => {
+			if let Some(album) = &mut model.album {
+				album.pictures.iter_mut()
+					.find(|p| p.id == id)
+					.map(|p| p.data = data);
+			}
 		},
 	}
 }
@@ -104,9 +112,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
 	nodes![
-		IF!(model.test.is_some() => img![
-			attrs! { At::Src => model.test.clone().unwrap() }
-		]),
 		match &model.album {
 			Some(album) => div![
 				s_album,
@@ -120,6 +125,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					span![&p.order],
 					" - ",
 					span![&p.caption],
+
+					match &p.data {
+						Some(d) => img![ 
+							attrs!{ At::Src => d }
+						],
+						_ => empty![]
+					}
 				])
 
 			],
