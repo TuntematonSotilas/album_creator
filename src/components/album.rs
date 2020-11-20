@@ -151,7 +151,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							],
 							_ => div![
 								&s_pic_ctn,
-								&s_loader
+								&s_loader,
+								div![C!("album__loader")],
 							]
 						},
 						span![
