@@ -128,9 +128,27 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_caption = style! {
 		St::TextAlign => "center",
 	};
-	let s_loader = style! {
+	let s_pic_empty = style! {
 		St::Height => rem(10),
 		St::Background => "rgba(0, 0, 0, 0.2)",
+
+	};
+	let s_loader = style! {
+		St::Position => "absolute",
+		St::MarginLeft => rem(5),
+		St::MarginTop => rem(2.5),
+		St::Width => rem(5),
+		St::Height => rem(5),
+		St::Background => "rgba(0, 0, 0, 0.2)",
+		St::BorderRadius => percent(50),
+	};
+	let s_loader_1 = style! {
+		St::Transform => "scale(1)",
+		St::Animation => "pulse 2s infinite linear",
+	};
+	let s_loader_2 = style! {
+		St::Transform => "scale(0)",
+		St::Animation => "pulse 2s 1s infinite linear",
 	};
 	nodes![
 		match &model.album {
@@ -151,8 +169,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							],
 							_ => div![
 								&s_pic_ctn,
-								&s_loader,
-								div![C!("album__loader")],
+								&s_pic_empty,
+								div![&s_loader, &s_loader_1 ],
+								div![&s_loader, &s_loader_2 ],
 							]
 						},
 						span![
