@@ -71,15 +71,15 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			if let Some(album) = &mut model.album {
 				//Load only X pictures in DOM 
 				album.pictures.iter_mut()
+					.filter(|p| !p.dom)
 					.take(MAX_LOAD)
 					.for_each(|p| p.dom = true);
-				model.loaded = MAX_LOAD;
+				model.loaded += MAX_LOAD;
 				//Load pictures
 				album.pictures.clone()
 					.into_iter()
 					.filter(|p| p.dom)
 					.for_each(|p| {
-						log!(p.id);
 						orders.send_msg(Msg::GetPicture(p.id));
 					});
 			}
@@ -207,7 +207,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					s_footer,
 					i![
 						s_footer_btn,
-						C!("fa fa-chevron-down album__footerBtn")
+						C!("fa fa-chevron-down album__footerBtn"),
+						ev(Ev::Click, |_| Msg::LoadPictures),
 					],
 				]),
 			],
