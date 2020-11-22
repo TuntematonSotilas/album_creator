@@ -207,7 +207,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					s_footer,
 					i![
 						s_footer_btn,
-						C!("fa fa-chevron-down")
+						C!("fa fa-chevron-down album__footerBtn")
 					],
 				]),
 			],

@@ -11,6 +11,10 @@
 	box-shadow: 0.3rem 0.2rem 0.5rem #db6d92, 1rem 0.4rem 0 #f9b0c9
 }
 
+.album__footerBtn:hover {
+	cursor: pointer;
+}
+
 @keyframes pulse {
 	0% {
 	  transform: scale(0.6);
