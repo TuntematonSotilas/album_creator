@@ -11,9 +11,12 @@ use crate::utils::{
 //     Model
 // -----------
 
+const MAX_LOAD: usize = 10;
+
 #[derive(Default)]
 pub struct Model {
 	album: Option<Album>,
+	loaded: usize,
 }
 
 #[derive(Clone)]
@@ -28,6 +31,7 @@ pub struct Picture {
 	pub order: i32,
 	pub caption: String,
 	pub data: Option<String>,
+	pub dom: bool,
 }
 
 // ------------
@@ -64,10 +68,18 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			orders.send_msg(Msg::LoadPictures);
 		},
 		Msg::LoadPictures => {
-			if let Some(album) = &model.album {
+			if let Some(album) = &mut model.album {
+				//Load only X pictures in DOM 
+				album.pictures.iter_mut()
+					.take(MAX_LOAD)
+					.for_each(|p| p.dom = true);
+				model.loaded = MAX_LOAD;
+				//Load pictures
 				album.pictures.clone()
 					.into_iter()
-					.take(10).for_each(|p| {
+					.filter(|p| p.dom)
+					.for_each(|p| {
+						log!(p.id);
 						orders.send_msg(Msg::GetPicture(p.id));
 					});
 			}
@@ -150,6 +162,17 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Transform => "scale(0)",
 		St::Animation => "pulse 2s 1s infinite linear",
 	};
+	let s_footer = style! {
+		St::Display => "flex",
+		St::JustifyContent => "center",
+		St::MarginTop => rem(1),
+	};
+	let s_footer_btn = style! {
+		St::Color => "#008891",
+		St::FontSize => rem(3),
+		St::TextShadow => "2px 1px 2px rgba(0, 0, 0, 0.3)",
+		St::Animation => "movebtn 1s infinite linear",
+	};
 	nodes![
 		match &model.album {
 			Some(album) => div![
@@ -160,7 +183,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				],
 				div![
 					s_pic_list,
-					album.pictures.iter().map(|pic| div![
+					album.pictures.iter().filter(|p| p.dom).map(|pic| div![
 						&s_pic,
 						match &pic.data {
 							Some(data_url) => img![
@@ -180,8 +203,15 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 						],
 					]),
 				],
+				IF!(album.pictures.len() > model.loaded => div![
+					s_footer,
+					i![
+						s_footer_btn,
+						C!("fa fa-chevron-down")
+					],
+				]),
 			],
 			None => empty![],
-		}
+		},
 	]
 }

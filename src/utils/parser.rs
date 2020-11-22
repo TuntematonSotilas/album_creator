@@ -52,6 +52,7 @@ pub async fn parse_album(result: Result<Response, FetchError>) -> Option<album::
 							order: p.order.value.parse().unwrap_or(0),
 							caption: p.caption,
 							data: None,
+							dom: false,
 						}
 					)
 					.collect()
