@@ -68,6 +68,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             radial-gradient(circle at top left, #008891 -20%, #0f3057 100%)",
         St::Height => percent(100),
         St::Color => "white",
+        St::MinHeight => vh(100),
     };
     let s_form = style! {
         St::Width => rem(12),

@@ -180,11 +180,11 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 
 fn view(model: &Model) -> Node<Msg> {
     let style = style! { 
-        St::Height => vh(100),
+        St::MinHeight => vh(100),
         St::FontFamily => "'Open Sans', sans-serif",
 	};
 	let s_main = style! {
-		St::Height => percent(100),
+		St::MinHeight => vh(100),
 		St::Background => "radial-gradient(circle at bottom right, #0f3057 -20%, #d0fcff 100%)",
 	};
 
