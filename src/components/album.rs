@@ -112,7 +112,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_album = style! {
-		St::Margin => rem(1),
 		St::Display => "flex",
 		St::FlexDirection => "column",
 		St::JustifyContent => "center",
@@ -122,7 +121,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FontSize => rem(2),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
-		St::Margin => 0,
 	};
 	let s_pic_list = style! {
 		St::Display => "flex",
