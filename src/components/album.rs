@@ -49,6 +49,8 @@ pub enum Msg {
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
 		Msg::Show(id_url) => {
+			model.album = None;
+			model.loaded = 0;
 			orders.skip(); // No need to rerender
 			let mut album_opt: Option<Album> = None;
 			orders.perform_cmd(async {
