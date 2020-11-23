@@ -122,6 +122,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FontSize => rem(2),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
+		St::Margin => 0,
 	};
 	let s_pic_list = style! {
 		St::Display => "flex",
@@ -132,25 +133,27 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 	};
-	let s_pic_ctn = style! {
-		St::Width => rem(15),
-		St::Margin => rem(1),
+	let s_pic_border = style! {
+		St::Margin => rem(0.5),
 		St::BorderRadius => rem(0.2),
+	};
+	let s_pic_img = style! {
+		St::MaxWidth => rem(15),
+	};
+	let s_pic_empty = style! {
+		St::Width => rem(5),
+		St::Height => rem(5),
+		St::Background => "rgba(0, 0, 0, 0.2)",
 	};
 	let s_caption = style! {
 		St::TextAlign => "center",
 	};
-	let s_pic_empty = style! {
-		St::Height => rem(10),
-		St::Background => "rgba(0, 0, 0, 0.2)",
-
-	};
 	let s_loader = style! {
 		St::Position => "absolute",
-		St::MarginLeft => rem(5),
-		St::MarginTop => rem(2.5),
-		St::Width => rem(5),
-		St::Height => rem(5),
+		St::MarginLeft => rem(1),
+		St::MarginTop => rem(1),
+		St::Width => rem(3),
+		St::Height => rem(3),
 		St::Background => "rgba(0, 0, 0, 0.2)",
 		St::BorderRadius => percent(50),
 	};
@@ -187,11 +190,12 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 						&s_pic,
 						match &pic.data {
 							Some(data_url) => img![
-								&s_pic_ctn,
+								&s_pic_border,
+								&s_pic_img,
 								attrs!{ At::Src => data_url }
 							],
 							_ => div![
-								&s_pic_ctn,
+								&s_pic_border,
 								&s_pic_empty,
 								div![&s_loader, &s_loader_1 ],
 								div![&s_loader, &s_loader_2 ],
