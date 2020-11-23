@@ -136,7 +136,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                         "Album Creator"
                     ],
                     input![
-                        canvas!("login__input"),
+                        C!("login__input"),
                         &s_input,
                         attrs! {
                             At::Value => model.login,

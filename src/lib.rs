@@ -30,7 +30,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         menu: menu::Model::new(url.clone()),
 		header: header::Model::new(url.clone()),
 		album_list: album_list::Model::new(url.clone()),
-		new_album: new_album::Model::new(),
+		new_album: new_album::Model::default(),
 		album: album::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),
@@ -131,6 +131,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Page::Menu => menu::update(menu::Msg::Show, &mut model.menu, &mut orders.proxy(Msg::Menu)),
 				Page::AlbumList => album_list::update(album_list::Msg::Show, &mut model.album_list, &mut orders.proxy(Msg::AlbumList)),
 				Page::Album => album::update(album::Msg::Show(model.id_url.clone()), &mut model.album, &mut orders.proxy(Msg::Album)),
+				Page::NewAlbum => new_album::update(new_album::Msg::Show, &mut model.new_album, &mut orders.proxy(Msg::NewAlbum)),
 				_ => (),
 			};
 		},
