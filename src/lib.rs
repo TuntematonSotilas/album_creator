@@ -30,7 +30,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         menu: menu::Model::new(url.clone()),
 		header: header::Model::new(url.clone()),
 		album_list: album_list::Model::new(url.clone()),
-		new_album: new_album::Model::default(),
+		new_album: new_album::Model::new(),
 		album: album::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),

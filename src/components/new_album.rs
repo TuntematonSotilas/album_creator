@@ -8,9 +8,9 @@ use crate::utils::{vars::API_URI, request::get_auth};
 //     Model
 // -----------
 
-#[derive(Default)]
 pub struct Model {
 	album: Album,
+	status: Status
 }
 
 #[derive(serde::Serialize, Default)]
@@ -19,15 +19,30 @@ struct Album {
 	name: String,
 }
 
+enum Status {
+	New,
+	Saving,
+	Saved,
+	Error,
+}
+
+impl Model {
+	pub fn new() -> Self {
+		Model {
+			album: Album::default(),
+			status: Status::New,
+		}
+	}
+}
 // ------------
 //    Update
 // ------------
 
 pub enum Msg {
 	Show,
-	NameChanged(String),
+	NameBlur(String),
 	Post,
-	Toast(bool),
+	SetStatus(bool),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -36,13 +51,15 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.album.frid = friendly_id::create();
 			model.album.name = "New Album".to_string();
 		},
-		Msg::NameChanged(name) => {
+		Msg::NameBlur(name) => {
 			model.album.name = name;
 			orders.send_msg(Msg::Post);
-		},
+		}
 		Msg::Post => {
 			orders.skip(); // No need to rerender
 			
+			model.status = Status::Saving;
+
 			let uri = format!("{0}new-album", API_URI);
 			let request = Request::new(uri)
 				.method(Method::Post)
@@ -59,11 +76,14 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 						}
 					}
 				}
-				Msg::Toast(is_success)
+				Msg::SetStatus(is_success)
 			});
 		},
-		Msg::Toast(is_success) => {
-			log!("Toast", is_success);
+		Msg::SetStatus(is_success) => {
+			model.status = match is_success {
+				true => Status::Saved,
+				false => Status::Error,
+			};
 		},
 	}
 }
@@ -74,14 +94,23 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	nodes![
-		form![
+		div![
 			input![
 				attrs! {
 					At::Value => model.album.name,
 					At::Placeholder => "Name",
 				},
-				input_ev(Ev::Input, Msg::NameChanged),
+				input_ev(Ev::Blur, Msg::NameBlur),
 			],
-		],		
+			span![
+				match model.status {
+					Status::New => "New",
+					Status::Saving => "Saving",
+					Status::Saved => "Saved",
+					Status::Error => "Error",
+				}
+			]
+		]
+		
 	]
 }
