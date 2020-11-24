@@ -120,7 +120,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_title = style! {
 		St::TextAlign => "center",
-		St::FontSize => rem(2),
+		St::FontSize => vh(3),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
@@ -168,11 +168,11 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_footer = style! {
 		St::Display => "flex",
 		St::JustifyContent => "center",
-		St::MarginTop => rem(1),
+		St::Margin => rem(1),
 	};
 	let s_footer_btn = style! {
 		St::Color => "#008891",
-		St::FontSize => rem(3),
+		St::FontSize => rem(2),
 		St::TextShadow => "2px 1px 2px rgba(0, 0, 0, 0.3)",
 		St::Animation => "movebtn 1s infinite linear",
 	};

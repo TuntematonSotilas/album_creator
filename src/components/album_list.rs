@@ -106,6 +106,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Color => "white",
 		St::FontSize => rem(0.8),
 		St::MarginTop => rem(1),
+		St::PaddingLeft => rem(0.7),
 	};
 	let s_album_border = style! {
 		St::Position => "absolute",

@@ -124,12 +124,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_input = style! {
 		St::Outline => "none",
-		St::FontSize => rem(2),
+		St::FontSize => vh(3),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
 		St::Border => "none",
 		St::Background => "none",
 		St::TextAlign => "center",
+		St::Width => percent(80),
 	};
 	let s_status = style! {
 		St::Color => color,
@@ -153,6 +154,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					attrs! {
 						At::Value => model.album.name,
 						At::Placeholder => "Name",
+						At::MaxLength => 20,
 					},
 					input_ev(Ev::Blur, Msg::NameBlur),
 				],
