@@ -38,8 +38,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Padding => ".75rem 1.25rem",
         St::Color => "#ff0303",
         St::Background => "rgba(220, 17, 1, 0.3)",
-        St::Border => "1px solid rgba(241, 6, 6, 0.81)",
-        St::BorderRadius => "0.25rem",
+        St::Border => "1px solid rgba(241, 6, 6, 0.5)",
+        St::BorderRadius => rem(0.25),
 		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
 		St::Transition => "margin-top 200ms ease-out",
     };

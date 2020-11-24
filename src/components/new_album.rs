@@ -93,24 +93,75 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
+	let (status, color, bckg) = match model.status {
+		Status::New => (
+			"NEW".to_string(),
+			"#0396ff".to_string(),
+			"#b5d7ff".to_string()),
+		Status::Saving => (
+			"SAVING".to_string(),
+			"#ffb103".to_string(),
+			"#a49582".to_string()),
+		Status::Saved => (
+			"SAVED".to_string(), 
+			"#0ad406".to_string(),
+			"#c3ffdc".to_string()),
+		Status::Error => (
+			"ERROR".to_string(), 
+			"#794242".to_string(),
+			"#d98882".to_string()),
+	};
+	let s_column = style! {
+		St::Display => "flex",
+		St::FlexDirection => "column",
+		St::AlignItems => "center",
+	};
+	let s_row = style! {
+		St::Display => "flex",
+		St::FlexDirection => "row",
+		St::AlignItems => "center",
+		St::Margin => rem(1),
+	};
+	let s_input = style! {
+		St::Outline => "none",
+		St::FontSize => rem(2),
+		St::LetterSpacing => rem(0.1),
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+		St::Border => "none",
+		St::Background => "none",
+		St::TextAlign => "center",
+	};
+	let s_status = style! {
+		St::Color => color,
+		St::Background => bckg,
+		St::BorderRadius => rem(0.25),
+		St::BorderColor => color,
+		St::BorderWidth => px(1),
+		St::BorderStyle => "solid",
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+		St::FontSize => rem(0.7),
+		St::Padding => rem(0.4),
+		St::LetterSpacing => rem(0.2),
+	};
 	nodes![
 		div![
-			input![
-				attrs! {
-					At::Value => model.album.name,
-					At::Placeholder => "Name",
-				},
-				input_ev(Ev::Blur, Msg::NameBlur),
+			s_column,
+			div![
+				s_row,
+				input![
+					s_input,
+					attrs! {
+						At::Value => model.album.name,
+						At::Placeholder => "Name",
+					},
+					input_ev(Ev::Blur, Msg::NameBlur),
+				],
+				div![
+					s_status,
+					status
+				],
 			],
-			span![
-				match model.status {
-					Status::New => "New",
-					Status::Saving => "Saving",
-					Status::Saved => "Saved",
-					Status::Error => "Error",
-				}
-			]
-		]
-		
+			span!["photos"]
+		],
 	]
 }

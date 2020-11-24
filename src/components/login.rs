@@ -96,8 +96,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Color => "white",
         St::Border => "1px solid rgba(0,0,0,0.3)",
         St::BorderRadius => rem(0.3),
-        St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
         St::Transition => "box-shadow .5s ease",
+        St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
     };
     let s_button = style! {
         St::Padding => rem(0.5),
