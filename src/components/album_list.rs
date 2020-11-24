@@ -107,6 +107,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FontSize => rem(0.8),
 		St::MarginTop => rem(1),
 		St::PaddingLeft => rem(0.7),
+		St::OverflowWrap => "anywhere",
 	};
 	let s_album_border = style! {
 		St::Position => "absolute",
