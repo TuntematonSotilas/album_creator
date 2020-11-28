@@ -1,3 +1,8 @@
 .edit_album__name:hover {
 	border-bottom: dashed 1px #6a639b !important;
 }
+
+.edit_ablum__file_btn:hover {
+	cursor: pointer;
+	background: rgba(255, 255, 255, 0.3) !important;
+}

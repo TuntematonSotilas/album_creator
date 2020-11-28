@@ -111,21 +111,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			"#794242".to_string(),
 			"#d98882".to_string()),
 	};
-	let s_column = style! {
-		St::Display => "flex",
-		St::FlexDirection => "column",
-		St::AlignItems => "center",
-		St::MarginTop => rem(0.5),
-	};
-	let s_input = style! {
-		St::Outline => "none",
-		St::FontSize => rem(2),
-		St::LetterSpacing => rem(0.1),
-		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
-		St::Border => "none",
-		St::Background => "none",
-		St::TextAlign => "center",
-	};
 	let s_status = style! {
 		St::Color => color,
 		St::Background => bckg,
@@ -140,6 +125,36 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::TransitionProperty => "color, background, border-color",
 		St::TransitionDuration => "200ms",
 	};
+	let s_column = style! {
+		St::Display => "flex",
+		St::FlexDirection => "column",
+		St::AlignItems => "center",
+		St::MarginTop => rem(0.5),
+	};
+	let s_name = style! {
+		St::Outline => "none",
+		St::FontSize => rem(2),
+		St::LetterSpacing => rem(0.1),
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+		St::Border => "none",
+		St::Background => "none",
+		St::TextAlign => "center",
+	};
+	let s_file_btn = style! {
+		St::Width => rem(5),
+        St::Height => rem(5),
+		St::Margin => rem(1),
+		St::BorderRadius => rem(0.2),
+		St::FontSize => rem(2),
+		St::TextAlign => "center",
+		St::LineHeight => rem(5),
+		St::Color => "#3f46ac",
+		St::Background => "rgba(0, 0, 0, 0.2)",
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+	};
+	let s_input_file = style! {
+		St::Display => "none",
+	};
 	nodes![
 		div![
 			s_column,
@@ -149,7 +164,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			],
 			input![
 				C!("edit_album__name"),
-				s_input,
+				s_name,
 				attrs! {
 					At::Value => model.album.name,
 					At::Placeholder => "Name",
@@ -157,7 +172,20 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				},
 				input_ev(Ev::Blur, Msg::NameBlur),
 			],
-			span!["photos"]
+			label![
+				s_file_btn,
+				C!("edit_ablum__file_btn"),
+				i![
+					C!("fa fa-plus"),
+				],
+				input![
+					s_input_file,
+					attrs! {
+						At::Type => "file",
+						At::Accept => "image/*",
+					},
+				],
+			],
 		],
 	]
 }
