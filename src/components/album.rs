@@ -120,7 +120,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_title = style! {
 		St::TextAlign => "center",
-		St::FontSize => vh(3),
+		St::FontSize => rem(2),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
 	};
@@ -211,7 +211,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					s_footer,
 					i![
 						s_footer_btn,
-						C!("fa fa-chevron-down album__footerBtn"),
+						C!("fa fa-chevron-down album__footer_btn"),
 						ev(Ev::Click, |_| Msg::LoadPictures),
 					],
 				]),

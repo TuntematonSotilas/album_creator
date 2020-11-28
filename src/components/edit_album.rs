@@ -100,8 +100,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			"#b5d7ff".to_string()),
 		Status::Saving => (
 			"SAVING".to_string(),
-			"#ffb103".to_string(),
-			"#a49582".to_string()),
+			"#b08015".to_string(),
+			"#f7e2b4".to_string()),
 		Status::Saved => (
 			"SAVED".to_string(), 
 			"#0ad406".to_string(),
@@ -115,22 +115,16 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 		St::AlignItems => "center",
-	};
-	let s_row = style! {
-		St::Display => "flex",
-		St::FlexDirection => "row",
-		St::AlignItems => "center",
-		St::Margin => rem(1),
+		St::MarginTop => rem(0.5),
 	};
 	let s_input = style! {
 		St::Outline => "none",
-		St::FontSize => vh(3),
+		St::FontSize => rem(2),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
 		St::Border => "none",
 		St::Background => "none",
 		St::TextAlign => "center",
-		St::Width => percent(80),
 	};
 	let s_status = style! {
 		St::Color => color,
@@ -143,25 +137,25 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FontSize => rem(0.7),
 		St::Padding => rem(0.4),
 		St::LetterSpacing => rem(0.2),
+		St::TransitionProperty => "color, background, border-color",
+		St::TransitionDuration => "200ms",
 	};
 	nodes![
 		div![
 			s_column,
 			div![
-				s_row,
-				input![
-					s_input,
-					attrs! {
-						At::Value => model.album.name,
-						At::Placeholder => "Name",
-						At::MaxLength => 20,
-					},
-					input_ev(Ev::Blur, Msg::NameBlur),
-				],
-				div![
-					s_status,
-					status
-				],
+				s_status,
+				status
+			],
+			input![
+				C!("edit_album__name"),
+				s_input,
+				attrs! {
+					At::Value => model.album.name,
+					At::Placeholder => "Name",
+					At::MaxLength => 20,
+				},
+				input_ev(Ev::Blur, Msg::NameBlur),
 			],
 			span!["photos"]
 		],

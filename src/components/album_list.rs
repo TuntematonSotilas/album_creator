@@ -126,7 +126,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				s_albums_list,
 				albums.iter().map(|album| a![
 					div![&s_album_border],
-					C!("album"),
+					C!("album_list"),
 					&s_album,
 					attrs! { 
 						At::Id	=> album.frid,
