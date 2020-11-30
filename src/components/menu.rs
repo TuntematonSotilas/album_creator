@@ -52,7 +52,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Width => rem(5),
         St::Height => rem(5),
         St::Margin => rem(1),
-        St::BorderRadius => percent(100),
+        St::BorderRadius => rem(0.5),
         St::FontSize => rem(1.5),
         St::TextAlign => "center",
         St::LineHeight => rem(5),

@@ -5,3 +5,4 @@ pub mod header;
 pub mod album_list;
 pub mod edit_album;
 pub mod album;
+pub mod picture;

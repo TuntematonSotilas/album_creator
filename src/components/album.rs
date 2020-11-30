@@ -171,11 +171,19 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Margin => rem(1),
 	};
 	let s_footer_btn = style! {
-		St::Color => "#008891",
-		St::FontSize => rem(2),
-		St::TextShadow => "2px 1px 2px rgba(0, 0, 0, 0.3)",
-		St::Animation => "movebtn 1s infinite linear",
-	};
+        St::Padding => rem(0.5),
+        St::BackgroundImage => "linear-gradient(#6eb6de, #4a77d4)",
+        St::BackgroundRepeat => "repeat-x",
+        St::Border => "1px solid #3762bc",
+        St::BorderRadius => rem(0.3),
+        St::Color => "white",
+        St::FontSize => rem(0.9),
+        St::LetterSpacing => rem(0.1),
+        St::TextShadow => "1px 1px 1px rgba(0,0,0,0.4)",
+        St::Cursor => "pointer",
+        St::Outline => "none",
+        St::BoxShadow => "0 1px 2px rgba(0, 0, 0, 0.5)",
+    };
 	nodes![
 		match &model.album {
 			Some(album) => div![
@@ -209,11 +217,11 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				],
 				IF!(album.pictures.len() > model.loaded => div![
 					s_footer,
-					i![
+					div![
 						s_footer_btn,
-						C!("fa fa-chevron-down album__footer_btn"),
 						ev(Ev::Click, |_| Msg::LoadPictures),
-					],
+						"Load more"
+					]
 				]),
 			],
 			None => empty![],
