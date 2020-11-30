@@ -7,3 +7,9 @@
 @import "album_list.css";
 @import "album.css";
 @import "edit_album.css";
+
+.button:hover, .button:focus {
+    background-color: #4a77d4;
+    background-position: 0 -1rem;
+    transition: background-position 0.1s linear;
+}

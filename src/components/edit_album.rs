@@ -2,7 +2,13 @@ use seed::{self, prelude::*, *};
 
 use friendly_id;
 
-use crate::utils::{vars::API_URI, request::get_auth};
+use crate::{
+	components::pic_upload,
+	utils::{
+		vars::API_URI, 
+		request::get_auth,
+	},
+};
 
 // ------------
 //     Model
@@ -10,7 +16,8 @@ use crate::utils::{vars::API_URI, request::get_auth};
 
 pub struct Model {
 	album: Album,
-	status: Status
+	status: Status,
+	pic_upload: pic_upload::Model,
 }
 
 #[derive(serde::Serialize, Default)]
@@ -31,6 +38,7 @@ impl Model {
 		Model {
 			album: Album::default(),
 			status: Status::New,
+			pic_upload: pic_upload::Model::default(),
 		}
 	}
 }
@@ -43,6 +51,7 @@ pub enum Msg {
 	NameBlur(String),
 	Post,
 	SetStatus(bool),
+	PicUpload(pic_upload::Msg),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -86,6 +95,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				false => Status::Error,
 			};
 		},
+		Msg::PicUpload(msg) => {
+			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
+		}
 	}
 }
 
@@ -163,8 +175,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 						},
 						input_ev(Ev::Blur, Msg::NameBlur),
 					],
-				],	
+				],
 			],
+			pic_upload::view(&model.pic_upload).map_msg(Msg::PicUpload),
 		],
 	]
 }
