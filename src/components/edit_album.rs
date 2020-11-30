@@ -48,6 +48,7 @@ pub enum Msg {
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
 		Msg::Show => {
+			model.status = Status::New;
 			model.album.frid = friendly_id::create();
 			model.album.name = "New Album".to_string();
 		},
@@ -93,43 +94,45 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
-	let (status, color, bckg) = match model.status {
+	let (status, color) = match model.status {
 		Status::New => (
 			"NEW".to_string(),
-			"#0396ff".to_string(),
-			"#b5d7ff".to_string()),
+			"#0396ff".to_string()),
 		Status::Saving => (
 			"SAVING".to_string(),
-			"#b08015".to_string(),
-			"#f7e2b4".to_string()),
+			"#788d95".to_string()),
 		Status::Saved => (
 			"SAVED".to_string(), 
-			"#0ad406".to_string(),
-			"#c3ffdc".to_string()),
+			"#0ad406".to_string()),
 		Status::Error => (
 			"ERROR".to_string(), 
-			"#794242".to_string(),
-			"#d98882".to_string()),
+			"#794242".to_string()),
 	};
 	let s_status = style! {
 		St::Color => color,
-		St::Background => bckg,
-		St::BorderRadius => rem(0.25),
-		St::BorderColor => color,
-		St::BorderWidth => px(1),
-		St::BorderStyle => "solid",
 		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
 		St::FontSize => rem(0.7),
-		St::Padding => rem(0.4),
 		St::LetterSpacing => rem(0.2),
-		St::TransitionProperty => "color, background, border-color",
+		St::TransitionProperty => "color",
 		St::TransitionDuration => "200ms",
+		St::AlignSelf => "start",
 	};
 	let s_column = style! {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 		St::AlignItems => "center",
 		St::MarginTop => rem(0.5),
+	};
+	let s_info_ctn = style! {
+		St::Width => vw(90),
+	};
+	let s_infos = style! {
+		St::Display => "flex",
+		St::FlexDirection => "column",
+		St::AlignItems => "center",
+		St::Border => "1px solid #23888e",
+		St::BorderRadius => rem(0.3),
+		St::BoxShadow => "2px 2px 2px rgba(35, 136, 142, 0.5)",
 	};
 	let s_name = style! {
 		St::Outline => "none",
@@ -159,18 +162,23 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		div![
 			s_column,
 			div![
-				s_status,
-				status
-			],
-			input![
-				C!("edit_album__name"),
-				s_name,
-				attrs! {
-					At::Value => model.album.name,
-					At::Placeholder => "Name",
-					At::MaxLength => 20,
-				},
-				input_ev(Ev::Blur, Msg::NameBlur),
+				s_info_ctn,
+				span![
+					s_status,
+					status
+				],
+				div![
+					s_infos,
+					input![
+						s_name,
+						attrs! {
+							At::Value => model.album.name,
+							At::Placeholder => "Name",
+							At::MaxLength => 20,
+						},
+						input_ev(Ev::Blur, Msg::NameBlur),
+					],
+				],	
 			],
 			label![
 				s_file_btn,
