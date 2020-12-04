@@ -70,7 +70,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			
 			model.status = Status::Saving;
 
-			let uri = format!("{0}new-album", API_URI);
+			let uri = format!("{0}edit-album", API_URI);
 			let request = Request::new(uri)
 				.method(Method::Post)
 				.header(Header::authorization(get_auth()))

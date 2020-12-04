@@ -1,7 +1,7 @@
 use seed::{self, prelude::*, *};
-use web_sys::{FileList, FileReader, Blob};
+use web_sys::FileList;
 
-use crate::utils::style::s_button;
+use crate::utils::{style::s_button, vars::API_URI, request::get_auth};
 
 
 // ------------
@@ -9,7 +9,17 @@ use crate::utils::style::s_button;
 // -----------
 
 #[derive(Default)]
-pub struct Model {}
+pub struct Model {
+	picture: Option<Picture>,
+}
+
+#[derive(serde::Serialize, Default)]
+pub struct Picture {
+	album_id: String,
+	order: i32,
+	caption: String,
+	data: String,
+}
 
 // ------------
 //    Update
@@ -17,23 +27,36 @@ pub struct Model {}
 
 pub enum Msg {
 	FilesChanged(Option<FileList>),
+	SetPic(Option<Picture>),
 }
 
-pub fn update(msg: Msg, _model: &mut Model, orders: &mut impl Orders<Msg>) {
+pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
 		Msg::FilesChanged(files_opt) => {
 			if let Some(files) = files_opt {
 				let file_opt = files.get(0);
 				if let Some(file) = file_opt {
 					orders.perform_cmd(async move {
+						let mut pic_opt: Option<Picture> = None;
 						let data_res = gloo_file::futures::read_as_data_url(&gloo_file::Blob::from(file.clone())).await;
 						if let Ok(data) = data_res {
 							log!(data);
+							let picture = Picture {
+								album_id: "6aPtAy9t1bQmcAnAex2nLV".to_string(),
+								order: 0,
+								caption: "plop".to_string(),
+								data: data,
+							};
+							pic_opt = Some(picture);
 						}
+						Msg::SetPic(pic_opt)
 					});
 					
 				}
 			}
+		},
+		Msg::SetPic(pic_opt) => {
+			model.picture = pic_opt;
 		}
 	}
 }
