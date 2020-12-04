@@ -19,6 +19,8 @@ seed = "0.8.0"
 serde = { version = "1.0.117", features = ["derive"] }
 base64 = "0.13.0"
 friendly_id = "0.3.0"
+web-sys = "0.3.46"
+gloo-file = "0.1.0"
 
 [profile.release]
 lto = true
