@@ -54,7 +54,7 @@ pub fn view(_model: &Model) -> Vec<Node<Msg>> {
 			s_btn,
 			s_button(),
 			C!("button"),
-            "Add pictures",
+            "Add picture",
             input![
                 s_input_file,
                 attrs! {
