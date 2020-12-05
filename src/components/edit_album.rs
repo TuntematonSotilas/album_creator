@@ -99,6 +99,14 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 		},
 		Msg::PicUpload(msg) => {
+			match msg {
+				pic_upload::Msg::SetUploadResult(ref pic_opt) => {
+					if let Some(picture) = pic_opt {
+						log!(picture.id);
+					}
+				},
+				_ => ()
+			}
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
 		}
 	}

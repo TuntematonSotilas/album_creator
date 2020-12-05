@@ -1,7 +1,14 @@
 use seed::{self, prelude::*, *};
 use web_sys::FileList;
 
-use crate::utils::{style::s_button, vars::API_URI, request::get_auth};
+use crate::{
+	models::picture::Picture,
+	utils::{
+		style::s_button, 
+		vars::API_URI, 
+		request::get_auth
+	}
+};
 
 
 // ------------
@@ -16,11 +23,9 @@ pub struct Model {
 	picture: Option<Picture>,
 }
 
-#[derive(serde::Serialize, Debug)]
-pub struct Picture {
-	album_id: String,
-	order: i32,
-	data: String,
+#[derive(serde::Deserialize)]
+pub struct PicInserted {
+	id: String,
 }
 
 // ------------
@@ -32,7 +37,8 @@ pub enum Msg {
 	FilesChanged(Option<FileList>),
 	SetPicData(Option<String>),
 	Post,
-	SetUploadStatus(bool),
+	Result(Option<String>),
+	SetUploadResult(Option<Picture>),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -61,6 +67,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			if let Some(data) = data_opt {
 				model.picture = Some(
 					Picture {
+						id: None,
 						album_id: model.album_id.clone(),
 						order: model.order,
 						data: data,
@@ -81,19 +88,28 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				.json(&model.picture);
 			
 			orders.perform_cmd(async {
-				let mut is_success = false;
+				let mut id_opt: Option<String> = None;
 				if let Ok(json) = request {
 					let result = fetch(json).await;
 					if let Ok(response) = result {
-						if let Ok(_) = response.check_status() {
-							is_success = true;
+						if let Ok(resp_ok) = response.check_status() {
+							let pic_inserted_res = resp_ok.json::<PicInserted>().await;
+							if let Ok(pic_inserted) = pic_inserted_res {
+								id_opt = Some(pic_inserted.id)
+							}
 						}
 					}
 				}
-				Msg::SetUploadStatus(is_success)
+				Msg::Result(id_opt)
 			});
 		},
-		Msg::SetUploadStatus(is_success) => (),
+		Msg::Result(id_opt, ) => {
+			if let Some(picture) = &mut model.picture {
+				picture.id = id_opt;
+				orders.send_msg(Msg::SetUploadResult(model.picture.clone())); 
+			}
+		},
+		Msg::SetUploadResult(_pic_opt) => {},
 	}
 }
 
