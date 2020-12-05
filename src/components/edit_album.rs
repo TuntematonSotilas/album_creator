@@ -94,6 +94,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				true => Status::Saved,
 				false => Status::Error,
 			};
+			if is_success {
+				pic_upload::update(pic_upload::Msg::Show(model.album.frid.clone(), 0), &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
+			}
 		},
 		Msg::PicUpload(msg) => {
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));

@@ -2,32 +2,32 @@ use seed::{self, prelude::*};
 
 use crate::components::album;
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct Album {
 	info: Info,
 	pictures: Vec<Picture>,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct Info {
     name: String,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct Picture {
 	#[serde(rename = "_id")]	
 	id: Id,
 	order: Order,
-    caption: String,
+    caption: Option<String>,
 }
 
-#[derive(serde::Deserialize)]	
+#[derive(serde::Deserialize, Debug)]	
 pub struct Id {	
 	#[serde(rename = "$oid")]	
 	value: String,	
 }
 
-#[derive(serde::Deserialize)]	
+#[derive(serde::Deserialize, Debug)]	
 pub struct Order {	
 	#[serde(rename = "$numberInt")]	
 	value: String,	

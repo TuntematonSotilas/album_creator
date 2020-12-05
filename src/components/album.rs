@@ -31,7 +31,7 @@ pub struct Album {
 pub struct Picture {
 	pub id: String,
 	pub order: i32,
-	pub caption: String,
+	pub caption: Option<String>,
 	pub data: Option<String>,
 	pub dom: bool,
 }
@@ -197,10 +197,12 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 								div![&s_loader, &s_loader_2 ],
 							]
 						},
-						span![
-							&s_caption,
-							&pic.caption
-						],
+						IF!(pic.caption.is_some() => 
+							span![
+								&s_caption,
+								pic.caption.clone().unwrap()
+							]
+						),
 					]),
 				],
 				IF!(album.pictures.len() > model.loaded => div![
