@@ -7,6 +7,7 @@ use crate::{
 	utils::{
 		vars::API_URI, 
 		request::get_auth,
+		serializer::ser_edit_album,
 	},
 };
 
@@ -20,10 +21,10 @@ pub struct Model {
 	pic_upload: pic_upload::Model,
 }
 
-#[derive(serde::Serialize, Default)]
-struct Album {
-	frid: String,
-	name: String,
+#[derive(Default, Clone)]
+pub struct Album {
+	pub frid: String,
+	pub name: String,
 }
 
 enum Status {
@@ -74,7 +75,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			let request = Request::new(uri)
 				.method(Method::Post)
 				.header(Header::authorization(get_auth()))
-				.json(&model.album);
+				.json(&ser_edit_album(model.album.clone()));
 			
 			orders.perform_cmd(async {
 				let mut is_success = false;

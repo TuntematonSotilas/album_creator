@@ -5,7 +5,7 @@ use crate::{
 		style::s_button,
 		request::get_auth, 
 		vars::API_URI, 
-		parser::{parse_album, parse_picture},
+		deserializer::{deser_album_det, deser_picture},
 	}
 };
 
@@ -62,7 +62,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 						.method(Method::Get)
 						.header(Header::authorization(get_auth()));
 					let result = fetch(request).await;
-					album_opt = parse_album(result).await;
+					album_opt = deser_album_det(result).await;
 				}
 				Msg::AlbumRecieved(album_opt)
 			});
@@ -96,7 +96,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					.method(Method::Get)
 					.header(Header::authorization(get_auth()));
 				let result = fetch(request).await;
-				let data_opt = parse_picture(result).await;
+				let data_opt = deser_picture(result).await;
 				Msg::PictureReceived(data_opt, id)
 			});
 		},

@@ -1,16 +1,20 @@
 use seed::{self, prelude::*};
 
-use crate::components::album;
+use crate::components::{
+	album,
+	album_list,
+};
 
 #[derive(serde::Deserialize, Debug)]
 pub struct Album {
-	info: Info,
+	info: AlbumInfo,
 	pictures: Vec<Picture>,
 }
 
 #[derive(serde::Deserialize, Debug)]
-pub struct Info {
-    name: String,
+pub struct AlbumInfo {
+	frid: String,
+	name: String,
 }
 
 #[derive(serde::Deserialize, Debug)]
@@ -33,12 +37,35 @@ pub struct Order {
 	value: String,	
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct PictureData {
 	data: String,
 }
 
-pub async fn parse_album(result: Result<Response, FetchError>) -> Option<album::Album> {
+#[derive(serde::Deserialize)]
+pub struct PicInserted {
+	id: String,
+}
+
+pub async fn deser_album_list(result: Result<Response, FetchError>) -> Option<Vec<album_list::Album>> {
+	let mut album_opt: Option<Vec<album_list::Album>> = None;
+	if let Ok(response) = result {
+		if let Ok(resp_ok) = response.check_status() {
+			let albums_res = resp_ok.json::<Vec<AlbumInfo>>().await;
+			if let Ok(albums) = albums_res {
+				let list = albums.into_iter().map(|a|
+					album_list::Album {
+						frid: a.frid,
+						name: a.name,
+					}).collect();
+				album_opt = Some(list);
+			}
+		}
+	}
+	album_opt
+}
+
+pub async fn deser_album_det(result: Result<Response, FetchError>) -> Option<album::Album> {
 	let mut album_opt: Option<album::Album> = None;
 	if let Ok(response) = result {
 		if let Ok(resp_ok) = response.check_status() {
@@ -66,7 +93,7 @@ pub async fn parse_album(result: Result<Response, FetchError>) -> Option<album::
     album_opt
 }
 
-pub async fn parse_picture(result: Result<Response, FetchError>) -> Option<String> {
+pub async fn deser_picture(result: Result<Response, FetchError>) -> Option<String> {
 	let mut data: Option<String> = None;
     if let Ok(response) = result {
 		if let Ok(resp_ok) = response.check_status() {
@@ -77,4 +104,17 @@ pub async fn parse_picture(result: Result<Response, FetchError>) -> Option<Strin
 		}
 	}
     data
+}
+
+pub async fn deser_upload_resp(result: Result<Response, FetchError>) -> Option<String> {
+	let mut id: Option<String> = None;
+    if let Ok(response) = result {
+		if let Ok(resp_ok) = response.check_status() {
+			let inserted_res = resp_ok.json::<PicInserted>().await;
+			if let Ok(inserted) = inserted_res {
+				id = Some(inserted.id)
+			}
+		}
+	}
+    id
 }

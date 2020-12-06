@@ -2,7 +2,8 @@ use seed::{self, prelude::*, *};
 
 use crate::utils::{
 	vars::API_URI,
-	request::get_auth
+	request::get_auth,
+	deserializer::deser_album_list,
 };
 
 // ------------
@@ -24,11 +25,9 @@ impl Model {
 	}
 }
 
-
-#[derive(serde::Deserialize)]
 pub struct Album {
-	frid: String,
-    name: String,
+	pub frid: String,
+    pub name: String,
 }
 
 // ------------
@@ -49,19 +48,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				let request = Request::new(uri)
                 	.method(Method::Get)
 					.header(Header::authorization(get_auth()));
-				let response_res = fetch(request).await;
-
-				let mut opt: Option<Vec<Album>> = None;
-
-				if let Ok(response) = response_res {
-					if let Ok(resp_ok) = response.check_status() {
-						let albums_res = resp_ok.json::<Vec<Album>>().await;
-						if let Ok(albums) = albums_res {
-							opt = Some(albums);
-						}
-					}
-				}	
-				Msg::Received(opt)
+				let result = fetch(request).await;
+				let album_opt = deser_album_list(result).await;
+				Msg::Received(album_opt)
             });
 		},
 		Msg::Received(albums) => {

@@ -1,4 +1,4 @@
-#[derive(serde::Serialize, Debug, Clone, Default)]
+#[derive(Clone, Default)]
 pub struct Picture {
 	pub id: Option<String>,
 	pub album_id: String,

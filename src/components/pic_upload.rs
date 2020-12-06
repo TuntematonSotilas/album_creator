@@ -6,7 +6,9 @@ use crate::{
 	utils::{
 		style::s_button, 
 		vars::API_URI, 
-		request::get_auth
+		request::get_auth,
+		deserializer::deser_upload_resp,
+		serializer::ser_new_picture,
 	}
 };
 
@@ -21,11 +23,6 @@ pub struct Model {
 	album_id: String,
 	order: i32,
 	picture: Option<Picture>,
-}
-
-#[derive(serde::Deserialize)]
-pub struct PicInserted {
-	id: String,
 }
 
 // ------------
@@ -79,29 +76,22 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Post => {
 			orders.skip(); // No need to rerender
 
-			//TODO : saving
-
-			let uri = format!("{0}new-picture", API_URI);
-			let request = Request::new(uri)
-				.method(Method::Post)
-				.header(Header::authorization(get_auth()))
-				.json(&model.picture);
-			
-			orders.perform_cmd(async {
-				let mut id_opt: Option<String> = None;
-				if let Ok(json) = request {
-					let result = fetch(json).await;
-					if let Ok(response) = result {
-						if let Ok(resp_ok) = response.check_status() {
-							let pic_inserted_res = resp_ok.json::<PicInserted>().await;
-							if let Ok(pic_inserted) = pic_inserted_res {
-								id_opt = Some(pic_inserted.id)
-							}
-						}
+			if let Some(picture) = model.picture.clone() {
+				let uri = format!("{0}new-picture", API_URI);
+				let request = Request::new(uri)
+					.method(Method::Post)
+					.header(Header::authorization(get_auth()))
+					.json(&ser_new_picture(picture));
+				
+				orders.perform_cmd(async {
+					let mut id_opt: Option<String> = None;
+					if let Ok(json) = request {
+						let result = fetch(json).await;
+						id_opt = deser_upload_resp(result).await;
 					}
-				}
-				Msg::Result(id_opt)
-			});
+					Msg::Result(id_opt)
+				});
+			}
 		},
 		Msg::Result(id_opt, ) => {
 			if let Some(picture) = &mut model.picture {
