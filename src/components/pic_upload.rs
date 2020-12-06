@@ -46,19 +46,22 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.order = order;
 		},
 		Msg::FilesChanged(files_opt) => {
-			if let Some(files) = files_opt {
-				let file_opt = files.get(0);
-				if let Some(file) = file_opt {
-					orders.perform_cmd(async move {
-						let mut data_opt: Option<String> = None;
+			orders.skip(); // No need to rerender
+
+			orders.perform_cmd(async move {
+				let mut data_opt: Option<String> = None;
+				if let Some(files) = files_opt {
+					let file_opt = files.get(0);	
+					if let Some(file) = file_opt {		
 						let data_res = gloo_file::futures::read_as_data_url(&gloo_file::Blob::from(file.clone())).await;
 						if let Ok(data) = data_res {
 							data_opt = Some(data);
 						}
-						Msg::SetPicData(data_opt)
-					});
+						
+					}
 				}
-			}
+				Msg::SetPicData(data_opt)
+			});
 		},
 		Msg::SetPicData(data_opt) => {
 			if let Some(data) = data_opt {
@@ -68,14 +71,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 						album_id: model.album_id.clone(),
 						order: model.order,
 						data: data,
+						caption: None,
 					}
 				);
 				orders.send_msg(Msg::Post);
 			}	
 		}
 		Msg::Post => {
-			orders.skip(); // No need to rerender
-
 			if let Some(picture) = model.picture.clone() {
 				let uri = format!("{0}new-picture", API_URI);
 				let request = Request::new(uri)

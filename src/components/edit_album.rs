@@ -9,6 +9,7 @@ use crate::{
 		request::get_auth,
 		serializer::ser_edit_album,
 	},
+	models::picture,
 };
 
 // ------------
@@ -25,6 +26,7 @@ pub struct Model {
 pub struct Album {
 	pub frid: String,
 	pub name: String,
+	pub pictures : Vec<picture::Picture>,
 }
 
 enum Status {
@@ -167,6 +169,15 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Background => "none",
 		St::TextAlign => "center",
 	};
+	let s_list = style! {
+
+	};
+	let s_list_item = style! {
+
+	};
+	let s_pic = style! {
+		St::MaxWidth => rem(2),
+	};
 	nodes![
 		div![
 			s_column,
@@ -190,6 +201,21 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				],
 			],
 			pic_upload::view(&model.pic_upload).map_msg(Msg::PicUpload),
+			ul![
+				s_list,
+				model.album.pictures.iter().map(|p| li![
+					&s_list_item,
+					img![
+						&s_pic,
+						attrs!{ At::Src => p.data }
+					],
+					IF!(p.caption.is_some() => 
+						span![
+							p.caption.clone().unwrap()
+						]
+					),
+				]),
+			],
 		],
 	]
 }

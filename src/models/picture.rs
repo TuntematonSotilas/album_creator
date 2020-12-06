@@ -4,4 +4,5 @@ pub struct Picture {
 	pub album_id: String,
 	pub order: i32,
 	pub data: String,
+	pub caption: Option<String>,
 }
