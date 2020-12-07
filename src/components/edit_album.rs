@@ -221,7 +221,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					if let Some(cap) = p.caption.clone() {
 						caption = cap;
 					};
-					let mut id = p.id.clone();
+					let id = p.id.clone();
 					li![
 						img![
 							&s_pic,
@@ -231,7 +231,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							attrs! {
 								At::Value => caption,
 								At::Placeholder => "Caption",
-								At::Disabled =>  p.id.is_none(),
+								At::Disabled => p.id.is_none().as_at_value(),
 							},
 							input_ev(Ev::Blur, |value| Msg::CaptionBlur(id, value)),
 						],
