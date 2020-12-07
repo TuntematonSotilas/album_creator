@@ -34,8 +34,8 @@ pub enum Msg {
 	FilesChanged(Option<FileList>),
 	SetPicData(Option<String>),
 	Post,
-	Result(Option<String>),
-	SetUploadResult(Option<Picture>),
+	BeginUpload(Option<Picture>),
+	EndUpload(Option<String>),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -74,6 +74,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 						caption: None,
 					}
 				);
+				orders.send_msg(Msg::BeginUpload(model.picture.clone()));
 				orders.send_msg(Msg::Post);
 			}	
 		}
@@ -91,17 +92,12 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 						let result = fetch(json).await;
 						id_opt = deser_upload_resp(result).await;
 					}
-					Msg::Result(id_opt)
+					Msg::EndUpload(id_opt)
 				});
 			}
 		},
-		Msg::Result(id_opt, ) => {
-			if let Some(picture) = &mut model.picture {
-				picture.id = id_opt;
-				orders.send_msg(Msg::SetUploadResult(model.picture.clone())); 
-			}
-		},
-		Msg::SetUploadResult(_pic_opt) => {},
+		Msg::BeginUpload(_pic_opt) => (),
+		Msg::EndUpload(_pic_opt) => (),
 	}
 }
 

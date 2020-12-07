@@ -55,6 +55,7 @@ pub enum Msg {
 	Post,
 	SetStatus(bool),
 	PicUpload(pic_upload::Msg),
+	CaptionBlur(Option<String>, String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -103,14 +104,26 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::PicUpload(msg) => {
 			match msg {
-				pic_upload::Msg::SetUploadResult(ref pic_opt) => {
+				pic_upload::Msg::BeginUpload(ref pic_opt) => {
 					if let Some(picture) = pic_opt.clone() {
 						model.album.pictures.push(picture);
 					}
 				},
+				pic_upload::Msg::EndUpload(ref id_opt) => {
+					log!("EndUpload",id_opt);
+					model.album.pictures.iter_mut()
+						.filter(|p| p.id == None)
+						.for_each(|p| p.id = id_opt.clone());
+				},
 				_ => ()
 			}
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
+		},
+		Msg::CaptionBlur(pic_id, caption) => {
+			log!(pic_id, caption);
+			model.album.pictures.iter_mut()
+				.filter(|p| p.id == pic_id)
+				.for_each(|p| p.caption = Some(caption.clone()));
 		}
 	}
 }
@@ -170,13 +183,14 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::TextAlign => "center",
 	};
 	let s_list = style! {
-
-	};
-	let s_list_item = style! {
-
+		St::ListStyle => "none",
+		St::Padding => 0,
+		St::Display => "flex",
+		St::FlexDirection => "column",
+		St::Width => vw(90),
 	};
 	let s_pic = style! {
-		St::MaxWidth => rem(2),
+		St::MaxWidth => rem(6),
 	};
 	nodes![
 		div![
@@ -200,22 +214,31 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					],
 				],
 			],
-			pic_upload::view(&model.pic_upload).map_msg(Msg::PicUpload),
 			ul![
 				s_list,
-				model.album.pictures.iter().map(|p| li![
-					&s_list_item,
-					img![
-						&s_pic,
-						attrs!{ At::Src => p.data }
-					],
-					IF!(p.caption.is_some() => 
-						span![
-							p.caption.clone().unwrap()
-						]
-					),
-				]),
+				model.album.pictures.iter().map(|p| {
+					let mut caption = String::new();
+					if let Some(cap) = p.caption.clone() {
+						caption = cap;
+					};
+					let mut id = p.id.clone();
+					li![
+						img![
+							&s_pic,
+							attrs!{ At::Src => p.data }
+						],
+						input![
+							attrs! {
+								At::Value => caption,
+								At::Placeholder => "Caption",
+								At::Disabled =>  p.id.is_none(),
+							},
+							input_ev(Ev::Blur, |value| Msg::CaptionBlur(id, value)),
+						],
+					]
+				}),
 			],
+			pic_upload::view(&model.pic_upload).map_msg(Msg::PicUpload),
 		],
 	]
 }
