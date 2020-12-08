@@ -1,12 +1,17 @@
-.album_list:link, .album_list:visited, .album_list:hover, .album_list:active {
+.album_list__album:link, .album_list__album:visited, .album_list__album:hover, .album_list__album:active {
 	text-decoration: none;
 }
 
-.album_list {
+.album_list__album {
 	box-shadow: 3px 3px 10px 0px #363062;
 }
 
-.album_list:hover {
+.album_list__album:hover {
 	transform: rotateY(-28deg) rotateZ(-2deg) scale(1.02);
-	box-shadow: 0.3rem 0.2rem 0.5rem #db6d92, 1rem 0.4rem 0 #f9b0c9
+	box-shadow: 0.3rem 0.2rem 0.5rem #db6d92, 1rem 0.4rem 0 #f9b0c9;
+}
+
+.album_list__delete:hover {
+	text-decoration: underline;
+	cursor: pointer;
 }

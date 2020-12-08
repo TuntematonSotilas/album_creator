@@ -79,6 +79,10 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FlexFlow => "row wrap",
 		St::JustifyContent => "center",
 	};
+	let s_album_ctn = style! {
+		St::Display => "flex",
+		St::FlexDirection => "column",
+	};
 	let s_album = style! {
 		St::Margin => rem(1),
 		St::Width => rem(6),
@@ -89,9 +93,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Display => "flex",
 		St::JustifyContent => "center",
 	};
-	
 	let s_album_name = style! {
-		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
 		St::Color => "white",
 		St::FontSize => rem(0.8),
 		St::MarginTop => rem(1),
@@ -105,6 +108,12 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Background => "linear-gradient(to right, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.5) 150%)",
 		St::MarginLeft => rem(-5.5),
 	};
+	let s_delete = style! {
+		St::FontSize => rem(0.8),
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+		St::TextAlign => "center",
+		St::MarginTop => rem(-0.7),
+	};
 	nodes![
 		h1![
 			s_title,
@@ -113,18 +122,29 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		match &model.albums {
 			Some(albums) => div![
 				s_albums_list,
-				albums.iter().map(|album| a![
-					div![&s_album_border],
-					C!("album_list"),
-					&s_album,
-					attrs! { 
-						At::Id	=> album.frid,
-						At::Href => model.base_url.clone().add_path_part("album").add_path_part(&album.frid), 
-					},
-					span![
-						&s_album_name,
-						&album.name]
-				],)
+				albums.iter().map(|album| 
+					div![
+						&s_album_ctn,
+						a![
+							div![&s_album_border],
+							C!("album_list__album"),
+							&s_album,
+							attrs! { 
+								At::Id	=> album.frid,
+								At::Href => model.base_url.clone().add_path_part("album").add_path_part(&album.frid), 
+							},
+							span![
+								&s_album_name,
+								&album.name
+							]
+						],
+						span![
+							C!("album_list__delete"),
+							&s_delete,
+							"delete"
+						],
+					]
+				)
 			],
 			None => div![
 				s_no_albums,
