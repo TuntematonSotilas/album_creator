@@ -6,3 +6,4 @@ pub mod album_list;
 pub mod edit_album;
 pub mod album;
 pub mod pic_upload;
+pub mod confirm;

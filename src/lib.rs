@@ -8,6 +8,7 @@ use crate::components::{
 	album_list,
 	edit_album,
 	album,
+	confirm,
 };
 use crate::models::toast::Toast;
 
@@ -34,6 +35,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         page: Page::init(url),
 		is_auth: false,
 		id_url: None,
+		confirm: confirm::Model::default(),
     }
 }
 
@@ -53,6 +55,7 @@ struct Model {
     page: Page,
 	is_auth: bool,
 	id_url: Option<String>,
+	confirm: confirm::Model,
 }
 
 #[derive(Copy, Clone)]
@@ -93,6 +96,8 @@ enum Msg {
 	UrlChanged(subs::UrlChanged),
 	SetUrl,
 	LoadPage,
+	Confirm(confirm::Msg),
+	ShowConfirm(String),
 }
 
 // `update` describes how to handle each `Msg`.
@@ -162,6 +167,12 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             toast::update(toast::Msg::Show(toast), &mut model.toast, &mut orders.proxy(Msg::Toast));
         },
         Msg::AlbumList(msg) => {
+			match msg {
+				album_list::Msg::ShowConfirm(ref message) => {
+					orders.send_msg(Msg::ShowConfirm(message.clone()));
+				},
+				_ => (),
+			}
 			album_list::update(msg, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
         },
         Msg::EditAlbum(msg) => {
@@ -169,7 +180,13 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::Album(msg) => {
 			album::update(msg, &mut model.album, &mut orders.proxy(Msg::Album));
-        },
+		},
+		Msg::Confirm(msg) => {
+			confirm::update(msg, &mut model.confirm, &mut orders.proxy(Msg::Confirm));
+		},
+		Msg::ShowConfirm(message) => {
+			confirm::update(confirm::Msg::Show(message), &mut model.confirm, &mut orders.proxy(Msg::Confirm));
+		}
     }
 }
 

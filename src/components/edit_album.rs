@@ -63,7 +63,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Show => {
 			model.status = Status::New;
 			model.album.frid = friendly_id::create();
-			model.album.name = "New Album".to_string();
+			model.album.name = "New Album".into();
 		},
 		Msg::NameBlur(name) => {
 			model.album.name = name;
@@ -133,19 +133,19 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
-	let (status, color) = match model.status {
+	let (status, color): (String, String) = match model.status {
 		Status::New => (
-			"NEW".to_string(),
-			"#0396ff".to_string()),
+			"NEW".into(),
+			"#0396ff".into()),
 		Status::Saving => (
-			"SAVING".to_string(),
-			"#788d95".to_string()),
+			"SAVING".into(),
+			"#788d95".into()),
 		Status::Saved => (
-			"SAVED".to_string(), 
-			"#0ad406".to_string()),
+			"SAVED".into(), 
+			"#0ad406".into()),
 		Status::Error => (
-			"ERROR".to_string(), 
-			"#794242".to_string()),
+			"ERROR".into(), 
+			"#794242".into()),
 	};
 	let s_status = style! {
 		St::Color => color,

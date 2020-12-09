@@ -45,8 +45,8 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 orders.send_msg(Msg::ShowToast(
                     Toast { 
                         is_visible: true,
-                        title: Some("Login failed !".to_string()),
-                        content: Some("Try again.".to_string()),
+                        title: Some("Login failed !".into()),
+                        content: Some("Try again.".into()),
                     }));
             }
         },

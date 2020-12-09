@@ -37,6 +37,8 @@ pub struct Album {
 pub enum Msg {
 	Show,
 	Received(Option<Vec<Album>>),
+	ShowConfirm(String),
+	AskDelete(String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -55,7 +57,11 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::Received(albums) => {
 			model.albums = albums;
-        }
+		},
+		Msg::ShowConfirm(msg) => (),
+		Msg::AskDelete(frid) => {
+			Msg::ShowConfirm("Delete album ?".into());
+		},
 	}
 }
 
@@ -122,7 +128,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		match &model.albums {
 			Some(albums) => div![
 				s_albums_list,
-				albums.iter().map(|album| 
+				albums.iter().map(|album| {
+					let frid = album.frid.clone();
+
 					div![
 						&s_album_ctn,
 						a![
@@ -141,10 +149,11 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 						span![
 							C!("album_list__delete"),
 							&s_delete,
-							"delete"
+							"delete",
+							ev(Ev::Click, |_| Msg::AskDelete(frid)),
 						],
 					]
-				)
+				})
 			],
 			None => div![
 				s_no_albums,
