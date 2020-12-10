@@ -64,6 +64,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.status = Status::New;
 			model.album.frid = friendly_id::create();
 			model.album.name = "New Album".into();
+			model.album.pictures = Vec::new();
 		},
 		Msg::NameBlur(name) => {
 			model.album.name = name;
