@@ -169,6 +169,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::AlbumList(msg) => {
 			match msg {
 				album_list::Msg::ShowConfirm(ref message) => {
+					log!("ShowConfirm");
 					orders.send_msg(Msg::ShowConfirm(message.clone()));
 				},
 				_ => (),
@@ -206,7 +207,7 @@ fn view(model: &Model) -> Node<Msg> {
 
     div![style,
 		toast::view(&model.toast).map_msg(Msg::Toast),
-		
+		confirm::view(&model.confirm).map_msg(Msg::Confirm),
 		match &model.page {
 			Page::Login => login::view(&model.login).map_msg(Msg::Login),
 			_ => nodes![

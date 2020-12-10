@@ -58,9 +58,10 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Received(albums) => {
 			model.albums = albums;
 		},
-		Msg::ShowConfirm(msg) => (),
-		Msg::AskDelete(frid) => {
-			Msg::ShowConfirm("Delete album ?".into());
+		Msg::ShowConfirm(_msg) => (),
+		Msg::AskDelete(_frid) => {
+			log!("AskDelete");
+			orders.send_msg(Msg::ShowConfirm("Delete album ?".into()));
 		},
 	}
 }

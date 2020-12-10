@@ -34,15 +34,21 @@ pub fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
     let s_confirm = style!{
         St::Position => "fixed",
-        St::Background => "rgba(0, 0, 0, 0.3)",
-        St::Transition => "opacity 200ms ease-out",
+        St::Background => "rgba(0, 0, 0, 0.5)",
+        St::Transition => "opacity 400ms ease-out",
+        St::Width => percent(100),
+        St::Height => percent(100),
+        St::AlignItems => "center",
+        St::JustifyContent => "center",
     };
 	let s_anim = match model.is_visible {
 		true => style! {
-			St::Opacity => 1
+            St::Opacity => 1
+            St::Display => "flex",
 		},
 		false => style! {
-			St::Opacity => 0
+            St::Opacity => 0,
+            St::Display => "none",
 		},
 	};
     nodes![
