@@ -169,7 +169,6 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::AlbumList(msg) => {
 			match msg {
 				album_list::Msg::ShowConfirm(ref message) => {
-					log!("ShowConfirm");
 					orders.send_msg(Msg::ShowConfirm(message.clone()));
 				},
 				_ => (),
@@ -183,6 +182,12 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			album::update(msg, &mut model.album, &mut orders.proxy(Msg::Album));
 		},
 		Msg::Confirm(msg) => {
+			match msg {
+				confirm::Msg::Ok => {
+					album_list::update(album_list::Msg::Delete, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
+				},
+				_ => (),
+			}
 			confirm::update(msg, &mut model.confirm, &mut orders.proxy(Msg::Confirm));
 		},
 		Msg::ShowConfirm(message) => {

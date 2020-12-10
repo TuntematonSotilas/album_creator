@@ -110,7 +110,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					}
 				},
 				pic_upload::Msg::EndUpload(ref id_opt) => {
-					log!("EndUpload",id_opt);
 					model.album.pictures.iter_mut()
 						.filter(|p| p.id == None)
 						.for_each(|p| p.id = id_opt.clone());
@@ -120,7 +119,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
 		},
 		Msg::CaptionBlur(pic_id, caption) => {
-			log!(pic_id, caption);
 			model.album.pictures.iter_mut()
 				.filter(|p| p.id == pic_id)
 				.for_each(|p| p.caption = Some(caption.clone()));

@@ -14,6 +14,7 @@ use crate::utils::{
 pub struct Model {
 	albums: Option<Vec<Album>>,
 	base_url: Url,
+	frid_to_delete: Option<String>,
 }
 
 impl Model {
@@ -21,6 +22,7 @@ impl Model {
 		Model {
 			albums: None,
 			base_url: url.to_base_url(),
+			frid_to_delete: None
 		}
 	}
 }
@@ -39,6 +41,8 @@ pub enum Msg {
 	Received(Option<Vec<Album>>),
 	ShowConfirm(String),
 	AskDelete(String),
+	Delete,
+	DeleteResp(bool),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -59,9 +63,31 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.albums = albums;
 		},
 		Msg::ShowConfirm(_msg) => (),
-		Msg::AskDelete(_frid) => {
-			log!("AskDelete");
+		Msg::AskDelete(frid) => {
+			model.frid_to_delete = Some(frid);
 			orders.send_msg(Msg::ShowConfirm("Delete album ?".into()));
+		},
+		Msg::Delete => {
+			orders.skip(); // No need to rerender
+			if let Some(frid) = &model.frid_to_delete {	
+				let uri = format!("{0}delete-album?id={1}", API_URI, frid);	
+				let mut is_ok = false;
+				orders.perform_cmd(async move {
+					let request = Request::new(uri)
+						.method(Method::Delete)
+						.header(Header::authorization(get_auth()));
+					let result = fetch(request).await;
+					if let Ok(response) = result {
+						if response.check_status().is_ok() {
+							is_ok = true;
+						}
+					}
+					Msg::DeleteResp(is_ok)
+				});
+			}
+		},
+		Msg::DeleteResp(is_ok) => {
+			log!("DeleteResp", is_ok);
 		},
 	}
 }

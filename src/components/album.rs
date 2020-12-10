@@ -130,6 +130,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Display => "flex",
 		St::FlexFlow => "row wrap",
 		St::AlignItems => "center",
+		St::FontSize => rem(0.8),
 	};
 	let s_pic = style! {
 		St::Display => "flex",
