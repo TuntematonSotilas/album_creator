@@ -51,6 +51,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::AlignItems => "center",
         St::JustifyContent => "center",
 		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+		St::ZIndex => 1,
     };
     let s_modal = style! {
 		St::Display => "flex",
