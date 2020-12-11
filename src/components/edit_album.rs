@@ -45,6 +45,7 @@ impl Model {
 		}
 	}
 }
+
 // ------------
 //    Update
 // ------------
@@ -56,6 +57,7 @@ pub enum Msg {
 	SetStatus(bool),
 	PicUpload(pic_upload::Msg),
 	CaptionBlur(Option<String>, String),
+	EditPicture(picture::Picture),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -123,7 +125,22 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.album.pictures.iter_mut()
 				.filter(|p| p.id == pic_id)
 				.for_each(|p| p.caption = Some(caption.clone()));
-		}
+		},
+		Msg::EditPicture(picture) => {
+			/*if let Some(picture) = &model.picture {
+				let uri = format!("{0}edit-picture", API_URI);
+				let request = Request::new(uri)
+					.method(Method::Post)
+					.header(Header::authorization(get_auth()))
+					.json(&ser_new_picture(picture.clone()));
+				
+				orders.perform_cmd(async {
+					if let Ok(json) = request {
+						let result = fetch(json).await;
+					}
+				});
+			}*/
+		},
 	}
 }
 
