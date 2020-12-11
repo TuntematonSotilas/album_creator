@@ -26,9 +26,9 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
     Model {
         login: login::Model::default(),
         toast: toast::Model::default(),
-        menu: menu::Model::new(url.clone()),
-		header: header::Model::new(url.clone()),
-		album_list: album_list::Model::new(url.clone()),
+        menu: menu::Model::new(&url),
+		header: header::Model::new(&url),
+		album_list: album_list::Model::new(&url),
 		edit_album: edit_album::Model::new(),
 		album: album::Model::default(),
         base_url: url.to_base_url(),

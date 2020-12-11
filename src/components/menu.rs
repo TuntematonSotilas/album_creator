@@ -11,7 +11,7 @@ pub struct Model {
 }
 
 impl Model {
-	pub fn new(url: Url) -> Self {
+	pub fn new(url: &Url) -> Self {
 		Model {
 			anim: false,
 			base_url: url.to_base_url(),

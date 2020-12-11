@@ -18,7 +18,7 @@ pub struct Model {
 }
 
 impl Model {
-	pub fn new(url: Url) -> Self {
+	pub fn new(url: &Url) -> Self {
 		Model {
 			albums: None,
 			base_url: url.to_base_url(),
