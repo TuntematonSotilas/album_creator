@@ -80,7 +80,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		}
 		Msg::Post => {
 			if let Some(picture) = &model.picture {
-				let uri = format!("{0}new-picture", API_URI);
+				let uri = format!("{0}edit-picture", API_URI);
 				let request = Request::new(uri)
 					.method(Method::Post)
 					.header(Header::authorization(get_auth()))
