@@ -80,11 +80,10 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					.for_each(|p| p.dom = true);
 				model.loaded += MAX_LOAD;
 				//Load pictures
-				album.pictures.clone()
-					.into_iter()
+				album.pictures.iter()
 					.filter(|p| p.dom)
 					.for_each(|p| {
-						orders.send_msg(Msg::GetPicture(p.id));
+						orders.send_msg(Msg::GetPicture(p.id.clone()));
 					});
 			}
 		},

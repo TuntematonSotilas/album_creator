@@ -79,12 +79,12 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}	
 		}
 		Msg::Post => {
-			if let Some(picture) = model.picture.clone() {
+			if let Some(picture) = &model.picture {
 				let uri = format!("{0}new-picture", API_URI);
 				let request = Request::new(uri)
 					.method(Method::Post)
 					.header(Header::authorization(get_auth()))
-					.json(&ser_new_picture(picture));
+					.json(&ser_new_picture(picture.clone()));
 				
 				orders.perform_cmd(async {
 					let mut id_opt: Option<String> = None;

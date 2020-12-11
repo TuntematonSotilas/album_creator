@@ -125,7 +125,6 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Page::NewAlbum => "new",
 				_ => "login",
 			};
-			//
 			model.base_url.clone().add_path_part(path_part)
 				.go_and_push();
 		},
