@@ -8,7 +8,7 @@ use crate::{
 		vars::API_URI, 
 		request::get_auth,
 		deserializer::deser_upload_resp,
-		serializer::ser_new_picture,
+		serializer::ser_edit_picture,
 	}
 };
 
@@ -84,7 +84,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				let request = Request::new(uri)
 					.method(Method::Post)
 					.header(Header::authorization(get_auth()))
-					.json(&ser_new_picture(picture.clone()));
+					.json(&ser_edit_picture(picture.clone()));
 				
 				orders.perform_cmd(async {
 					let mut id_opt: Option<String> = None;

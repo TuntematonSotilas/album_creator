@@ -7,7 +7,7 @@ use crate::{
 	utils::{
 		vars::API_URI, 
 		request::get_auth,
-		serializer::ser_edit_album,
+		serializer::{ser_edit_album, ser_edit_picture}
 	},
 	models::picture,
 };
@@ -122,24 +122,39 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
 		},
 		Msg::CaptionBlur(pic_id, caption) => {
-			model.album.pictures.iter_mut()
-				.filter(|p| p.id == pic_id)
-				.for_each(|p| p.caption = Some(caption.clone()));
+			let pictures = model.album.pictures
+				.iter_mut()
+				.find(|p| p.id == pic_id);
+	
+			if let Some(picture) = pictures
+			{
+				picture.caption = Some(caption.clone());
+				orders.send_msg(Msg::EditPicture(picture.clone()));
+			};
 		},
 		Msg::EditPicture(picture) => {
-			/*if let Some(picture) = &model.picture {
-				let uri = format!("{0}edit-picture", API_URI);
-				let request = Request::new(uri)
-					.method(Method::Post)
-					.header(Header::authorization(get_auth()))
-					.json(&ser_new_picture(picture.clone()));
-				
-				orders.perform_cmd(async {
-					if let Ok(json) = request {
-						let result = fetch(json).await;
+			orders.skip(); // No need to rerender
+
+			model.status = Status::Saving;
+
+			let uri = format!("{0}edit-picture", API_URI);
+			let request = Request::new(uri)
+				.method(Method::Post)
+				.header(Header::authorization(get_auth()))
+				.json(&ser_edit_picture(picture.clone()));
+			
+			orders.perform_cmd(async {
+				let mut is_ok = false;
+				if let Ok(json) = request {
+					let result = fetch(json).await;
+					if let Ok(response) = result {
+						if response.check_status().is_ok() {
+							is_ok = true;
+						}
 					}
-				});
-			}*/
+				}
+				Msg::SetStatus(is_ok)
+			});
 		},
 	}
 }

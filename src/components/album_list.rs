@@ -49,7 +49,8 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
         Msg::Show => {
 			orders.skip(); // No need to rerender
-            orders.perform_cmd(async {
+			
+			orders.perform_cmd(async {
 				let uri = format!("{0}get-albums", API_URI);
 				let request = Request::new(uri)
                 	.method(Method::Get)
