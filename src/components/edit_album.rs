@@ -220,8 +220,23 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FlexDirection => "column",
 		St::Width => vw(90),
 	};
+	let s_line = style ! {
+		St::Display => "flex",
+		St::AlignItems => "center",
+		St::Border => "1px solid #23888e",
+		St::BorderRadius => rem(0.3),
+		St::BoxShadow => "2px 2px 2px rgba(35, 136, 142, 0.5)",
+	};
 	let s_pic = style! {
 		St::MaxWidth => rem(6),
+	};
+	let s_caption = style! {
+		St::Outline => "none",
+		St::FontSize => rem(0.8),
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+		St::Border => "none",
+		St::Background => "none",
+		St::TextAlign => "center",
 	};
 	nodes![
 		div![
@@ -254,11 +269,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					};
 					let id = p.id.clone();
 					li![
+						&s_line,
 						img![
 							&s_pic,
 							attrs!{ At::Src => p.data }
 						],
 						input![
+							&s_caption,
 							attrs! {
 								At::Value => caption,
 								At::Placeholder => "Caption",
