@@ -203,6 +203,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Border => "1px solid #23888e",
 		St::BorderRadius => rem(0.3),
 		St::BoxShadow => "2px 2px 2px rgba(35, 136, 142, 0.5)",
+		St::Padding => rem(0.5),
 	};
 	let s_name = style! {
 		St::Outline => "none",
@@ -223,9 +224,10 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_line = style ! {
 		St::Display => "flex",
 		St::AlignItems => "center",
-		St::Border => "1px solid #23888e",
+		St::Border => "1px solid #2a86aa",
 		St::BorderRadius => rem(0.3),
-		St::BoxShadow => "2px 2px 2px rgba(35, 136, 142, 0.5)",
+		St::BoxShadow => "2px 2px 2px rgba(42, 134, 170, 0.5)",
+		St::Padding => rem(0.5),
 	};
 	let s_pic = style! {
 		St::MaxWidth => rem(6),
@@ -237,6 +239,10 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Border => "none",
 		St::Background => "none",
 		St::TextAlign => "center",
+		St::BackgroundColor => "rgba(255, 255, 255, 0.3)",
+		St::Height => rem(2),
+		St::BorderRadius => rem(0.2),
+		St::MarginLeft => rem(2),
 	};
 	nodes![
 		div![
