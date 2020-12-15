@@ -224,9 +224,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_line = style ! {
 		St::Display => "flex",
 		St::AlignItems => "center",
-		St::Border => "1px solid #2a86aa",
 		St::BorderRadius => rem(0.3),
-		St::BoxShadow => "2px 2px 2px rgba(42, 134, 170, 0.5)",
+		St::Background => "linear-gradient(rgba(0,0,0,0) 60%, rgba(255, 255, 255, 0.2))",
 		St::Padding => rem(0.5),
 	};
 	let s_pic = style! {
