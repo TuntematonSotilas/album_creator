@@ -20,6 +20,7 @@ pub struct Model {
 	album: Album,
 	status: Status,
 	pic_upload: pic_upload::Model,
+	focus: bool,
 }
 
 #[derive(Default, Clone)]
@@ -42,6 +43,7 @@ impl Model {
 			album: Album::default(),
 			status: Status::New,
 			pic_upload: pic_upload::Model::default(),
+			focus: false,
 		}
 	}
 }
@@ -58,6 +60,7 @@ pub enum Msg {
 	PicUpload(pic_upload::Msg),
 	CaptionBlur(Option<String>, String),
 	EditPicture(picture::Picture),
+	SetFocus,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -156,6 +159,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Msg::SetStatus(is_ok)
 			});
 		},
+		Msg::SetFocus => model.focus = true,
 	}
 }
 
@@ -196,7 +200,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_info_ctn = style! {
 		St::Width => vw(90),
 	};
-	let s_infos = style! {
+	let s_panel_info = style! {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 		St::AlignItems => "center",
@@ -205,14 +209,16 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::BoxShadow => "2px 2px 2px rgba(35, 136, 142, 0.5)",
 		St::Padding => rem(0.5),
 	};
-	let s_name = style! {
+	let s_name_label = style! {
+		St::Position => "relative",
+	};
+	let s_name_label_anin = match model.focus {
+		true => style! { St::Top => rem(0) },
+		false => style! { St::Top => rem(1.8) }
+	};
+	let s_name_input = style! {
+		St::Display => "block",
 		St::Outline => "none",
-		St::FontSize => rem(2),
-		St::LetterSpacing => rem(0.1),
-		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
-		St::Border => "none",
-		St::Background => "none",
-		St::TextAlign => "center",
 	};
 	let s_list = style! {
 		St::ListStyle => "none",
@@ -243,6 +249,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::BorderRadius => rem(0.2),
 		St::MarginLeft => rem(2),
 	};
+	
 	nodes![
 		div![
 			s_column,
@@ -253,15 +260,22 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					status
 				],
 				div![
-					s_infos,
-					input![
-						s_name,
-						attrs! {
-							At::Value => model.album.name,
-							At::Placeholder => "Name",
-							At::MaxLength => 20,
-						},
-						input_ev(Ev::Blur, Msg::NameBlur),
+					s_panel_info,
+					div![
+						label![
+							s_name_label,
+							s_name_label_anin,
+							"Name",
+						],
+						input![
+							s_name_input,
+							attrs! {
+								At::Value => model.album.name,
+								At::MaxLength => 20,
+							},
+							input_ev(Ev::Blur, Msg::NameBlur),
+							input_ev(Ev::Focus, |_| Msg::SetFocus),
+						],
 					],
 				],
 			],
