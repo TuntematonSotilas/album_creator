@@ -1,7 +1,5 @@
 use seed::{self, prelude::*, *};
 
-use crate::utils::style::s_button;
-
 // ------------
 //     Model
 // -----------
@@ -50,8 +48,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
         St::Height => percent(100),
         St::AlignItems => "center",
         St::JustifyContent => "center",
-		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
 		St::ZIndex => 1,
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
     };
     let s_modal = style! {
 		St::Display => "flex",
@@ -73,12 +71,28 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             St::Display => "none",
 		},
 	};
-	let s_buttons = style! {
-		St::MarginTop => rem(1),
-		St::Display => "flex",
+	let s_message = style! {
+		St::FlexGrow => 1,
+		St::MarginTop => percent(18),
 	};
-	let s_separator = style! {
-		St::Width => rem(2);
+	let s_buttons = style! {
+		St::Display => "flex",
+		St::Width => percent(100),
+	};
+	let s_button = style! {
+		St::Background => "none",
+		St::Border => "none",
+		St::Width => percent(100),
+		St::Height => rem(2.5),
+		St::Cursor => "pointer",
+	};
+	let s_yes = style! {
+		St::Background => "#fc7169",
+		St::BorderRadius => "0 0 0 0.2rem",
+	};
+	let s_no = style! {
+		St::Background => "#b6bece",
+		St::BorderRadius => "0 0 0.2rem 0",
 	};
     nodes![
         div![
@@ -86,22 +100,25 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             s_anim,
             div![
                 s_modal,
-				span![
-					&model.message],
+				div![
+					s_message,
+					&model.message
+				],
 				div![
 					s_buttons,
 					button![
-						"No",
-						C!("button"),
-						s_button(),
-						ev(Ev::Click, |_| Msg::Close),
-					],
-					span![s_separator],
-					button![
-						"Yes",
-						C!("button"),
-						s_button(),
+						C!("confirm__yes"),
+						&s_button,
+						s_yes,
+						"YES",
 						ev(Ev::Click, |_| Msg::Ok),
+					],
+					button![
+						C!("confirm__no"),
+						&s_button,
+						s_no,
+						"NO",
+						ev(Ev::Click, |_| Msg::Close),
 					],
 				]
             ],

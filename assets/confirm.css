@@ -1,0 +1,6 @@
+.confirm__yes:hover {
+    background: #ff5e55 !important;
+}
+.confirm__no:hover {
+    background: #c9d1e1 !important;
+}
