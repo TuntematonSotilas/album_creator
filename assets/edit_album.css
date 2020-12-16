@@ -1,0 +1,3 @@
+.edit_album__name_input:focus ~ label {
+    top: -1rem !important;
+}

@@ -207,11 +207,20 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_name_label = style! {
 		St::Position => "relative",
-		St::Top => rem(1.8),
+		St::Top => rem(0),
 	};
 	let s_name_input = style! {
 		St::Display => "block",
 		St::Outline => "none",
+		St::Background => "none",
+		St::FontSize => rem(1.5),
+		St::LetterSpacing => rem(0.1),
+		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
+		St::TextAlign => "center",
+		St::Border => "solid 1px #00587a",
+		St::BorderTop => "none",
+		St::BorderLeft => "none",
+		St::BorderRight => "none",
 	};
 	let s_list = style! {
 		St::ListStyle => "none",
@@ -255,17 +264,19 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				div![
 					s_panel_info,
 					div![
-						label![
-							s_name_label,
-							"Name",
-						],
 						input![
+							C!("edit_album__name_input"),
 							s_name_input,
 							attrs! {
 								At::Value => model.album.name,
 								At::MaxLength => 20,
 							},
 							input_ev(Ev::Blur, Msg::NameBlur),
+						],
+						label![
+							C!("edit_album__name_label"),
+							s_name_label,
+							"Name",
 						],
 					],
 				],
