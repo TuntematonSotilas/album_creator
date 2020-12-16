@@ -20,7 +20,6 @@ pub struct Model {
 	album: Album,
 	status: Status,
 	pic_upload: pic_upload::Model,
-	focus: bool,
 }
 
 #[derive(Default, Clone)]
@@ -43,7 +42,6 @@ impl Model {
 			album: Album::default(),
 			status: Status::New,
 			pic_upload: pic_upload::Model::default(),
-			focus: false,
 		}
 	}
 }
@@ -60,7 +58,6 @@ pub enum Msg {
 	PicUpload(pic_upload::Msg),
 	CaptionBlur(Option<String>, String),
 	EditPicture(picture::Picture),
-	SetFocus,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -159,7 +156,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Msg::SetStatus(is_ok)
 			});
 		},
-		Msg::SetFocus => model.focus = true,
 	}
 }
 
@@ -211,10 +207,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_name_label = style! {
 		St::Position => "relative",
-	};
-	let s_name_label_anin = match model.focus {
-		true => style! { St::Top => rem(0) },
-		false => style! { St::Top => rem(1.8) }
+		St::Top => rem(1.8),
 	};
 	let s_name_input = style! {
 		St::Display => "block",
@@ -264,7 +257,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					div![
 						label![
 							s_name_label,
-							s_name_label_anin,
 							"Name",
 						],
 						input![
@@ -274,7 +266,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 								At::MaxLength => 20,
 							},
 							input_ev(Ev::Blur, Msg::NameBlur),
-							input_ev(Ev::Focus, |_| Msg::SetFocus),
 						],
 					],
 				],
