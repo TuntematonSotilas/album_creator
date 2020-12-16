@@ -1,3 +1,7 @@
-.edit_album__name_input:focus ~ label {
-    top: -1rem !important;
+.edit_album__name_input:focus ~ label, edit_album__name_input:valid ~ label {
+    top: -3.4rem !important;
+}
+
+.edit_album__name_input:invalid {
+    box-shadow: none;
 }

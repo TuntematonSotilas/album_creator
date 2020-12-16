@@ -65,7 +65,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Show => {
 			model.status = Status::New;
 			model.album.frid = friendly_id::create();
-			model.album.name = "New Album".into();
+			model.album.name = String::new();
 			model.album.pictures = Vec::new();
 		},
 		Msg::NameBlur(name) => {
@@ -207,10 +207,12 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_name_label = style! {
 		St::Position => "relative",
-		St::Top => rem(0),
+		St::Top => rem(-1.4),
+		St::Color => "#84838e",
 	};
 	let s_name_input = style! {
 		St::Display => "block",
+		St::MarginTop => rem(1),
 		St::Outline => "none",
 		St::Background => "none",
 		St::FontSize => rem(1.5),
@@ -268,13 +270,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							C!("edit_album__name_input"),
 							s_name_input,
 							attrs! {
+								At::Required => true,
 								At::Value => model.album.name,
 								At::MaxLength => 20,
 							},
 							input_ev(Ev::Blur, Msg::NameBlur),
 						],
 						label![
-							C!("edit_album__name_label"),
 							s_name_label,
 							"Name",
 						],
