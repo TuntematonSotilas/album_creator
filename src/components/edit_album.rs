@@ -69,8 +69,10 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.album.pictures = Vec::new();
 		},
 		Msg::NameBlur(name) => {
-			model.album.name = name;
-			orders.send_msg(Msg::Post);
+			if name != String::new() {
+				model.album.name = name;
+				orders.send_msg(Msg::Post);
+			}
 		}
 		Msg::Post => {
 			orders.skip(); // No need to rerender
@@ -122,15 +124,17 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
 		},
 		Msg::CaptionBlur(pic_id, caption) => {
-			let pictures = model.album.pictures
+			if caption != String::new() {
+				let pictures = model.album.pictures
 				.iter_mut()
 				.find(|p| p.id == pic_id);
 	
-			if let Some(picture) = pictures
-			{
-				picture.caption = Some(caption.clone());
-				orders.send_msg(Msg::EditPicture(picture.clone()));
-			};
+				if let Some(picture) = pictures
+				{
+					picture.caption = Some(caption.clone());
+					orders.send_msg(Msg::EditPicture(picture.clone()));
+				};
+			}
 		},
 		Msg::EditPicture(picture) => {
 			orders.skip(); // No need to rerender
@@ -205,24 +209,27 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::BoxShadow => "2px 2px 2px rgba(35, 136, 142, 0.5)",
 		St::Padding => rem(0.5),
 	};
-	let s_name_label = style! {
+	let s_label = style! {
 		St::Position => "relative",
 		St::Top => rem(-1.4),
 		St::Color => "#84838e",
+		St::Transition => "0.2s ease all",
+		St::PointerEvents => "none",
 	};
-	let s_name_input = style! {
+	let s_input = style! {
 		St::Display => "block",
 		St::MarginTop => rem(1),
 		St::Outline => "none",
 		St::Background => "none",
-		St::FontSize => rem(1.5),
 		St::LetterSpacing => rem(0.1),
-		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
-		St::TextAlign => "center",
-		St::Border => "solid 1px #00587a",
+		St::TextShadow => "0 0 0.1rem rgba(0,0,0,0.3)",
+		St::BorderBottom => "solid 1px #0c8dbf",
 		St::BorderTop => "none",
 		St::BorderLeft => "none",
 		St::BorderRight => "none",
+	};
+	let s_name_input = style! {
+		St::FontSize => rem(1.5),
 	};
 	let s_list = style! {
 		St::ListStyle => "none",
@@ -240,17 +247,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_pic = style! {
 		St::MaxWidth => rem(6),
+		St::BorderRadius => rem(0.2),
 	};
 	let s_caption = style! {
-		St::Outline => "none",
-		St::FontSize => rem(0.8),
-		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
-		St::Border => "none",
-		St::Background => "none",
-		St::TextAlign => "center",
-		St::BackgroundColor => "rgba(255, 255, 255, 0.3)",
-		St::Height => rem(2),
-		St::BorderRadius => rem(0.2),
 		St::MarginLeft => rem(2),
 	};
 	
@@ -267,7 +266,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					s_panel_info,
 					div![
 						input![
-							C!("edit_album__name_input"),
+							C!("edit_album__input"),
+							&s_input,
 							s_name_input,
 							attrs! {
 								At::Required => true,
@@ -277,7 +277,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							input_ev(Ev::Blur, Msg::NameBlur),
 						],
 						label![
-							s_name_label,
+							&s_label,
 							"Name",
 						],
 					],
@@ -297,14 +297,22 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							&s_pic,
 							attrs!{ At::Src => p.data }
 						],
-						input![
+						div![
 							&s_caption,
-							attrs! {
-								At::Value => caption,
-								At::Placeholder => "Caption",
-								At::Disabled => p.id.is_none().as_at_value(),
-							},
-							input_ev(Ev::Blur, |value| Msg::CaptionBlur(id, value)),
+							input![
+								C!("edit_album__input"),
+								&s_input,
+								attrs! {
+									At::Value => caption,
+									At::Required => true,
+									At::Disabled => p.id.is_none().as_at_value(),
+								},
+								input_ev(Ev::Blur, |value| Msg::CaptionBlur(id, value)),
+							],
+							label![
+								&s_label,
+								"Caption",
+							],
 						],
 					]
 				}),

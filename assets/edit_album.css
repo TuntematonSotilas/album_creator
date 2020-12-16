@@ -1,7 +1,9 @@
-.edit_album__name_input:focus ~ label, edit_album__name_input:valid ~ label {
-    top: -3.4rem !important;
+.edit_album__input:focus ~ label, .edit_album__input:valid ~ label {
+    top: -3rem !important;
+    color: #0c8dbf !important;
+    font-size: 0.7rem;
 }
 
-.edit_album__name_input:invalid {
+.edit_album__input:invalid {
     box-shadow: none;
 }
