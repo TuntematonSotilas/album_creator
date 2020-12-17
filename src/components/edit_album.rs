@@ -52,28 +52,24 @@ impl Model {
 
 pub enum Msg {
 	Show,
-	NameBlur(String),
+	NameChange(String),
 	Post,
 	SetStatus(bool),
 	PicUpload(pic_upload::Msg),
-	CaptionBlur(Option<String>, String),
+	CaptionChange(Option<String>, String),
 	EditPicture(picture::Picture),
+	Save,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
+		Msg::NameChange(name) => model.album.name = name,
 		Msg::Show => {
 			model.status = Status::New;
 			model.album.frid = friendly_id::create();
 			model.album.name = String::new();
 			model.album.pictures = Vec::new();
 		},
-		Msg::NameBlur(name) => {
-			if name != String::new() {
-				model.album.name = name;
-				orders.send_msg(Msg::Post);
-			}
-		}
 		Msg::Post => {
 			orders.skip(); // No need to rerender
 			
@@ -123,18 +119,10 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
 		},
-		Msg::CaptionBlur(pic_id, caption) => {
-			if caption != String::new() {
-				let pictures = model.album.pictures
-				.iter_mut()
-				.find(|p| p.id == pic_id);
-	
-				if let Some(picture) = pictures
-				{
-					picture.caption = Some(caption.clone());
-					orders.send_msg(Msg::EditPicture(picture.clone()));
-				};
-			}
+		Msg::CaptionChange(pic_id, caption) => {
+			model.album.pictures.iter_mut()
+				.filter(|p| p.id == pic_id)
+				.for_each(|p| p.caption = Some(caption.clone()));
 		},
 		Msg::EditPicture(picture) => {
 			orders.skip(); // No need to rerender
@@ -160,6 +148,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Msg::SetStatus(is_ok)
 			});
 		},
+		Msg::Save => {
+			orders.send_msg(Msg::Post);
+			model.album.pictures.iter()
+				.for_each(|p| {
+					orders.send_msg(Msg::EditPicture(p.clone()));
+				});
+		}
 	}
 }
 
@@ -223,7 +218,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Background => "none",
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 0.1rem rgba(0,0,0,0.3)",
-		St::BorderBottom => "solid 1px #0c8dbf",
+		St::BorderBottom => "solid 1px #84838e",
 		St::BorderTop => "none",
 		St::BorderLeft => "none",
 		St::BorderRight => "none",
@@ -258,9 +253,15 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			s_column,
 			div![
 				s_info_ctn,
-				span![
-					s_status,
-					status
+				div![
+					span![
+						s_status,
+						status
+					],
+					button![
+						"Save",
+						ev(Ev::Click, |_| Msg::Save),
+					],
 				],
 				div![
 					s_panel_info,
@@ -274,7 +275,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 								At::Value => model.album.name,
 								At::MaxLength => 20,
 							},
-							input_ev(Ev::Blur, Msg::NameBlur),
+							input_ev(Ev::Input, Msg::NameChange),
 						],
 						label![
 							&s_label,
@@ -307,7 +308,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 									At::Required => true,
 									At::Disabled => p.id.is_none().as_at_value(),
 								},
-								input_ev(Ev::Blur, |value| Msg::CaptionBlur(id, value)),
+								input_ev(Ev::Input, |value| Msg::CaptionChange(id, value)),
 							],
 							label![
 								&s_label,
