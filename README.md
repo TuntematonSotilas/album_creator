@@ -17,7 +17,7 @@ https://www.rust-lang.org/learn/get-started
 
 # Configure
 
-Modif the `conf/vars.rs` file to personalize 
+Modif the `utils/vars.rs` file to personalize 
 * LOGIN
 * PWD
 * API_URI
