@@ -1,10 +1,10 @@
 .edit_album__input:focus, .edit_album__input:valid {
-    border-bottom: solid 1px #0c8dbf !important;
+    border-bottom: solid 1px #8ad8f7 !important;
 }
 
 .edit_album__input:focus ~ label, .edit_album__input:valid ~ label {
     top: -3rem !important;
-    color: #0c8dbf !important;
+    color: #8ad8f7 !important;
     font-size: 0.7rem;
 }
 

@@ -7,7 +7,8 @@ use crate::{
 	utils::{
 		vars::API_URI, 
 		request::get_auth,
-		serializer::{ser_edit_album, ser_edit_picture}
+		serializer::{ser_edit_album, ser_edit_picture},
+		style::s_button, 
 	},
 	models::picture,
 };
@@ -199,15 +200,15 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 		St::AlignItems => "center",
-		St::Border => "1px solid #23888e",
+		St::Background => "radial-gradient(circle at top right, white -70%, #6085b3 50%)",
 		St::BorderRadius => rem(0.3),
-		St::BoxShadow => "2px 2px 2px rgba(35, 136, 142, 0.5)",
+		St::BoxShadow => "2px 2px 2px rgba(90, 133, 183, 0.5)",
 		St::Padding => rem(0.5),
 	};
 	let s_label = style! {
 		St::Position => "relative",
 		St::Top => rem(-1.4),
-		St::Color => "#84838e",
+		St::Color => "#bdbdbd",
 		St::Transition => "0.2s ease all",
 		St::PointerEvents => "none",
 	};
@@ -216,9 +217,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::MarginTop => rem(1),
 		St::Outline => "none",
 		St::Background => "none",
+		St::Color => "#bdbdbd",
 		St::LetterSpacing => rem(0.1),
-		St::TextShadow => "0 0 0.1rem rgba(0,0,0,0.3)",
-		St::BorderBottom => "solid 1px #84838e",
+		St::BorderBottom => "solid 1px #bdbdbd",
 		St::BorderTop => "none",
 		St::BorderLeft => "none",
 		St::BorderRight => "none",
@@ -236,9 +237,10 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_line = style ! {
 		St::Display => "flex",
 		St::AlignItems => "center",
-		St::BorderRadius => rem(0.3),
-		St::Background => "linear-gradient(rgba(0,0,0,0) 60%, rgba(255, 255, 255, 0.2))",
 		St::Padding => rem(0.5),
+		St::Background => "radial-gradient(circle at top right, white -70%, #6085b3 50%)",
+		St::BorderRadius => rem(0.3),
+		St::BoxShadow => "2px 2px 2px rgba(90, 133, 183, 0.5)",
 	};
 	let s_pic = style! {
 		St::MaxWidth => rem(6),
@@ -247,18 +249,23 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_caption = style! {
 		St::MarginLeft => rem(2),
 	};
-	
+	let s_header = style! {
+		St::Display => "flex",
+		St::JustifyContent => "space-between",
+	};
 	nodes![
 		div![
 			s_column,
 			div![
 				s_info_ctn,
 				div![
+					s_header,
 					span![
 						s_status,
 						status
 					],
 					button![
+						s_button(),
 						"Save",
 						ev(Ev::Click, |_| Msg::Save),
 					],
