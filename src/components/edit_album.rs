@@ -200,9 +200,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 		St::AlignItems => "center",
-		St::Background => "radial-gradient(circle at top right, white -70%, #6085b3 50%)",
+		St::Background => "radial-gradient(circle at top left, rgba(0,0,0,0.5) -50%, rgba(0,0,0,0) 50%)",
 		St::BorderRadius => rem(0.3),
-		St::BoxShadow => "2px 2px 2px rgba(90, 133, 183, 0.5)",
+		St::BoxShadow => "inset 0 -0.3rem 2rem rgba(100,100,100,0.2), 0 1px 1px rgba(255,255,255,0.2)";
 		St::Padding => rem(0.5),
 	};
 	let s_label = style! {
