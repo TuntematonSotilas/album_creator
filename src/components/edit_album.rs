@@ -178,6 +178,12 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			"ERROR".into(), 
 			"#794242".into()),
 	};
+	let s_column = style! {
+		St::Display => "flex",
+		St::FlexDirection => "column",
+		St::AlignItems => "center",
+		St::MarginTop => rem(0.5),
+	};
 	let s_status = style! {
 		St::Color => color,
 		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
@@ -185,25 +191,23 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::LetterSpacing => rem(0.2),
 		St::TransitionProperty => "color",
 		St::TransitionDuration => "200ms",
-		St::AlignSelf => "start",
+		St::AlignSelf => "center",
 	};
-	let s_column = style! {
+	let s_header = style! {
 		St::Display => "flex",
-		St::FlexDirection => "column",
-		St::AlignItems => "center",
-		St::MarginTop => rem(0.5),
-	};
-	let s_info_ctn = style! {
+		St::JustifyContent => "space-between",
 		St::Width => vw(90),
-	};
-	let s_panel_info = style! {
-		St::Display => "flex",
-		St::FlexDirection => "column",
+		St::Margin => rem(1),
+	};	
+	let s_panel = style! {
 		St::AlignItems => "center",
-		St::Background => "radial-gradient(circle at top left, rgba(0,0,0,0.5) -50%, rgba(0,0,0,0) 50%)",
+		St::Display => "flex",
+		St::Background => "radial-gradient(circle at bottom left, rgba(28, 28, 36, 0.4) 40%, transparent 100%)",
+		St::BoxShadow => "inset 0.4rem -0.2rem 0.6rem #ffffff5c",
+		St::FlexDirection => "column",
 		St::BorderRadius => rem(0.3),
-		St::BoxShadow => "inset 0 -0.3rem 2rem rgba(100,100,100,0.2), 0 1px 1px rgba(255,255,255,0.2)";
 		St::Padding => rem(0.5),
+		St::Width => vw(90),
 	};
 	let s_label = style! {
 		St::Position => "relative",
@@ -232,15 +236,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Padding => 0,
 		St::Display => "flex",
 		St::FlexDirection => "column",
-		St::Width => vw(90),
-	};
-	let s_line = style ! {
-		St::Display => "flex",
-		St::AlignItems => "center",
-		St::Padding => rem(0.5),
-		St::Background => "radial-gradient(circle at top right, white -70%, #6085b3 50%)",
-		St::BorderRadius => rem(0.3),
-		St::BoxShadow => "2px 2px 2px rgba(90, 133, 183, 0.5)",
 	};
 	let s_pic = style! {
 		St::MaxWidth => rem(6),
@@ -249,45 +244,38 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_caption = style! {
 		St::MarginLeft => rem(2),
 	};
-	let s_header = style! {
-		St::Display => "flex",
-		St::JustifyContent => "space-between",
-	};
 	nodes![
 		div![
 			s_column,
 			div![
-				s_info_ctn,
-				div![
-					s_header,
-					span![
-						s_status,
-						status
-					],
-					button![
-						s_button(),
-						"Save",
-						ev(Ev::Click, |_| Msg::Save),
-					],
+				s_header,
+				span![
+					s_status,
+					status
 				],
+				button![
+					s_button(),
+					"Save",
+					ev(Ev::Click, |_| Msg::Save),
+				],
+			],
+			div![
+				&s_panel,
 				div![
-					s_panel_info,
-					div![
-						input![
-							C!("edit_album__input"),
-							&s_input,
-							s_name_input,
-							attrs! {
-								At::Required => true,
-								At::Value => model.album.name,
-								At::MaxLength => 20,
-							},
-							input_ev(Ev::Input, Msg::NameChange),
-						],
-						label![
-							&s_label,
-							"Name",
-						],
+					input![
+						C!("edit_album__input"),
+						&s_input,
+						s_name_input,
+						attrs! {
+							At::Required => true,
+							At::Value => model.album.name,
+							At::MaxLength => 20,
+						},
+						input_ev(Ev::Input, Msg::NameChange),
+					],
+					label![
+						&s_label,
+						"Name",
 					],
 				],
 			],
@@ -300,7 +288,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					};
 					let id = p.id.clone();
 					li![
-						&s_line,
+						&s_panel,
 						img![
 							&s_pic,
 							attrs!{ At::Src => p.data }
