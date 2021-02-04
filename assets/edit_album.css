@@ -3,7 +3,7 @@
 }
 
 .edit_album__input:focus ~ label, .edit_album__input:valid ~ label {
-    top: -3rem !important;
+    top: -3.2rem !important;
     color: #8ad8f7 !important;
     font-size: 0.7rem;
 }

@@ -202,12 +202,14 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_panel = style! {
 		St::AlignItems => "center",
 		St::Display => "flex",
-		St::Background => "radial-gradient(circle at bottom left, rgba(28, 28, 36, 0.4) 40%, transparent 100%)",
-		St::BoxShadow => "inset 0.4rem -0.2rem 0.6rem #ffffff5c",
-		St::FlexDirection => "column",
+		St::Background => "radial-gradient(circle at bottom left, rgba(28, 28, 36, 0.5) 40%, transparent 120%)",
+		St::BoxShadow => "inset 0.3rem 0rem 0.6rem #ffffff5c",
 		St::BorderRadius => rem(0.3),
 		St::Padding => rem(0.5),
 		St::Width => vw(90),
+	};
+	let s_panel_name = style! {
+		St::FlexDirection => "column",
 	};
 	let s_label = style! {
 		St::Position => "relative",
@@ -261,6 +263,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			],
 			div![
 				&s_panel,
+				&s_panel_name,
 				div![
 					input![
 						C!("edit_album__input"),
