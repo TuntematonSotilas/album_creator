@@ -3,11 +3,11 @@
 @import "toast.css";
 @import "login.css";
 @import "header.css";
-@import "menu.css";
 @import "album_list.css";
 @import "album.css";
 @import "edit_album.css";
 @import "confirm.css";
+@import "btn_icon.css";
 
 .button:hover, .button:focus {
     background-color: #4a77d4;

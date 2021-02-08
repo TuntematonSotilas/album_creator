@@ -8,7 +8,7 @@ use crate::{
 		vars::API_URI, 
 		request::get_auth,
 		serializer::{ser_edit_album, ser_edit_picture},
-		style::s_button, 
+		style::{Size, s_btn_icon}, 
 	},
 	models::picture,
 };
@@ -187,17 +187,16 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_status = style! {
 		St::Color => color,
 		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
-		St::FontSize => rem(0.7),
+		St::FontSize => rem(0.8),
 		St::LetterSpacing => rem(0.2),
 		St::TransitionProperty => "color",
 		St::TransitionDuration => "200ms",
 		St::AlignSelf => "center",
+		St::FontWeight => "bold",
 	};
 	let s_header = style! {
 		St::Display => "flex",
-		St::JustifyContent => "space-between",
 		St::Width => vw(90),
-		St::Margin => rem(1),
 	};	
 	let s_panel = style! {
 		St::AlignItems => "center",
@@ -214,7 +213,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_label = style! {
 		St::Position => "relative",
 		St::Top => rem(-1.4),
-		St::Color => "#bdbdbd",
+		St::Color => "white",
 		St::Transition => "0.2s ease all",
 		St::PointerEvents => "none",
 	};
@@ -223,12 +222,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::MarginTop => rem(1),
 		St::Outline => "none",
 		St::Background => "none",
-		St::Color => "#bdbdbd",
+		St::Color => "white",
 		St::LetterSpacing => rem(0.1),
-		St::BorderBottom => "solid 1px #bdbdbd",
+		St::BorderBottom => "solid 1px white",
 		St::BorderTop => "none",
 		St::BorderLeft => "none",
 		St::BorderRight => "none",
+		St::FontSize => rem(1.5),
 	};
 	let s_name_input = style! {
 		St::FontSize => rem(1.5),
@@ -251,14 +251,18 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			s_column,
 			div![
 				s_header,
+				a![
+					C!("btn_icon btn_icon--blue"),
+					s_btn_icon(Size::S),
+					ev(Ev::Click, |_| Msg::Save),
+					i![
+						C!("fa fa-check"),
+					],
+					attrs! { At::Href => String::new()},
+				],
 				span![
 					s_status,
 					status
-				],
-				button![
-					s_button(),
-					"Save",
-					ev(Ev::Click, |_| Msg::Save),
 				],
 			],
 			div![

@@ -1,25 +1,25 @@
-.menu__item {
+.btn_icon {
 	color: white;
 	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.12)
 }
 
-.menu__item:hover {
+.btn_icon:hover {
 	background: #e7e7de;
     text-shadow: none;
 }
 
-.menu__item--blue {
+.btn_icon--blue {
     background: #00587a;
 }
 
-.menu__item--green {
+.btn_icon--green {
 	background: #008891;
 }
 
-.menu__item--blue:hover {
+.btn_icon--blue:hover {
     color: #00587a;
 }
 
-.menu__item--green:hover {
+.btn_icon--green:hover {
     color: #008891;
 }
