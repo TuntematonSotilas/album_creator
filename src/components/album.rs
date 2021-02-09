@@ -119,11 +119,19 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::FlexDirection => "column",
 		St::JustifyContent => "center",
 	};
+	let s_header = style! {
+		St::Display => "flex",
+		St::FlexDirection => "row",
+	};
 	let s_title = style! {
 		St::TextAlign => "center",
 		St::FontSize => rem(2),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
+		St::Width => percent(90),
+	};
+	let s_switch = style! {
+
 	};
 	let s_pic_list = style! {
 		St::Display => "flex",
@@ -176,9 +184,16 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		match &model.album {
 			Some(album) => div![
 				s_album,
-				h1![
-					s_title,
-					&album.name
+				div![
+					s_header,
+					h1![
+						s_title,
+						&album.name
+					],
+					span![
+						s_switch,
+						"switch"
+					],
 				],
 				div![
 					s_pic_list,
