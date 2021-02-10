@@ -19,6 +19,7 @@ const MAX_LOAD: usize = 10;
 pub struct Model {
 	album: Option<Album>,
 	loaded: usize,
+	switch_timeout: u32,
 	is_switched: bool,
 }
 
@@ -48,6 +49,7 @@ pub enum Msg {
 	GetPicture(String),
 	PictureReceived(Option<String>, String),
 	Switch,
+	ChangeUrl,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -55,6 +57,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Show(id_url) => {
 			model.album = None;
 			model.loaded = 0;
+			model.switch_timeout = 200;
 			orders.skip(); // No need to rerender
 			let mut album_opt: Option<Album> = None;
 			orders.perform_cmd(async {
@@ -108,7 +111,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					.map(|p| p.data = data);
 			}
 		},
-		Msg::Switch => model.is_switched = true,
+		Msg::Switch => {
+			model.is_switched = true;
+			orders.perform_cmd_with_handle(cmds::timeout(model.switch_timeout, ||Msg::ChangeUrl));
+		}
+		Msg::ChangeUrl => {
+			log!("ChangeUrl");
+		}
 	}
 }
 
@@ -150,7 +159,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Height => rem(1.2),
 		St::BorderRadius => rem(1),
 		St::BoxShadow => "inset 0.2px -1px 1px rgba(0, 0, 0, 0.35)",
-		St::Transition => "margin-left 300ms ease",
+		St::Transition => format!("margin-left {0}ms ease", model.switch_timeout),
 	};
 	let s_switch_anim = match model.is_switched {
 		true => style! { 
