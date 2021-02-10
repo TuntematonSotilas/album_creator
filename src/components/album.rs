@@ -19,6 +19,7 @@ const MAX_LOAD: usize = 10;
 pub struct Model {
 	album: Option<Album>,
 	loaded: usize,
+	is_switched: bool,
 }
 
 #[derive(Clone)]
@@ -46,6 +47,7 @@ pub enum Msg {
 	LoadPictures,
 	GetPicture(String),
 	PictureReceived(Option<String>, String),
+	Switch,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -106,6 +108,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					.map(|p| p.data = data);
 			}
 		},
+		Msg::Switch => model.is_switched = true,
 	}
 }
 
@@ -131,7 +134,31 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Width => percent(90),
 	};
 	let s_switch = style! {
-
+		St::Display => "flex",
+		St::AlignItems => "center",
+		St::Background => "#008891",
+		St::Width => rem(3.3),
+		St::Height => rem(1.5),
+		St::AlignSelf => "center",
+		St::BoxShadow => "inset 0px 0px 3px 0px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.5)",
+		St::BorderRadius => rem(1),
+		St::Cursor => "pointer",
+	};
+	let s_switch_btn = style! {
+		St::Background => "white",
+		St::Width => rem(1.2),
+		St::Height => rem(1.2),
+		St::BorderRadius => rem(1),
+		St::BoxShadow => "inset 0.2px -1px 1px rgba(0, 0, 0, 0.35)",
+		St::Transition => "margin-left 300ms ease",
+	};
+	let s_switch_anim = match model.is_switched {
+		true => style! { 
+			St::MarginLeft => rem(1.9),
+		},
+		false => style! { 
+			St::MarginLeft => rem(0.1),
+		},
 	};
 	let s_pic_list = style! {
 		St::Display => "flex",
@@ -190,9 +217,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 						s_title,
 						&album.name
 					],
-					span![
+					div![
 						s_switch,
-						"switch"
+						span![
+							s_switch_btn, 
+							s_switch_anim,
+						],
+						ev(Ev::Click, |_| Msg::Switch),
 					],
 				],
 				div![

@@ -214,7 +214,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Position => "relative",
 		St::Top => rem(-1.4),
 		St::Color => "white",
-		St::Transition => "0.2s ease all",
+		St::Transition => "all 0.2s ease",
 		St::PointerEvents => "none",
 	};
 	let s_input = style! {
