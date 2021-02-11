@@ -25,6 +25,7 @@ pub struct Model {
 
 #[derive(Clone)]
 pub struct Album {
+	pub frid: String,
 	pub name: String,
 	pub pictures: Vec<Picture>,
 }
@@ -49,7 +50,7 @@ pub enum Msg {
 	GetPicture(String),
 	PictureReceived(Option<String>, String),
 	Switch,
-	ChangeUrl,
+	GoToEdit(String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -57,6 +58,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Show(id_url) => {
 			model.album = None;
 			model.loaded = 0;
+			model.is_switched = false;
 			model.switch_timeout = 200;
 			orders.skip(); // No need to rerender
 			let mut album_opt: Option<Album> = None;
@@ -113,11 +115,12 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::Switch => {
 			model.is_switched = true;
-			orders.perform_cmd_with_handle(cmds::timeout(model.switch_timeout, ||Msg::ChangeUrl));
-		}
-		Msg::ChangeUrl => {
-			log!("ChangeUrl");
-		}
+			if let Some(album) = &model.album {
+				let frid = album.frid.clone();
+				orders.perform_cmd(cmds::timeout(model.switch_timeout, ||Msg::GoToEdit(frid)));	
+			}
+		},
+		Msg::GoToEdit(_frid) => (),
 	}
 }
 

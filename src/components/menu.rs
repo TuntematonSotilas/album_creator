@@ -74,7 +74,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
                 C!("btn_icon btn_icon--green"),
 				&s_btn_icon(Size::X),
 				&s_anim,
-                attrs! { At::Href => model.base_url.clone().add_path_part("new") },
+                attrs! { At::Href => model.base_url.clone().add_path_part("edit") },
                 i![
                     C!("fa fa-plus"),
 				],

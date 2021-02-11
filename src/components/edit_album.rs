@@ -52,7 +52,7 @@ impl Model {
 // ------------
 
 pub enum Msg {
-	Show,
+	Show(Option<String>),
 	NameChange(String),
 	Post,
 	SetStatus(bool),
@@ -65,11 +65,18 @@ pub enum Msg {
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
 		Msg::NameChange(name) => model.album.name = name,
-		Msg::Show => {
+		Msg::Show(opt_frid) => {
 			model.status = Status::New;
-			model.album.frid = friendly_id::create();
-			model.album.name = String::new();
-			model.album.pictures = Vec::new();
+			match opt_frid {
+				Some(frid) => {
+					model.album.frid = frid;
+				},
+				None => {
+					model.album.frid = friendly_id::create();
+					model.album.name = String::new();
+					model.album.pictures = Vec::new();
+				}
+			}
 		},
 		Msg::Post => {
 			orders.skip(); // No need to rerender

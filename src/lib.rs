@@ -63,7 +63,7 @@ pub enum Page {
     Login,
     Menu,
 	AlbumList,
-	NewAlbum,
+	EditAlbum,
 	Album,
 }
 
@@ -73,7 +73,7 @@ impl Page {
             None => Self::Login,
             Some("menu") => Self::Menu,
 			Some("albums") => Self::AlbumList,
-			Some("new") => Self::NewAlbum,
+			Some("edit") => Self::EditAlbum,
 			Some("album") => Self::Album,
             Some(_) => Self::Login,
         }
@@ -94,8 +94,8 @@ enum Msg {
 	Album(album::Msg),
     ShowToast(Toast),
 	UrlChanged(subs::UrlChanged),
-	SetUrl,
-	LoadPage,
+	SetUrl(Option<String>),
+	LoadPage(Option<String>),
 	Confirm(confirm::Msg),
 	ShowConfirm(String),
 }
@@ -106,34 +106,38 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
 			if !model.is_auth {
 				model.page = Page::Login;
-				orders.send_msg(Msg::SetUrl);
+				orders.send_msg(Msg::SetUrl(None));
 			} else {
 				model.page = Page::init(url.clone());
 			}
 			let mut url_cp = url.clone(); 
 			url_cp.next_path_part();
+			let mut id_opt: Option<String> = None;
 			if let Some(id_url) = url_cp.next_path_part() {
 				model.id_url = Some(id_url.into());
+				id_opt = Some(id_url.into());
 			}
-
-			orders.send_msg(Msg::LoadPage);
+			orders.send_msg(Msg::LoadPage(id_opt));
 		},
-		Msg::SetUrl => {
+		Msg::SetUrl(id_opt) => {
 			let path_part = match model.page {
 				Page::Menu => "menu",
 				Page::AlbumList => "album",
-				Page::NewAlbum => "new",
+				Page::EditAlbum => "edit",
 				_ => "login",
 			};
-			model.base_url.clone().add_path_part(path_part)
-				.go_and_push();
+			let mut url = model.base_url.clone().add_path_part(path_part);
+			if let Some(id) = id_opt {
+				url = url.clone().add_path_part(id);
+			}
+			url.go_and_push();
 		},
-		Msg::LoadPage => {
+		Msg::LoadPage(opt_frid) => {
 			match model.page {
 				Page::Menu => menu::update(menu::Msg::Show, &mut model.menu, &mut orders.proxy(Msg::Menu)),
 				Page::AlbumList => album_list::update(album_list::Msg::Show, &mut model.album_list, &mut orders.proxy(Msg::AlbumList)),
 				Page::Album => album::update(album::Msg::Show(model.id_url.clone()), &mut model.album, &mut orders.proxy(Msg::Album)),
-				Page::NewAlbum => edit_album::update(edit_album::Msg::Show, &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum)),
+				Page::EditAlbum => edit_album::update(edit_album::Msg::Show(opt_frid), &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum)),
 				_ => (),
 			};
 		},
@@ -142,8 +146,8 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 login::Msg::SetIsAuth => {
 					model.is_auth = true;
 					model.page = Page::Menu;
-					orders.send_msg(Msg::SetUrl);
-					orders.send_msg(Msg::LoadPage);
+					orders.send_msg(Msg::SetUrl(None));
+					orders.send_msg(Msg::LoadPage(None));
 					header::update(header::Msg::Show, &mut model.header, &mut orders.proxy(Msg::Header));
 				}
                 login::Msg::ShowToast(ref toast) => {
@@ -178,6 +182,14 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			edit_album::update(msg, &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum));
 		},
 		Msg::Album(msg) => {
+			match msg {
+				album::Msg::GoToEdit(ref frid) => {
+					model.page = Page::EditAlbum;
+					orders.send_msg(Msg::SetUrl(Some(frid.into())));
+					orders.send_msg(Msg::LoadPage(None));
+				},
+				_ => (),
+			}
 			album::update(msg, &mut model.album, &mut orders.proxy(Msg::Album));
 		},
 		Msg::Confirm(msg) => {
@@ -222,7 +234,7 @@ fn view(model: &Model) -> Node<Msg> {
 							match &model.page {
 								Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
 								Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
-								Page::NewAlbum => edit_album::view(&model.edit_album).map_msg(Msg::EditAlbum),
+								Page::EditAlbum => edit_album::view(&model.edit_album).map_msg(Msg::EditAlbum),
 								Page::Album => album::view(&model.album).map_msg(Msg::Album),
 								_ => nodes![],
 							}

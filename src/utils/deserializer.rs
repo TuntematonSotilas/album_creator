@@ -72,6 +72,7 @@ pub async fn deser_album_det(result: Result<Response, FetchError>) -> Option<alb
 			let album_res = resp_ok.json::<Album>().await;
 			if let Ok(album) = album_res {
 				let mut album = album::Album {
+					frid: album.info.frid,
 					name: album.info.name,
 					pictures: album.pictures.into_iter().map(|p|
 						album::Picture {
