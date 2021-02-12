@@ -3,9 +3,7 @@ use seed::{self, prelude::*, *};
 use crate::{
 	utils::{
 		style::{s_button, s_loader, s_loader_1, s_loader_2},
-		request::get_auth, 
-		vars::API_URI, 
-		deserializer::{deser_album_det, deser_picture},
+		request::{get_album, get_picture}, 
 		busvars::MAX_LOAD,
 	},
 	models::album::Album,
@@ -48,12 +46,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			let mut album_opt: Option<Album> = None;
 			orders.perform_cmd(async {
 				if let Some(id) = id_url {
-					let uri = format!("{0}get-album-detail?id={1}", API_URI, id);
-					let request = Request::new(uri)
-						.method(Method::Get)
-						.header(Header::authorization(get_auth()));
-					let result = fetch(request).await;
-					album_opt = deser_album_det(result).await;
+					album_opt = get_album(id).await;
 				}
 				Msg::AlbumRecieved(album_opt)
 			});
@@ -80,13 +73,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::GetPicture(id) => {
 			orders.skip(); // No need to rerender
-			let uri = format!("{0}get-picture?id={1}", API_URI, id);
 			orders.perform_cmd(async {
-				let request = Request::new(uri)
-					.method(Method::Get)
-					.header(Header::authorization(get_auth()));
-				let result = fetch(request).await;
-				let data_opt = deser_picture(result).await;
+				let id_c = id.clone(); 
+				let data_opt = get_picture(id_c).await;
 				Msg::PictureReceived(data_opt, id)
 			});
 		},

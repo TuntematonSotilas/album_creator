@@ -6,9 +6,8 @@ use crate::{
 	components::pic_upload,
 	utils::{
 		vars::API_URI, 
-		request::get_auth,
+		request::{get_auth, get_album, get_picture},
 		serializer::{ser_edit_album, ser_edit_picture},
-		deserializer::{deser_album_det, deser_picture},
 		style::{Size, s_btn_icon, s_loader, s_loader_1, s_loader_2}, 
 		busvars::MAX_LOAD,
 	},
@@ -72,13 +71,8 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.album = Album::default();
 			match opt_id {
 				Some(id) => {
-					let uri = format!("{0}get-album-detail?id={1}", API_URI, id);	
 					orders.perform_cmd(async {
-						let request = Request::new(uri)
-							.method(Method::Get)
-							.header(Header::authorization(get_auth()));
-						let result = fetch(request).await;
-						let album_opt = deser_album_det(result).await;
+						let album_opt = get_album(id).await;
 						Msg::AlbumRecieved(album_opt)
 					});
 				},
@@ -114,13 +108,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::GetPicture(id) => {
 			orders.skip(); // No need to rerender
-			let uri = format!("{0}get-picture?id={1}", API_URI, id);
 			orders.perform_cmd(async {
-				let request = Request::new(uri)
-					.method(Method::Get)
-					.header(Header::authorization(get_auth()));
-				let result = fetch(request).await;
-				let data_opt = deser_picture(result).await;
+				let id_c = id.clone(); 
+				let data_opt = get_picture(id_c).await;
 				Msg::PictureReceived(data_opt, id)
 			});
 		},
