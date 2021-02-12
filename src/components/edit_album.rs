@@ -15,8 +15,6 @@ use crate::{
 	models::{album::Album, picture},
 };
 
-use super::album;
-
 // ------------
 //     Model
 // -----------
