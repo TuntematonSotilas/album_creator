@@ -186,7 +186,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				album::Msg::GoToEdit(ref frid) => {
 					model.page = Page::EditAlbum;
 					orders.send_msg(Msg::SetUrl(Some(frid.into())));
-					orders.send_msg(Msg::LoadPage(None));
+					orders.send_msg(Msg::LoadPage(Some(frid.into())));
 				},
 				_ => (),
 			}

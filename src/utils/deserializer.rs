@@ -1,8 +1,10 @@
 use seed::{self, prelude::*};
 
-use crate::components::{
-	album,
-	album_list,
+use crate::{
+	components::{
+		album_list,
+	},
+	models,
 };
 
 #[derive(serde::Deserialize, Debug)]
@@ -65,22 +67,24 @@ pub async fn deser_album_list(result: Result<Response, FetchError>) -> Option<Ve
 	album_opt
 }
 
-pub async fn deser_album_det(result: Result<Response, FetchError>) -> Option<album::Album> {
-	let mut album_opt: Option<album::Album> = None;
+pub async fn deser_album_det(result: Result<Response, FetchError>) -> Option<models::album::Album> {
+	let mut album_opt: Option<models::album::Album> = None;
 	if let Ok(response) = result {
 		if let Ok(resp_ok) = response.check_status() {
 			let album_res = resp_ok.json::<Album>().await;
 			if let Ok(album) = album_res {
-				let mut album = album::Album {
-					frid: album.info.frid,
+				let frid = album.info.frid;
+				let mut album = models::album::Album {
+					frid: frid.clone(),
 					name: album.info.name,
 					pictures: album.pictures.into_iter().map(|p|
-						album::Picture {
-							id: p.id.value,
+						models::picture::Picture {
+							id: Some(p.id.value),
 							order: p.order.value.parse().unwrap_or(0),
 							caption: p.caption,
 							data: None,
 							dom: false,
+							album_id: frid.clone(),
 						}
 					)
 					.collect()

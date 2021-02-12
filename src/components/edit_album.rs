@@ -8,10 +8,14 @@ use crate::{
 		vars::API_URI, 
 		request::get_auth,
 		serializer::{ser_edit_album, ser_edit_picture},
-		style::{Size, s_btn_icon}, 
+		deserializer::{deser_album_det, deser_picture},
+		style::{Size, s_btn_icon, s_loader, s_loader_1, s_loader_2}, 
+		busvars::MAX_LOAD,
 	},
-	models::picture,
+	models::{album::Album, picture},
 };
+
+use super::album;
 
 // ------------
 //     Model
@@ -21,13 +25,7 @@ pub struct Model {
 	album: Album,
 	status: Status,
 	pic_upload: pic_upload::Model,
-}
-
-#[derive(Default, Clone)]
-pub struct Album {
-	pub frid: String,
-	pub name: String,
-	pub pictures : Vec<picture::Picture>,
+	loaded: usize,
 }
 
 enum Status {
@@ -43,6 +41,7 @@ impl Model {
 			album: Album::default(),
 			status: Status::New,
 			pic_upload: pic_upload::Model::default(),
+			loaded: 0,
 		}
 	}
 }
@@ -53,23 +52,37 @@ impl Model {
 
 pub enum Msg {
 	Show(Option<String>),
+	AlbumRecieved(Option<Album>),
+	LoadPictures,
 	NameChange(String),
 	Post,
 	SetStatus(bool),
 	PicUpload(pic_upload::Msg),
 	CaptionChange(Option<String>, String),
 	EditPicture(picture::Picture),
+	GetPicture(String),
+	PictureReceived(Option<String>, String),
 	Save,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
 		Msg::NameChange(name) => model.album.name = name,
-		Msg::Show(opt_frid) => {
+		Msg::Show(opt_id) => {
 			model.status = Status::New;
-			match opt_frid {
-				Some(frid) => {
-					model.album.frid = frid;
+			model.loaded = 0;
+			model.album = Album::default();
+			match opt_id {
+				Some(id) => {
+					let uri = format!("{0}get-album-detail?id={1}", API_URI, id);	
+					orders.perform_cmd(async {
+						let request = Request::new(uri)
+							.method(Method::Get)
+							.header(Header::authorization(get_auth()));
+						let result = fetch(request).await;
+						let album_opt = deser_album_det(result).await;
+						Msg::AlbumRecieved(album_opt)
+					});
 				},
 				None => {
 					model.album.frid = friendly_id::create();
@@ -77,6 +90,46 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					model.album.pictures = Vec::new();
 				}
 			}
+		},
+		Msg::AlbumRecieved(opt) => {
+			orders.send_msg(Msg::SetStatus(true));
+			Msg::SetStatus(true);
+			if let Some(album) = opt {
+				model.album = album;
+				orders.send_msg(Msg::LoadPictures);
+			}
+		},
+		Msg::LoadPictures => {
+			//Load only X pictures in DOM 
+			model.album.pictures.iter_mut()
+				.filter(|p| !p.dom)
+				.take(MAX_LOAD)
+				.for_each(|p| p.dom = true);
+			model.loaded += MAX_LOAD;
+			//Load pictures
+			model.album.pictures.iter()
+				.filter(|p| p.dom && p.id.is_some())
+				.for_each(|p| {
+					orders.send_msg(Msg::GetPicture(p.id.clone().unwrap()));
+				});
+			
+		},
+		Msg::GetPicture(id) => {
+			orders.skip(); // No need to rerender
+			let uri = format!("{0}get-picture?id={1}", API_URI, id);
+			orders.perform_cmd(async {
+				let request = Request::new(uri)
+					.method(Method::Get)
+					.header(Header::authorization(get_auth()));
+				let result = fetch(request).await;
+				let data_opt = deser_picture(result).await;
+				Msg::PictureReceived(data_opt, id)
+			});
+		},
+		Msg::PictureReceived(data, id) => {
+			model.album.pictures.iter_mut()
+				.find(|p| p.id == Some(id.clone()))
+				.map(|p| p.data = data);
 		},
 		Msg::Post => {
 			orders.skip(); // No need to rerender
@@ -108,7 +161,11 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				false => Status::Error,
 			};
 			if is_success {
-				pic_upload::update(pic_upload::Msg::Show(model.album.frid.clone(), 0), &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
+				let max = model.album.pictures.iter().map(|p| p.order).max();
+				pic_upload::update(pic_upload::Msg::Show(
+					model.album.frid.clone(), max.unwrap_or(0)), 
+					&mut model.pic_upload, 
+					&mut orders.proxy(Msg::PicUpload));
 			}
 		},
 		Msg::PicUpload(msg) => {
@@ -213,6 +270,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::BorderRadius => rem(0.3),
 		St::Padding => rem(0.5),
 		St::Width => vw(90),
+		St::MarginBottom => rem(1),
 	};
 	let s_panel_name = style! {
 		St::FlexDirection => "column",
@@ -246,12 +304,20 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 	};
-	let s_pic = style! {
-		St::MaxWidth => rem(6),
-		St::BorderRadius => rem(0.2),
-	};
 	let s_caption = style! {
 		St::MarginLeft => rem(2),
+	};
+	let s_pic_border = style! {
+		St::Margin => rem(0.5),
+		St::BorderRadius => rem(0.2),
+	};
+	let s_pic_img = style! {
+		St::MaxWidth => rem(6),
+	};
+	let s_pic_empty = style! {
+		St::Width => rem(5),
+		St::Height => rem(5),
+		St::Background => "rgba(0, 0, 0, 0.2)",
 	};
 	nodes![
 		div![
@@ -295,18 +361,27 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			],
 			ul![
 				s_list,
-				model.album.pictures.iter().map(|p| {
+				model.album.pictures.iter().filter(|p| p.dom).map(|pic| {
 					let mut caption = String::new();
-					if let Some(cap) = p.caption.clone() {
+					if let Some(cap) = pic.caption.clone() {
 						caption = cap;
 					};
-					let id = p.id.clone();
+					let id = pic.id.clone();
 					li![
 						&s_panel,
-						img![
-							&s_pic,
-							attrs!{ At::Src => p.data }
-						],
+						match &pic.data {
+							Some(data_url) => img![
+								&s_pic_border,
+								&s_pic_img,
+								attrs!{ At::Src => data_url }
+							],
+							_ => div![
+								&s_pic_border,
+								&s_pic_empty,
+								div![s_loader(), s_loader_1() ],
+								div![s_loader(), s_loader_2() ],
+							]
+						},
 						div![
 							&s_caption,
 							input![
@@ -315,7 +390,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 								attrs! {
 									At::Value => caption,
 									At::Required => true,
-									At::Disabled => p.id.is_none().as_at_value(),
+									At::Disabled => pic.id.is_none().as_at_value(),
 								},
 								input_ev(Ev::Input, |value| Msg::CaptionChange(id, value)),
 							],

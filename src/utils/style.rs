@@ -39,3 +39,29 @@ pub fn s_btn_icon(size: Size) -> Style {
 		St::TransitionTimingFunction => "cubic-bezier(0.2, 0.8, 0.3, 1.2)",
 	}
 }
+
+pub fn s_loader() -> Style {
+	style! {
+		St::Position => "absolute",
+		St::MarginLeft => rem(1),
+		St::MarginTop => rem(1),
+		St::Width => rem(3),
+		St::Height => rem(3),
+		St::Background => "rgba(0, 0, 0, 0.2)",
+		St::BorderRadius => percent(50),
+	}
+}
+
+pub fn s_loader_1() -> Style {
+	style! {
+		St::Transform => "scale(1)",
+		St::Animation => "pulse 2s infinite linear",
+	}
+}
+
+pub fn s_loader_2() -> Style {
+	style! {
+		St::Transform => "scale(0)",
+		St::Animation => "pulse 2s 1s infinite linear",
+	}
+}

@@ -70,8 +70,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 						id: None,
 						album_id: model.album_id.clone(),
 						order: model.order,
-						data: data,
+						data: Some(data),
 						caption: None,
+						dom: true,
 					}
 				);
 				orders.send_msg(Msg::BeginUpload(model.picture.clone()));

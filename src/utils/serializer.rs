@@ -1,9 +1,4 @@
-use crate::{
-	components::{
-		edit_album,
-	},
-	models::picture,
-};
+use crate::models::{picture, album};
 
 #[derive(serde::Serialize, Debug)]
 pub struct Album {
@@ -21,7 +16,7 @@ pub struct Picture {
 }
 
 
-pub fn ser_edit_album(album: edit_album::Album) -> Album {
+pub fn ser_edit_album(album: album::Album) -> Album {
 	Album {
 		frid: album.frid,
 		name: album.name,
@@ -33,7 +28,7 @@ pub fn ser_edit_picture(picture: picture::Picture) -> Picture {
 		id: picture.id,
 		album_id: picture.album_id,
 		order: picture.order,
-		data: picture.data,
+		data: picture.data.unwrap_or(String::new()),
 		caption: picture.caption
 	}
 }

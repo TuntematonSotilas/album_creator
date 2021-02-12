@@ -2,18 +2,18 @@ use seed::{self, prelude::*, *};
 
 use crate::{
 	utils::{
-		style::s_button,
+		style::{s_button, s_loader, s_loader_1, s_loader_2},
 		request::get_auth, 
 		vars::API_URI, 
 		deserializer::{deser_album_det, deser_picture},
-	}
+		busvars::MAX_LOAD,
+	},
+	models::album::Album,
 };
 
 // ------------
 //     Model
 // -----------
-
-const MAX_LOAD: usize = 10;
 
 #[derive(Default)]
 pub struct Model {
@@ -21,22 +21,6 @@ pub struct Model {
 	loaded: usize,
 	switch_timeout: u32,
 	is_switched: bool,
-}
-
-#[derive(Clone)]
-pub struct Album {
-	pub frid: String,
-	pub name: String,
-	pub pictures: Vec<Picture>,
-}
-
-#[derive(Clone)]
-pub struct Picture {
-	pub id: String,
-	pub order: i32,
-	pub caption: Option<String>,
-	pub data: Option<String>,
-	pub dom: bool,
 }
 
 // ------------
@@ -88,9 +72,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				model.loaded += MAX_LOAD;
 				//Load pictures
 				album.pictures.iter()
-					.filter(|p| p.dom)
+					.filter(|p| p.dom && p.id.is_some())
 					.for_each(|p| {
-						orders.send_msg(Msg::GetPicture(p.id.clone()));
+						orders.send_msg(Msg::GetPicture(p.id.clone().unwrap()));
 					});
 			}
 		},
@@ -109,7 +93,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::PictureReceived(data, id) => {
 			if let Some(album) = &mut model.album {
 				album.pictures.iter_mut()
-					.find(|p| p.id == id)
+					.find(|p| p.id == Some(id.clone()))
 					.map(|p| p.data = data);
 			}
 		},
@@ -197,23 +181,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_caption = style! {
 		St::TextAlign => "center",
 	};
-	let s_loader = style! {
-		St::Position => "absolute",
-		St::MarginLeft => rem(1),
-		St::MarginTop => rem(1),
-		St::Width => rem(3),
-		St::Height => rem(3),
-		St::Background => "rgba(0, 0, 0, 0.2)",
-		St::BorderRadius => percent(50),
-	};
-	let s_loader_1 = style! {
-		St::Transform => "scale(1)",
-		St::Animation => "pulse 2s infinite linear",
-	};
-	let s_loader_2 = style! {
-		St::Transform => "scale(0)",
-		St::Animation => "pulse 2s 1s infinite linear",
-	};
+	
 	let s_footer = style! {
 		St::Display => "flex",
 		St::JustifyContent => "center",
@@ -251,8 +219,8 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							_ => div![
 								&s_pic_border,
 								&s_pic_empty,
-								div![&s_loader, &s_loader_1 ],
-								div![&s_loader, &s_loader_2 ],
+								div![s_loader(), s_loader_1() ],
+								div![s_loader(), s_loader_2() ],
 							]
 						},
 						IF!(pic.caption.is_some() => 
