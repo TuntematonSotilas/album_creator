@@ -25,8 +25,9 @@ pub struct Model {
 	loaded: usize,
 }
 
-enum Status {
+pub enum Status {
 	New,
+	Edited,
 	Saving,
 	Saved,
 	Error,
@@ -53,7 +54,7 @@ pub enum Msg {
 	LoadPictures,
 	NameChange(String),
 	Post,
-	SetStatus(bool),
+	SetStatus(Status),
 	PicUpload(pic_upload::Msg),
 	CaptionChange(Option<String>, String),
 	EditPicture(picture::Picture),
@@ -64,7 +65,13 @@ pub enum Msg {
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
-		Msg::NameChange(name) => model.album.name = name,
+		Msg::NameChange(name) => {
+			model.album.name = name;
+			match model.status {
+				Status::New => (),
+				_ => { orders.send_msg(Msg::SetStatus(Status::Edited)); }
+			} 
+		}
 		Msg::Show(opt_id) => {
 			model.status = Status::New;
 			model.loaded = 0;
@@ -84,8 +91,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 		},
 		Msg::AlbumRecieved(opt) => {
-			orders.send_msg(Msg::SetStatus(true));
-			Msg::SetStatus(true);
+			orders.send_msg(Msg::SetStatus(Status::Saved));
 			if let Some(album) = opt {
 				model.album = album;
 				orders.send_msg(Msg::LoadPictures);
@@ -131,29 +137,33 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				.json(&ser_edit_album(model.album.clone()));
 			
 			orders.perform_cmd(async {
-				let mut is_success = false;
+				let mut status = Status::Error;
 				if let Ok(json) = request {
 					let result = fetch(json).await;
 					if let Ok(response) = result {
 						if let Ok(_) = response.check_status() {
-							is_success = true;
+							status = Status::Saved;
 						}
 					}
 				}
-				Msg::SetStatus(is_success)
+				Msg::SetStatus(status)
 			});
 		},
-		Msg::SetStatus(is_success) => {
-			model.status = match is_success {
-				true => Status::Saved,
-				false => Status::Error,
-			};
-			if is_success {
-				let max = model.album.pictures.iter().map(|p| p.order).max();
-				pic_upload::update(pic_upload::Msg::Show(
-					model.album.frid.clone(), max.unwrap_or(0)), 
-					&mut model.pic_upload, 
-					&mut orders.proxy(Msg::PicUpload));
+		Msg::SetStatus(status) => {
+			model.status = status;
+			match model.status {
+				Status::Saved => {
+					//Set all pics as saved
+					model.album.pictures.iter_mut()
+						.for_each(|p| p.saved = true);
+					//Update upload component 
+					let max = model.album.pictures.iter().map(|p| p.order).max();
+					pic_upload::update(pic_upload::Msg::Show(
+						model.album.frid.clone(), max.unwrap_or(0)), 
+						&mut model.pic_upload, 
+						&mut orders.proxy(Msg::PicUpload));
+				},
+				_ => (),
 			}
 		},
 		Msg::PicUpload(msg) => {
@@ -173,9 +183,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			pic_upload::update(msg, &mut model.pic_upload, &mut orders.proxy(Msg::PicUpload));
 		},
 		Msg::CaptionChange(pic_id, caption) => {
+			orders.send_msg(Msg::SetStatus(Status::Edited));
 			model.album.pictures.iter_mut()
 				.filter(|p| p.id == pic_id)
-				.for_each(|p| p.caption = Some(caption.clone()));
+				.for_each(|p| {
+					p.caption = Some(caption.clone());
+					p.saved = false;
+				});
 		},
 		Msg::EditPicture(picture) => {
 			orders.skip(); // No need to rerender
@@ -189,21 +203,22 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				.json(&ser_edit_picture(picture.clone()));
 			
 			orders.perform_cmd(async {
-				let mut is_ok = false;
+				let mut status = Status::Error;
 				if let Ok(json) = request {
 					let result = fetch(json).await;
 					if let Ok(response) = result {
 						if response.check_status().is_ok() {
-							is_ok = true;
+							status = Status::Saved;
 						}
 					}
 				}
-				Msg::SetStatus(is_ok)
+				Msg::SetStatus(status)
 			});
 		},
 		Msg::Save => {
 			orders.send_msg(Msg::Post);
 			model.album.pictures.iter()
+				.filter(|p| p.saved)
 				.for_each(|p| {
 					orders.send_msg(Msg::EditPicture(p.clone()));
 				});
@@ -219,6 +234,9 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let (status, color): (String, String) = match model.status {
 		Status::New => (
 			"NEW".into(),
+			"#0396ff".into()),
+		Status::Edited => (
+			"EDITED".into(),
 			"#0396ff".into()),
 		Status::Saving => (
 			"SAVING".into(),

@@ -73,6 +73,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 						data: Some(data),
 						caption: None,
 						dom: true,
+						saved: false,
 					}
 				);
 				orders.send_msg(Msg::BeginUpload(model.picture.clone()));

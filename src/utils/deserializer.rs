@@ -85,6 +85,7 @@ pub async fn deser_album_det(result: Result<Response, FetchError>) -> Option<mod
 							data: None,
 							dom: false,
 							album_id: frid.clone(),
+							saved: true,
 						}
 					)
 					.collect()

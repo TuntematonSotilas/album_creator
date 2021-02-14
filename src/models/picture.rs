@@ -6,4 +6,5 @@ pub struct Picture {
 	pub data: Option<String>,
 	pub caption: Option<String>,
 	pub dom: bool,
+	pub saved: bool,
 }
