@@ -217,8 +217,9 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::Save => {
 			orders.send_msg(Msg::Post);
+			//Update pictures not saved
 			model.album.pictures.iter()
-				.filter(|p| p.saved)
+				.filter(|p| !p.saved)
 				.for_each(|p| {
 					orders.send_msg(Msg::EditPicture(p.clone()));
 				});
