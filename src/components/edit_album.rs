@@ -287,7 +287,6 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::AlignItems => "center",
 		St::Display => "flex",
 		St::Background => "radial-gradient(circle at bottom left, rgba(28, 28, 36, 0.5) 40%, transparent 120%)",
-		St::BoxShadow => "inset 0.3rem 0rem 0.6rem #ffffff5c",
 		St::BorderRadius => rem(0.3),
 		St::Padding => rem(0.5),
 		St::Width => vw(90),
@@ -305,6 +304,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	let s_input = style! {
 		St::Display => "block",
+		St::Width => percent(100),
 		St::MarginTop => rem(1),
 		St::Outline => "none",
 		St::Background => "none",

@@ -227,10 +227,17 @@ fn view(model: &Model) -> Node<Msg> {
 	};
 	let s_main = style! {
 		St::MinHeight => vh(100),
-		St::Background => "radial-gradient(circle at bottom right, #0f3057 -20%, #d0fcff 100%)",
 	};
-
-    div![style,
+	let s_bckg = match model.page {
+		Page::EditAlbum => style! {
+			St::Background => "radial-gradient(circle at bottom right, #fc8621 -20%, #f9e0ae 100%)",
+		},
+		_ => style! {
+			St::Background => "radial-gradient(circle at bottom right, #0f3057 -20%, #d0fcff 100%)",
+		},
+	};
+    div![
+		style,
 		toast::view(&model.toast).map_msg(Msg::Toast),
 		confirm::view(&model.confirm).map_msg(Msg::Confirm),
 		match &model.page {
@@ -239,6 +246,7 @@ fn view(model: &Model) -> Node<Msg> {
 					match model.is_auth {
 						true => div![
 							s_main,
+							s_bckg,
 							header::view(&model.header).map_msg(Msg::Header),
 							match &model.page {
 								Page::Menu => menu::view(&model.menu).map_msg(Msg::Menu),
