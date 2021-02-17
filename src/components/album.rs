@@ -2,7 +2,7 @@ use seed::{self, prelude::*, *};
 
 use crate::{
 	utils::{
-		style::{s_button, s_loader, s_loader_1, s_loader_2},
+		style::*,
 		request::{get_album, get_picture}, 
 		busvars::MAX_LOAD,
 	},
@@ -102,48 +102,23 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 // ------------
 
 pub fn view(model: &Model) -> Vec<Node<Msg>> {
-	let s_album = style! {
+	let s_main = style! {
 		St::Display => "flex",
 		St::FlexDirection => "column",
-		St::JustifyContent => "center",
+		St::AlignItems => "center",
 	};
 	let s_header = style! {
 		St::Display => "flex",
-		St::FlexDirection => "row",
+		St::Width => vw(90),
+		St::Height => rem(5),
+		St::AlignItems => "center",
 	};
 	let s_title = style! {
 		St::TextAlign => "center",
 		St::FontSize => rem(2),
 		St::LetterSpacing => rem(0.1),
 		St::TextShadow => "0 0 1rem rgba(0,0,0,0.3)",
-		St::Width => percent(90),
-	};
-	let s_switch = style! {
-		St::Display => "flex",
-		St::AlignItems => "center",
-		St::Background => "#008891",
-		St::Width => rem(3.3),
-		St::Height => rem(1.5),
-		St::AlignSelf => "center",
-		St::BoxShadow => "inset 0px 0px 3px 0px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.5)",
-		St::BorderRadius => rem(1),
-		St::Cursor => "pointer",
-	};
-	let s_switch_btn = style! {
-		St::Background => "white",
-		St::Width => rem(1.2),
-		St::Height => rem(1.2),
-		St::BorderRadius => rem(1),
-		St::BoxShadow => "inset 0.2px -1px 1px rgba(0, 0, 0, 0.35)",
-		St::Transition => format!("margin-left {0}ms ease", model.switch_timeout),
-	};
-	let s_switch_anim = match model.is_switched {
-		true => style! { 
-			St::MarginLeft => rem(1.9),
-		},
-		false => style! { 
-			St::MarginLeft => rem(0.1),
-		},
+		St::Width => vw(85),
 	};
 	let s_pic_list = style! {
 		St::Display => "flex",
@@ -176,21 +151,23 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::JustifyContent => "center",
 		St::Margin => rem(1),
 	};
+	
 	nodes![
 		match &model.album {
 			Some(album) => div![
-				s_album,
+				s_main,
 				div![
 					s_header,
-					h1![
+					div![
 						s_title,
 						&album.name
 					],
 					div![
-						s_switch,
+						s_switch(model.switch_timeout),
+						s_switch_anim(model.is_switched),
 						span![
-							s_switch_btn, 
-							s_switch_anim,
+							s_switch_btn(model.switch_timeout), 
+							s_switch_btn_anim(model.is_switched),
 						],
 						ev(Ev::Click, |_| Msg::Switch),
 					],

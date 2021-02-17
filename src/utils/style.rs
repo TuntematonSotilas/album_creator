@@ -65,3 +65,50 @@ pub fn s_loader_2() -> Style {
 		St::Animation => "pulse 2s 1s infinite linear",
 	}
 }
+
+pub fn s_switch(switch_timeout: u32) -> Style {
+	style! {
+		St::Display => "flex",
+		St::AlignItems => "center",
+		St::Width => rem(3.3),
+		St::Height => rem(1.5),
+		St::AlignSelf => "center",
+		St::BoxShadow => "inset 0px 0px 3px 0px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.5)",
+		St::BorderRadius => rem(1),
+		St::Cursor => "pointer",
+		St::Transition => format!("background {0}ms ease", switch_timeout),
+	}
+}
+
+pub fn s_switch_btn(switch_timeout: u32) -> Style {
+	style! {
+		St::Background => "white",
+		St::Width => rem(1.2),
+		St::Height => rem(1.2),
+		St::BorderRadius => rem(1),
+		St::BoxShadow => "inset 0.2px -1px 1px rgba(0, 0, 0, 0.35)",
+		St::Transition => format!("margin-left {0}ms ease", switch_timeout),
+	}
+}
+
+pub fn s_switch_anim(is_switched: bool) -> Style {
+	match is_switched {
+		true => style! { 
+			St::Background => "#c24914",
+		},
+		false => style! { 
+			St::Background => "#008891",
+		}
+	}
+}
+
+pub fn s_switch_btn_anim(is_switched: bool) -> Style {
+	match is_switched {
+		true => style! { 
+			St::MarginLeft => rem(1.9),
+		},
+		false => style! { 
+			St::MarginLeft => rem(0.1),
+		}
+	}
+}

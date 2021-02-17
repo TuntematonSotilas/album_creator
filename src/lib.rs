@@ -29,7 +29,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         menu: menu::Model::new(&url),
 		header: header::Model::new(&url),
 		album_list: album_list::Model::new(&url),
-		edit_album: edit_album::Model::new(),
+		edit_album: edit_album::Model::default(),
 		album: album::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),
@@ -122,7 +122,8 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::SetUrl(id_opt) => {
 			let path_part = match model.page {
 				Page::Menu => "menu",
-				Page::AlbumList => "album",
+				Page::AlbumList => "albums",
+				Page::Album => "album",
 				Page::EditAlbum => "edit",
 				_ => "login",
 			};
@@ -179,6 +180,14 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			album_list::update(msg, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
         },
         Msg::EditAlbum(msg) => {
+			match msg {
+				edit_album::Msg::GoToConsult(ref frid) => {
+					model.page = Page::Album;
+					orders.send_msg(Msg::SetUrl(Some(frid.into())));
+					orders.send_msg(Msg::LoadPage(Some(frid.into())));
+				},
+				_ => (),
+			}
 			edit_album::update(msg, &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum));
 		},
 		Msg::Album(msg) => {

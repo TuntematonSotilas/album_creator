@@ -8,7 +8,7 @@ use crate::{
 		vars::API_URI, 
 		request::{get_auth, get_album, get_picture},
 		serializer::{ser_edit_album, ser_edit_picture},
-		style::{Size, s_btn_icon, s_loader, s_loader_1, s_loader_2}, 
+		style::*, 
 		busvars::MAX_LOAD,
 	},
 	models::{album::Album, picture},
@@ -18,13 +18,17 @@ use crate::{
 //     Model
 // -----------
 
+#[derive(Default)]
 pub struct Model {
 	album: Album,
 	status: Status,
 	pic_upload: pic_upload::Model,
 	loaded: usize,
+	switch_timeout: u32,
+	is_switched: bool,
 }
 
+#[derive(PartialEq)]
 pub enum Status {
 	New,
 	Edited,
@@ -33,15 +37,10 @@ pub enum Status {
 	Error,
 }
 
-impl Model {
-	pub fn new() -> Self {
-		Model {
-			album: Album::default(),
-			status: Status::New,
-			pic_upload: pic_upload::Model::default(),
-			loaded: 0,
-		}
-	}
+impl Default for Status {
+    fn default() -> Self {
+        Status::New
+    }
 }
 
 // ------------
@@ -61,20 +60,17 @@ pub enum Msg {
 	GetPicture(String),
 	PictureReceived(Option<String>, String),
 	Save,
+	Switch,
+	GoToConsult(String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 	match msg {
-		Msg::NameChange(name) => {
-			model.album.name = name;
-			match model.status {
-				Status::New => (),
-				_ => { orders.send_msg(Msg::SetStatus(Status::Edited)); }
-			} 
-		}
 		Msg::Show(opt_id) => {
 			model.status = Status::New;
 			model.loaded = 0;
+			model.is_switched = true;
+			model.switch_timeout = 200;
 			model.album = Album::default();
 			match opt_id {
 				Some(id) => {
@@ -89,6 +85,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					model.album.pictures = Vec::new();
 				}
 			}
+		},
+		Msg::NameChange(name) => {
+			model.album.name = name;
+			match model.status {
+				Status::New => (),
+				_ => { orders.send_msg(Msg::SetStatus(Status::Edited)); }
+			} 
 		},
 		Msg::AlbumRecieved(opt) => {
 			orders.send_msg(Msg::SetStatus(Status::Saved));
@@ -223,7 +226,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				.for_each(|p| {
 					orders.send_msg(Msg::EditPicture(p.clone()));
 				});
-		}
+		},
+		Msg::Switch => {
+			model.is_switched = false;
+			let frid = model.album.frid.clone();
+			orders.perform_cmd(cmds::timeout(model.switch_timeout, ||Msg::GoToConsult(frid)));
+		},
+		Msg::GoToConsult(_frid) => (),
 	}
 }
 
@@ -249,11 +258,10 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 			"ERROR".into(), 
 			"#794242".into()),
 	};
-	let s_column = style! {
+	let s_main = style! {
 		St::Display => "flex",
 		St::FlexDirection => "column",
 		St::AlignItems => "center",
-		St::MarginTop => rem(0.5),
 	};
 	let s_status = style! {
 		St::Color => color,
@@ -268,7 +276,13 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_header = style! {
 		St::Display => "flex",
 		St::Width => vw(90),
-	};	
+		St::Height => rem(5),
+		St::AlignItems => "center",
+	};
+	let s_header_left = style! {
+		St::Width => vw(85),
+		St::Display => "flex",
+	};
 	let s_panel = style! {
 		St::AlignItems => "center",
 		St::Display => "flex",
@@ -328,22 +342,36 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	};
 	nodes![
 		div![
-			s_column,
+			s_main,
 			div![
 				s_header,
-				a![
-					C!("btn_icon btn_icon--blue"),
-					s_btn_icon(Size::S),
-					ev(Ev::Click, |_| Msg::Save),
-					i![
-						C!("fa fa-check"),
+				div![
+					s_header_left,
+					a![
+						C!("btn_icon btn_icon--blue"),
+						s_btn_icon(Size::S),
+						ev(Ev::Click, |_| Msg::Save),
+						i![
+							C!("fa fa-check"),
+						],
+						attrs! { At::Href => String::new()},
 					],
-					attrs! { At::Href => String::new()},
+					span![
+						s_status,
+						status
+					],
 				],
-				span![
-					s_status,
-					status
-				],
+				IF!(model.status != Status::New =>  
+					div![
+						s_switch(model.switch_timeout),
+						s_switch_anim(model.is_switched),
+						span![
+							s_switch_btn(model.switch_timeout), 
+							s_switch_btn_anim(model.is_switched),
+						],
+						ev(Ev::Click, |_| Msg::Switch),
+					]
+				)
 			],
 			div![
 				&s_panel,
