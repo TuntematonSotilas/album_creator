@@ -243,9 +243,10 @@ fn view(model: &Model) -> Node<Msg> {
 	let s_bckg = style! {
 		St::Transition => format!("background {0}ms linear", SWITCH_TIMEOUT),
 		St::Background => match model.is_edit {
-			true => "#f9e0ae", //"radial-gradient(circle at bottom right, #fc8621 -20%, #f9e0ae 100%)",
-			false => "#d0fcff", //"radial-gradient(circle at bottom right, #0f3057 -20%, #d0fcff 100%)",
+			true => "#fc8621",
+			false => "#264871",
 		},
+		St::BackgroundImage => "radial-gradient(circle at top left, rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0) 120%)";
 	};
     div![
 		style,
