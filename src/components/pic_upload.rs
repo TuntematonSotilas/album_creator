@@ -4,7 +4,7 @@ use web_sys::FileList;
 use crate::{
 	models::picture::Picture,
 	utils::{
-		style::s_button, 
+		style::*, 
 		vars::API_URI, 
 		request::get_auth,
 		deserializer::deser_upload_resp,
@@ -111,16 +111,20 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_input_file = style! {
 		St::Display => "none",
 	};
-	let s_btn = style! {
-		St::MarginTop => rem(1),
+	let s_bnt = style! {
+		St::Display => "block",
 	};
 	nodes![
 		IF!(model.show => 
 			label![
-				s_btn,
-				s_button(),
-				C!("button"),
-				"Add picture",
+				div![
+					s_bnt,
+					s_btn_icon(Size::S, 0),
+					C!("btn_icon btn_icon--orange"),
+					i![
+						C!("fa fa-plus"),
+					],
+				],
 				input![
 					s_input_file,
 					attrs! {

@@ -16,10 +16,18 @@
 	background: #008891;
 }
 
+.btn_icon--orange {
+    background: #c24914;
+}
+
 .btn_icon--blue:hover {
     color: #00587a;
 }
 
 .btn_icon--green:hover {
     color: #008891;
+}
+
+.btn_icon--orange:hover {
+    background: #fc8621;
 }

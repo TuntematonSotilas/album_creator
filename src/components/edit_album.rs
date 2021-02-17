@@ -9,7 +9,7 @@ use crate::{
 		request::{get_auth, get_album, get_picture},
 		serializer::{ser_edit_album, ser_edit_picture},
 		style::*, 
-		busvars::MAX_LOAD,
+		pubvars::{MAX_LOAD, SWITCH_TIMEOUT},
 	},
 	models::{album::Album, picture},
 };
@@ -24,7 +24,6 @@ pub struct Model {
 	status: Status,
 	pic_upload: pic_upload::Model,
 	loaded: usize,
-	switch_timeout: u32,
 	is_switched: bool,
 }
 
@@ -62,6 +61,7 @@ pub enum Msg {
 	Save,
 	Switch,
 	GoToConsult(String),
+	AnimBckg(bool),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -70,7 +70,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.status = Status::New;
 			model.loaded = 0;
 			model.is_switched = true;
-			model.switch_timeout = 200;
 			model.album = Album::default();
 			match opt_id {
 				Some(id) => {
@@ -228,11 +227,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				});
 		},
 		Msg::Switch => {
+			orders.send_msg(Msg::AnimBckg(false));
 			model.is_switched = false;
 			let frid = model.album.frid.clone();
-			orders.perform_cmd(cmds::timeout(model.switch_timeout, ||Msg::GoToConsult(frid)));
+			orders.perform_cmd(cmds::timeout(SWITCH_TIMEOUT, ||Msg::GoToConsult(frid)));
 		},
 		Msg::GoToConsult(_frid) => (),
+		Msg::AnimBckg(_is_edit) => (),
 	}
 }
 
@@ -349,7 +350,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 					s_header_left,
 					a![
 						C!("btn_icon btn_icon--blue"),
-						s_btn_icon(Size::S),
+						s_btn_icon(Size::S, 1),
 						ev(Ev::Click, |_| Msg::Save),
 						i![
 							C!("fa fa-check"),
@@ -363,10 +364,10 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				],
 				IF!(model.status != Status::New =>  
 					div![
-						s_switch(model.switch_timeout),
+						s_switch(),
 						s_switch_anim(model.is_switched),
 						span![
-							s_switch_btn(model.switch_timeout), 
+							s_switch_btn(), 
 							s_switch_btn_anim(model.is_switched),
 						],
 						ev(Ev::Click, |_| Msg::Switch),

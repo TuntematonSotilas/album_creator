@@ -1,5 +1,7 @@
 use seed::{self, prelude::*, *};
 
+use crate::utils::pubvars::SWITCH_TIMEOUT;
+
 pub enum Size {
 	S, X
 }
@@ -21,16 +23,15 @@ pub fn s_button() -> Style {
     }
 }
 
-pub fn s_btn_icon(size: Size) -> Style {
+pub fn s_btn_icon(size: Size, margin: u32) -> Style {
 	let size = match size {
 		Size::S => 2.5,
 		Size::X => 5.
 	};
 	style! {
 		St::Width => rem(size),
-		St::Width => rem(size),
 		St::LineHeight => rem(size),
-        St::Margin => rem(1),
+        St::Margin => rem(margin),
         St::BorderRadius => rem(0.5),
         St::FontSize => rem(size / 3.),
         St::TextAlign => "center",
@@ -66,7 +67,7 @@ pub fn s_loader_2() -> Style {
 	}
 }
 
-pub fn s_switch(switch_timeout: u32) -> Style {
+pub fn s_switch() -> Style {
 	style! {
 		St::Display => "flex",
 		St::AlignItems => "center",
@@ -76,18 +77,18 @@ pub fn s_switch(switch_timeout: u32) -> Style {
 		St::BoxShadow => "inset 0px 0px 3px 0px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.5)",
 		St::BorderRadius => rem(1),
 		St::Cursor => "pointer",
-		St::Transition => format!("background {0}ms ease", switch_timeout),
+		St::Transition => format!("background {0}ms ease", SWITCH_TIMEOUT),
 	}
 }
 
-pub fn s_switch_btn(switch_timeout: u32) -> Style {
+pub fn s_switch_btn() -> Style {
 	style! {
 		St::Background => "white",
 		St::Width => rem(1.2),
 		St::Height => rem(1.2),
 		St::BorderRadius => rem(1),
 		St::BoxShadow => "inset 0.2px -1px 1px rgba(0, 0, 0, 0.35)",
-		St::Transition => format!("margin-left {0}ms ease", switch_timeout),
+		St::Transition => format!("margin-left {0}ms ease", SWITCH_TIMEOUT),
 	}
 }
 

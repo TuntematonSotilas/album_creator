@@ -63,7 +63,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             s_nav,
             a![
 				C!("btn_icon btn_icon--blue"),
-				&s_btn_icon(Size::X),
+				&s_btn_icon(Size::X, 1),
 				&s_anim,
 				attrs! { At::Href => model.base_url.clone().add_path_part("albums") },
                 i![
@@ -72,7 +72,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
             ],
             a![
                 C!("btn_icon btn_icon--green"),
-				&s_btn_icon(Size::X),
+				&s_btn_icon(Size::X, 1),
 				&s_anim,
                 attrs! { At::Href => model.base_url.clone().add_path_part("edit") },
                 i![

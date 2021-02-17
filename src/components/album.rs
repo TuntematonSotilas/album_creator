@@ -4,7 +4,7 @@ use crate::{
 	utils::{
 		style::*,
 		request::{get_album, get_picture}, 
-		busvars::MAX_LOAD,
+		pubvars::{MAX_LOAD, SWITCH_TIMEOUT},
 	},
 	models::album::Album,
 };
@@ -17,7 +17,6 @@ use crate::{
 pub struct Model {
 	album: Option<Album>,
 	loaded: usize,
-	switch_timeout: u32,
 	is_switched: bool,
 }
 
@@ -33,6 +32,7 @@ pub enum Msg {
 	PictureReceived(Option<String>, String),
 	Switch,
 	GoToEdit(String),
+	AnimBckg(bool),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -41,7 +41,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			model.album = None;
 			model.loaded = 0;
 			model.is_switched = false;
-			model.switch_timeout = 200;
 			orders.skip(); // No need to rerender
 			let mut album_opt: Option<Album> = None;
 			orders.perform_cmd(async {
@@ -87,13 +86,15 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 		},
 		Msg::Switch => {
+			orders.send_msg(Msg::AnimBckg(true));
 			model.is_switched = true;
 			if let Some(album) = &model.album {
 				let frid = album.frid.clone();
-				orders.perform_cmd(cmds::timeout(model.switch_timeout, ||Msg::GoToEdit(frid)));	
+				orders.perform_cmd(cmds::timeout(SWITCH_TIMEOUT, ||Msg::GoToEdit(frid)));	
 			}
 		},
 		Msg::GoToEdit(_frid) => (),
+		Msg::AnimBckg(_is_edit) => (),
 	}
 }
 
@@ -163,10 +164,10 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 						&album.name
 					],
 					div![
-						s_switch(model.switch_timeout),
+						s_switch(),
 						s_switch_anim(model.is_switched),
 						span![
-							s_switch_btn(model.switch_timeout), 
+							s_switch_btn(), 
 							s_switch_btn_anim(model.is_switched),
 						],
 						ev(Ev::Click, |_| Msg::Switch),

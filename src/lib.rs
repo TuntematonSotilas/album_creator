@@ -11,6 +11,7 @@ use crate::components::{
 	confirm,
 };
 use crate::models::toast::Toast;
+use crate::utils::pubvars::SWITCH_TIMEOUT;
 
 mod components;
 mod utils;
@@ -36,6 +37,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 		is_auth: false,
 		id_url: None,
 		confirm: confirm::Model::default(),
+		is_edit: false,
     }
 }
 
@@ -56,6 +58,7 @@ struct Model {
 	is_auth: bool,
 	id_url: Option<String>,
 	confirm: confirm::Model,
+	is_edit: bool
 }
 
 #[derive(Copy, Clone)]
@@ -100,7 +103,6 @@ enum Msg {
 	ShowConfirm(String),
 }
 
-// `update` describes how to handle each `Msg`.
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
@@ -134,6 +136,10 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			url.go_and_push();
 		},
 		Msg::LoadPage(opt_frid) => {
+			model.is_edit = match model.page {
+				Page::EditAlbum => true,
+				_ => false,
+			};
 			match model.page {
 				Page::Menu => menu::update(menu::Msg::Show, &mut model.menu, &mut orders.proxy(Msg::Menu)),
 				Page::AlbumList => album_list::update(album_list::Msg::Show, &mut model.album_list, &mut orders.proxy(Msg::AlbumList)),
@@ -186,6 +192,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					orders.send_msg(Msg::SetUrl(Some(frid.into())));
 					orders.send_msg(Msg::LoadPage(Some(frid.into())));
 				},
+				edit_album::Msg::AnimBckg(is_edit) => {
+					model.is_edit = is_edit;
+				},
 				_ => (),
 			}
 			edit_album::update(msg, &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum));
@@ -196,6 +205,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					model.page = Page::EditAlbum;
 					orders.send_msg(Msg::SetUrl(Some(frid.into())));
 					orders.send_msg(Msg::LoadPage(Some(frid.into())));
+				},
+				album::Msg::AnimBckg(is_edit) => {
+					model.is_edit = is_edit;
 				},
 				_ => (),
 			}
@@ -228,12 +240,11 @@ fn view(model: &Model) -> Node<Msg> {
 	let s_main = style! {
 		St::MinHeight => vh(100),
 	};
-	let s_bckg = match model.page {
-		Page::EditAlbum => style! {
-			St::Background => "radial-gradient(circle at bottom right, #fc8621 -20%, #f9e0ae 100%)",
-		},
-		_ => style! {
-			St::Background => "radial-gradient(circle at bottom right, #0f3057 -20%, #d0fcff 100%)",
+	let s_bckg = style! {
+		St::Transition => format!("background {0}ms linear", SWITCH_TIMEOUT),
+		St::Background => match model.is_edit {
+			true => "#f9e0ae", //"radial-gradient(circle at bottom right, #fc8621 -20%, #f9e0ae 100%)",
+			false => "#d0fcff", //"radial-gradient(circle at bottom right, #0f3057 -20%, #d0fcff 100%)",
 		},
 	};
     div![
