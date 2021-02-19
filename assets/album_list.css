@@ -10,8 +10,3 @@
 	transform: rotateY(-28deg) rotateZ(-2deg) scale(1.02);
 	box-shadow: 0.3rem 0.2rem 0.5rem #db6d92, 1rem 0.4rem 0 #f9b0c9;
 }
-
-.album_list__delete:hover {
-	text-decoration: underline;
-	cursor: pointer;
-}

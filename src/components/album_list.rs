@@ -91,7 +91,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			if is_ok {
 				if let Some(album) = &mut model.albums {
 					if let Some(frid) = &model.frid_to_delete {
-						let position = album.into_iter()
+						let position = album.iter()
 							.position(|a| a.frid == *frid);
 						if let Some(pos) = position {
 							album.remove(pos);
@@ -185,7 +185,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 							]
 						],
 						span![
-							C!("album_list__delete"),
+							C!("delete_link"),
 							&s_delete,
 							"delete",
 							ev(Ev::Click, |_| Msg::AskDelete(frid)),

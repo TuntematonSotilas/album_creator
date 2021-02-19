@@ -70,6 +70,12 @@ pub enum Page {
 	Album,
 }
 
+impl Default for Page {
+    fn default() -> Self {
+        Page::Login
+    }
+}
+
 impl Page {
     fn init(mut url: Url) -> Self {
 		match url.next_path_part() {
@@ -187,6 +193,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         },
         Msg::EditAlbum(msg) => {
 			match msg {
+				edit_album::Msg::ShowConfirm(ref message) => {
+					orders.send_msg(Msg::ShowConfirm(message.clone()));
+				},
 				edit_album::Msg::GoToConsult(ref frid) => {
 					model.page = Page::Album;
 					orders.send_msg(Msg::SetUrl(Some(frid.into())));
@@ -216,7 +225,15 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		Msg::Confirm(msg) => {
 			match msg {
 				confirm::Msg::Ok => {
-					album_list::update(album_list::Msg::Delete, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
+					match model.page {
+						Page::AlbumList => {
+							album_list::update(album_list::Msg::Delete, &mut model.album_list, &mut orders.proxy(Msg::AlbumList));
+						},
+						Page::EditAlbum => {
+							edit_album::update(edit_album::Msg::DeletePic, &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum));
+						},
+						_ => (),
+					}
 				},
 				_ => (),
 			}

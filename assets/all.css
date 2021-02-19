@@ -14,3 +14,8 @@
     background-position: 0 -1rem;
     transition: background-position 0.1s linear;
 }
+
+.delete_link:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}

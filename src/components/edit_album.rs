@@ -25,6 +25,7 @@ pub struct Model {
 	pic_upload: pic_upload::Model,
 	loaded: usize,
 	is_switched: bool,
+	pic_id_to_delete: Option<String>,
 }
 
 #[derive(PartialEq)]
@@ -62,6 +63,10 @@ pub enum Msg {
 	Switch,
 	GoToConsult(String),
 	AnimBckg(bool),
+	AskDeletePic(Option<String>),
+	DeletePic,
+	DeletePicResp(bool),
+	ShowConfirm(String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -234,6 +239,39 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::GoToConsult(_frid) => (),
 		Msg::AnimBckg(_is_edit) => (),
+		Msg::AskDeletePic(id) => {
+			model.pic_id_to_delete = id;
+			orders.send_msg(Msg::ShowConfirm("Delete picture ?".into()));
+		},
+		Msg::DeletePic => {
+			orders.skip(); // No need to rerender
+			if let Some(id) = &model.pic_id_to_delete {	
+				let uri = format!("{0}delete-picture?id={1}", API_URI, id);	
+				let mut is_ok = false;
+				orders.perform_cmd(async move {
+					let request = Request::new(uri)
+						.method(Method::Delete)
+						.header(Header::authorization(get_auth()));
+					let result = fetch(request).await;
+					if let Ok(response) = result {
+						if response.check_status().is_ok() {
+							is_ok = true;
+						}
+					}
+					Msg::DeletePicResp(is_ok)
+				});
+			}
+		},
+		Msg::DeletePicResp(is_ok) => {
+			if is_ok {
+				let position = &model.album.pictures.iter()
+					.position(|a| a.id == model.pic_id_to_delete);
+				if let Some(pos) = position {
+					model.album.pictures.remove(*pos);
+				}
+			}
+		},
+		Msg::ShowConfirm(_msg) => (),
 	}
 }
 
@@ -287,6 +325,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_panel = style! {
 		St::AlignItems => "center",
 		St::Display => "flex",
+		St::JustifyContent => "space-between"
 		St::Background => "radial-gradient(circle at bottom left, rgba(28, 28, 36, 0.5) 40%, transparent 120%)",
 		St::BorderRadius => rem(0.3),
 		St::Padding => rem(0.5),
@@ -299,7 +338,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 	let s_label = style! {
 		St::Position => "relative",
 		St::Top => rem(-1.4),
-		St::Color => "white",
+		St::Color => "rgba(255,255,255,0.6)",
 		St::Transition => "all 0.2s ease",
 		St::PointerEvents => "none",
 	};
@@ -340,6 +379,11 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 		St::Width => rem(5),
 		St::Height => rem(5),
 		St::Background => "rgba(0, 0, 0, 0.2)",
+	};
+	let s_delete = style! {
+		St::FontSize => rem(0.8),
+		St::TextShadow => "1px 1px 1px rgba(0,0,0,0.3)",
+		St::AlignSelf => "flex-start",
 	};
 	nodes![
 		div![
@@ -403,6 +447,7 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 						caption = cap;
 					};
 					let id = pic.id.clone();
+					let id_del = pic.id.clone();
 					li![
 						&s_panel,
 						match &pic.data {
@@ -434,6 +479,12 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 								&s_label,
 								"Caption",
 							],
+						],
+						div![
+							C!("delete_link"),
+							&s_delete,
+							"delete",
+							ev(Ev::Click, |_| Msg::AskDeletePic(id_del)),
 						],
 					]
 				}),
