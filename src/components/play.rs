@@ -89,8 +89,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             orders.perform_cmd(cmds::timeout(2000, || Msg::DoNextPic));
         },
         Msg::DoNextPic => {
-            model.curr_pic_index += 1;
-            orders.send_msg(Msg::NextPic);
+            let index =  model.curr_pic_index + 1;
+            if let Some(album) = &mut model.album {
+                if album.pictures.get(index).is_some() {  
+                    model.curr_pic_index = index;
+                    orders.send_msg(Msg::NextPic);
+                }
+            }
         },
     }
 }

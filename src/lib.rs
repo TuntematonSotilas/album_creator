@@ -118,6 +118,7 @@ enum Msg {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
+			model.id_url = None;
 			if !model.is_auth {
 				model.page = Page::Login;
 				orders.send_msg(Msg::SetUrl(None));
