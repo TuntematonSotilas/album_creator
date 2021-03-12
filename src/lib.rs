@@ -104,7 +104,7 @@ enum Msg {
     ShowToast(Toast),
 	UrlChanged(subs::UrlChanged),
 	SetUrl(Option<String>),
-	LoadPage(Option<String>),
+	LoadPage,
 	Confirm(confirm::Msg),
 	ShowConfirm(String),
 }
@@ -120,12 +120,10 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 			let mut url_cp = url.clone(); 
 			url_cp.next_path_part();
-			let mut id_opt: Option<String> = None;
 			if let Some(id_url) = url_cp.next_path_part() {
 				model.id_url = Some(id_url.into());
-				id_opt = Some(id_url.into());
 			}
-			orders.send_msg(Msg::LoadPage(id_opt));
+			orders.send_msg(Msg::LoadPage);
 		},
 		Msg::SetUrl(id_opt) => {
 			let path_part = match model.page {
@@ -141,7 +139,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 			}
 			url.go_and_push();
 		},
-		Msg::LoadPage(opt_frid) => {
+		Msg::LoadPage => {
 			model.is_edit = match model.page {
 				Page::EditAlbum => true,
 				_ => false,
@@ -150,7 +148,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Page::Menu => menu::update(menu::Msg::Show, &mut model.menu, &mut orders.proxy(Msg::Menu)),
 				Page::AlbumList => album_list::update(album_list::Msg::Show, &mut model.album_list, &mut orders.proxy(Msg::AlbumList)),
 				Page::Album => album::update(album::Msg::Show(model.id_url.clone()), &mut model.album, &mut orders.proxy(Msg::Album)),
-				Page::EditAlbum => edit_album::update(edit_album::Msg::Show(opt_frid), &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum)),
+				Page::EditAlbum => edit_album::update(edit_album::Msg::Show(model.id_url.clone()), &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum)),
 				_ => (),
 			};
 		},
@@ -160,7 +158,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					model.is_auth = true;
 					model.page = Page::Menu;
 					orders.send_msg(Msg::SetUrl(None));
-					orders.send_msg(Msg::LoadPage(None));
+					orders.send_msg(Msg::LoadPage);
 					header::update(header::Msg::Show, &mut model.header, &mut orders.proxy(Msg::Header));
 				}
                 login::Msg::ShowToast(ref toast) => {
@@ -199,7 +197,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				edit_album::Msg::GoToConsult(ref frid) => {
 					model.page = Page::Album;
 					orders.send_msg(Msg::SetUrl(Some(frid.into())));
-					orders.send_msg(Msg::LoadPage(Some(frid.into())));
+					orders.send_msg(Msg::LoadPage);
 				},
 				edit_album::Msg::AnimBckg(is_edit) => {
 					model.is_edit = is_edit;
@@ -213,7 +211,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				album::Msg::GoToEdit(ref frid) => {
 					model.page = Page::EditAlbum;
 					orders.send_msg(Msg::SetUrl(Some(frid.into())));
-					orders.send_msg(Msg::LoadPage(Some(frid.into())));
+					orders.send_msg(Msg::LoadPage);
 				},
 				album::Msg::AnimBckg(is_edit) => {
 					model.is_edit = is_edit;

@@ -7,3 +7,4 @@ pub mod edit_album;
 pub mod album;
 pub mod pic_upload;
 pub mod confirm;
+pub mod play;
