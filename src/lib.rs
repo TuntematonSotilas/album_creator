@@ -32,11 +32,11 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 		album_list: album_list::Model::new(&url),
 		edit_album: edit_album::Model::default(),
 		album: album::Model::default(),
+		confirm: confirm::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),
 		is_auth: false,
 		id_url: None,
-		confirm: confirm::Model::default(),
 		is_edit: false,
     }
 }
@@ -53,11 +53,11 @@ struct Model {
 	album_list: album_list::Model,
 	edit_album: edit_album::Model,
 	album: album::Model,
-    base_url: Url,
+    confirm: confirm::Model,
+	base_url: Url,
     page: Page,
 	is_auth: bool,
 	id_url: Option<String>,
-	confirm: confirm::Model,
 	is_edit: bool
 }
 
@@ -101,11 +101,11 @@ enum Msg {
 	AlbumList(album_list::Msg),
 	EditAlbum(edit_album::Msg),
 	Album(album::Msg),
+	Confirm(confirm::Msg),
     ShowToast(Toast),
 	UrlChanged(subs::UrlChanged),
 	SetUrl(Option<String>),
 	LoadPage,
-	Confirm(confirm::Msg),
 	ShowConfirm(String),
 }
 
