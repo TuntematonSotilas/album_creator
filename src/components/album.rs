@@ -33,6 +33,8 @@ pub enum Msg {
 	Switch,
 	GoToEdit(String),
 	AnimBckg(bool),
+	Play,
+	GoToPlay(String),
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -95,6 +97,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::GoToEdit(_frid) => (),
 		Msg::AnimBckg(_is_edit) => (),
+		Msg::Play => {
+			if let Some(album) = &model.album {
+				let frid = album.frid.clone();
+				orders.send_msg(Msg::GoToPlay(frid));
+			}
+		},
+		Msg::GoToPlay(_frid) => (),
 	}
 }
 
@@ -159,6 +168,15 @@ pub fn view(model: &Model) -> Vec<Node<Msg>> {
 				s_main,
 				div![
 					s_header,
+					a![
+						C!("btn_icon btn_icon--blue"),
+						s_btn_icon(Size::S, 1),
+						ev(Ev::Click, |_| Msg::Play),
+						i![
+							C!("fa fa-play"),
+						],
+						attrs! { At::Href => String::new()},
+					],
 					div![
 						s_title,
 						&album.name

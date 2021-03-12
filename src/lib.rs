@@ -9,6 +9,7 @@ use crate::components::{
 	edit_album,
 	album,
 	confirm,
+	play,
 };
 use crate::models::toast::Toast;
 use crate::utils::pubvars::SWITCH_TIMEOUT;
@@ -33,6 +34,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 		edit_album: edit_album::Model::default(),
 		album: album::Model::default(),
 		confirm: confirm::Model::default(),
+		play: play::Model::default(),
         base_url: url.to_base_url(),
         page: Page::init(url),
 		is_auth: false,
@@ -54,6 +56,7 @@ struct Model {
 	edit_album: edit_album::Model,
 	album: album::Model,
     confirm: confirm::Model,
+	play: play::Model,
 	base_url: Url,
     page: Page,
 	is_auth: bool,
@@ -68,6 +71,7 @@ pub enum Page {
 	AlbumList,
 	EditAlbum,
 	Album,
+	Play,
 }
 
 impl Default for Page {
@@ -84,6 +88,7 @@ impl Page {
 			Some("albums") => Self::AlbumList,
 			Some("edit") => Self::EditAlbum,
 			Some("album") => Self::Album,
+			Some("play") => Self::Play,
             Some(_) => Self::Login,
         }
     }
@@ -102,6 +107,7 @@ enum Msg {
 	EditAlbum(edit_album::Msg),
 	Album(album::Msg),
 	Confirm(confirm::Msg),
+	Play(play::Msg),
     ShowToast(Toast),
 	UrlChanged(subs::UrlChanged),
 	SetUrl(Option<String>),
@@ -131,6 +137,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Page::AlbumList => "albums",
 				Page::Album => "album",
 				Page::EditAlbum => "edit",
+				Page::Play => "play",
 				_ => "login",
 			};
 			let mut url = model.base_url.clone().add_path_part(path_part);
@@ -149,6 +156,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 				Page::AlbumList => album_list::update(album_list::Msg::Show, &mut model.album_list, &mut orders.proxy(Msg::AlbumList)),
 				Page::Album => album::update(album::Msg::Show(model.id_url.clone()), &mut model.album, &mut orders.proxy(Msg::Album)),
 				Page::EditAlbum => edit_album::update(edit_album::Msg::Show(model.id_url.clone()), &mut model.edit_album, &mut orders.proxy(Msg::EditAlbum)),
+				Page::Play => play::update(play::Msg::Show(model.id_url.clone()), &mut model.play, &mut orders.proxy(Msg::Play)),
 				_ => (),
 			};
 		},
@@ -213,6 +221,11 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 					orders.send_msg(Msg::SetUrl(Some(frid.into())));
 					orders.send_msg(Msg::LoadPage);
 				},
+				album::Msg::GoToPlay(ref frid) => {
+					model.page = Page::Play;
+					orders.send_msg(Msg::SetUrl(Some(frid.into())));
+					orders.send_msg(Msg::LoadPage);
+				},
 				album::Msg::AnimBckg(is_edit) => {
 					model.is_edit = is_edit;
 				},
@@ -239,7 +252,10 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 		},
 		Msg::ShowConfirm(message) => {
 			confirm::update(confirm::Msg::Show(message), &mut model.confirm, &mut orders.proxy(Msg::Confirm));
-		}
+		},
+		Msg::Play(msg) => {
+			play::update(msg, &mut model.play, &mut orders.proxy(Msg::Play));
+		},
     }
 }
 
@@ -280,6 +296,7 @@ fn view(model: &Model) -> Node<Msg> {
 								Page::AlbumList => album_list::view(&model.album_list).map_msg(Msg::AlbumList),
 								Page::EditAlbum => edit_album::view(&model.edit_album).map_msg(Msg::EditAlbum),
 								Page::Album => album::view(&model.album).map_msg(Msg::Album),
+								Page::Play => play::view(&model.play).map_msg(Msg::Play),
 								_ => nodes![],
 							}
 						],
